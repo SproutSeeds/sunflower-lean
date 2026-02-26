@@ -1,5 +1,316 @@
 import Mathlib.Data.Finset.Card
-import SunflowerLean.Balance
+import SunflowerLean.PairWeightCountingB
+
+/-- Pointwise pair-union lower bound target for off-diagonal pairs. -/
+def PointwiseUnionLowerBound {α : Type*} [DecidableEq α] (c : ℕ) : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α),
+    IsOnGround family ground →
+    IsSunflowerFree family 3 →
+    ∀ p ∈ family.offDiag, c ≤ (p.1 ∪ p.2).card
+
+/-- Average union-size bound target (kept as explicit hypothesis form). -/
+def AverageUnionSizeBound {α : Type*} [DecidableEq α] (c : ℕ) : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α),
+    IsOnGround family ground →
+    IsSunflowerFree family 3 →
+    family.card ≥ 3 →
+    c * family.offDiag.card ≤
+      ∑ p ∈ family.offDiag, (p.1 ∪ p.2).card
+
+/-- Pointwise implies average (mechanical bridge). -/
+theorem average_union_of_pointwise {α : Type*} [DecidableEq α] (c : ℕ) :
+    PointwiseUnionLowerBound (α := α) c →
+    AverageUnionSizeBound (α := α) c := by
+  intro hpoint family ground h_on hfree _hcard
+  have hconst : ∑ _ ∈ family.offDiag, c = family.offDiag.card * c := by
+    simpa [nsmul_eq_mul] using
+      (Finset.sum_const (s := family.offDiag) (a := c))
+  calc
+    c * family.offDiag.card = family.offDiag.card * c := by
+      rw [Nat.mul_comm]
+    _ = ∑ _ ∈ family.offDiag, c := by
+      exact hconst.symm
+    _ ≤ ∑ p ∈ family.offDiag, (p.1 ∪ p.2).card := by
+      refine Finset.sum_le_sum ?_
+      intro p hp
+      exact hpoint family ground h_on hfree p hp
+
+/-- Hypothesis: pairWeight is bounded by the union-size envelope.
+    This isolates the case-split over pairWeight definition. -/
+def PairWeightEnvelopeHyp {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (ground : Finset α) (i : α) (p : Finset α × Finset α),
+    pairWeight ground i p ≤ 2 ^ (ground.card - (p.1 ∪ p.2).card)
+
+/-- Conditional weight-sum reduction from pointwise union lower bound
+    plus pairWeight envelope hypothesis. -/
+theorem weight_sum_le_of_pointwise_union_lower {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) (c : ℕ)
+    (_h_on : IsOnGround family ground)
+    (henv : PairWeightEnvelopeHyp (α := α))
+    (hpoint : ∀ p ∈ family.offDiag, c ≤ (p.1 ∪ p.2).card) :
+    ∑ p ∈ family.offDiag, pairWeight ground i p ≤
+      family.offDiag.card * 2 ^ (ground.card - c) := by
+  have hconst :
+      ∑ p ∈ family.offDiag, 2 ^ (ground.card - c) =
+        family.offDiag.card * 2 ^ (ground.card - c) := by
+    simpa [nsmul_eq_mul] using
+      (Finset.sum_const (s := family.offDiag) (a := 2 ^ (ground.card - c)))
+  have hle :
+      ∑ p ∈ family.offDiag, pairWeight ground i p ≤
+        ∑ p ∈ family.offDiag, 2 ^ (ground.card - c) := by
+    refine Finset.sum_le_sum ?_
+    intro p hp
+    exact le_trans (henv ground i p)
+      (Nat.pow_le_pow_right (by decide)
+        (Nat.sub_le_sub_left (hpoint p hp) _))
+  calc
+    ∑ p ∈ family.offDiag, pairWeight ground i p
+        ≤ ∑ p ∈ family.offDiag, 2 ^ (ground.card - c) := hle
+    _ = family.offDiag.card * 2 ^ (ground.card - c) := by
+      exact hconst
+
+/-- Candidates containing i that are already in the family. -/
+def InFamilyContaining {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) : Finset (Finset α) :=
+  (CandidatesContaining ground i).filter (fun S => S ∈ family)
+
+lemma in_family_containing_subset {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) :
+    InFamilyContaining family ground i ⊆ family.filter (fun S => i ∈ S) := by
+  intro S hS
+  have h := Finset.mem_filter.mp hS
+  have hCand := mem_candidates_iff.mp h.1
+  exact Finset.mem_filter.mpr ⟨h.2, hCand.2⟩
+
+lemma card_in_family_containing_le {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) :
+    (InFamilyContaining family ground i).card ≤ coordDegree family i := by
+  unfold coordDegree
+  exact Finset.card_le_card (in_family_containing_subset family ground i)
+
+/-- If every set in family is on the ground, candidates-in-family match coordDegree. -/
+lemma in_family_containing_eq_filter {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α)
+    (h_on : IsOnGround family ground) :
+    InFamilyContaining family ground i = family.filter (fun S => i ∈ S) := by
+  ext S
+  constructor
+  · intro hS
+    have h := Finset.mem_filter.mp hS
+    have hCand := mem_candidates_iff.mp h.1
+    exact Finset.mem_filter.mpr ⟨h.2, hCand.2⟩
+  · intro hS
+    have h := Finset.mem_filter.mp hS
+    have hsub : S ⊆ ground := h_on S h.1
+    exact Finset.mem_filter.mpr ⟨
+      Finset.mem_filter.mpr ⟨Finset.mem_powerset.mpr hsub, h.2⟩,
+      h.1⟩
+
+lemma card_in_family_containing_eq {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α)
+    (h_on : IsOnGround family ground) :
+    (InFamilyContaining family ground i).card = coordDegree family i := by
+  unfold coordDegree
+  simp [in_family_containing_eq_filter family ground i h_on]
+
+lemma exists_good_containing_of_card_lt {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α)
+    (hcard : (BadContaining family ground i).card <
+      (CandidatesContaining ground i).card) :
+    ∃ S, S ⊆ ground ∧ i ∈ S ∧ (S ∈ family ∨ ¬ BadSet family S) := by
+  classical
+  rcases Finset.exists_mem_notMem_of_card_lt_card hcard with ⟨S, hS, hnot⟩
+  have hmem : S ⊆ ground ∧ i ∈ S := (mem_candidates_iff.mp hS)
+  refine ⟨S, hmem.1, hmem.2, ?_⟩
+  by_cases hSf : S ∈ family
+  · exact Or.inl hSf
+  · right
+    intro hbad
+    have : S ∈ BadContaining family ground i := by
+      exact Finset.mem_filter.mpr ⟨hS, ⟨hSf, hbad⟩⟩
+    exact hnot this
+
+/-- If bad or in-family candidates are fewer than total candidates, we can pick a good, new set. -/
+lemma exists_good_not_in_family_of_count {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α)
+    (hcount :
+      (BadContaining family ground i).card +
+        (InFamilyContaining family ground i).card <
+        (CandidatesContaining ground i).card) :
+    ∃ S, S ⊆ ground ∧ i ∈ S ∧ S ∉ family ∧ ¬ BadSet family S := by
+  classical
+  let bad := BadContaining family ground i
+  let infam := InFamilyContaining family ground i
+  let cand := CandidatesContaining ground i
+  have h_union :
+      (bad ∪ infam).card < cand.card := by
+    have hle : (bad ∪ infam).card ≤ bad.card + infam.card :=
+      Finset.card_union_le bad infam
+    exact lt_of_le_of_lt hle hcount
+  rcases Finset.exists_mem_notMem_of_card_lt_card h_union with ⟨S, hS_cand, hS_not_union⟩
+  have hmem : S ⊆ ground ∧ i ∈ S := mem_candidates_iff.mp hS_cand
+  have hS_not_infam : S ∉ infam := by
+    intro hSf
+    exact hS_not_union (Finset.mem_union.mpr (Or.inr hSf))
+  have hS_not_family : S ∉ family := by
+    intro hSf
+    have : S ∈ infam := by
+      exact Finset.mem_filter.mpr ⟨hS_cand, hSf⟩
+    exact hS_not_infam this
+  have hS_not_bad : ¬ BadSet family S := by
+    intro hbad
+    have : S ∈ bad := by
+      exact Finset.mem_filter.mpr ⟨hS_cand, ⟨hS_not_family, hbad⟩⟩
+    exact hS_not_union (Finset.mem_union.mpr (Or.inl this))
+  exact ⟨S, hmem.1, hmem.2, hS_not_family, hS_not_bad⟩
+
+/-- If adding S preserves sunflower-freeness, then S witnesses AddableContaining. -/
+lemma addable_of_good {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) (S : Finset α) :
+    S ⊆ ground → i ∈ S → S ∉ family → IsSunflowerFree (insert S family) 3 →
+    AddableContaining family ground i := by
+  intro hSground hiS hSnot hfree
+  exact ⟨S, hSground, hiS, hSnot, hfree⟩
+
+/-- If S is not bad, inserting S preserves 3-sunflower-freeness. -/
+lemma good_implies_insert_sf_free {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (S : Finset α) :
+    IsSunflowerFree family 3 →
+    ¬ BadSet family S →
+    IsSunflowerFree (insert S family) 3 := by
+  intro h_sf h_not_bad subfamily h_sub h_sun
+  rcases h_sun with ⟨h_card, core, hcore⟩
+  by_cases hS : S ∈ subfamily
+  · classical
+    have hxyz :
+        ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ subfamily = {x, y, z} :=
+      (Finset.card_eq_three (s := subfamily)).1 h_card
+    rcases hxyz with ⟨x, y, z, hxy, hxz, hyz, hsub_eq⟩
+    have hSxyz : S = x ∨ S = y ∨ S = z := by
+      have hS' : S ∈ ({x, y, z} : Finset (Finset α)) := hsub_eq ▸ hS
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hS'
+      exact hS'
+    -- Build the bad set contradiction for each case
+    have hbad : BadSet family S := by
+      cases hSxyz with
+      | inl hSx =>
+          -- S = x, take A = y, B = z
+          subst hSx
+          have hA_sub : y ∈ subfamily := by
+            simp [hsub_eq]
+          have hB_sub : z ∈ subfamily := by
+            simp [hsub_eq]
+          have hA_ins : y ∈ insert S family := h_sub hA_sub
+          have hB_ins : z ∈ insert S family := h_sub hB_sub
+          have hA_fam : y ∈ family := by
+            rcases Finset.mem_insert.mp hA_ins with hA | hA
+            · have : y = S := hA
+              exact (hxy this.symm).elim
+            · exact hA
+          have hB_fam : z ∈ family := by
+            rcases Finset.mem_insert.mp hB_ins with hB | hB
+            · have : z = S := hB
+              exact (hxz this.symm).elim
+            · exact hB
+          refine ⟨y, hA_fam, z, hB_fam, hyz, core, ?_, ?_, ?_⟩
+          · exact hcore y z hA_sub hB_sub hyz
+          · exact hcore y S hA_sub hS hxy.symm
+          · exact hcore z S hB_sub hS hxz.symm
+      | inr hSyz =>
+          cases hSyz with
+          | inl hSy =>
+              -- S = y, take A = x, B = z
+              subst hSy
+              have hA_sub : x ∈ subfamily := by
+                simp [hsub_eq]
+              have hB_sub : z ∈ subfamily := by
+                simp [hsub_eq]
+              have hA_ins : x ∈ insert S family := h_sub hA_sub
+              have hB_ins : z ∈ insert S family := h_sub hB_sub
+              have hA_fam : x ∈ family := by
+                rcases Finset.mem_insert.mp hA_ins with hA | hA
+                · have : x = S := hA
+                  exact (hxy this).elim
+                · exact hA
+              have hB_fam : z ∈ family := by
+                rcases Finset.mem_insert.mp hB_ins with hB | hB
+                · have : z = S := hB
+                  exact (hyz this.symm).elim
+                · exact hB
+              refine ⟨x, hA_fam, z, hB_fam, hxz, core, ?_, ?_, ?_⟩
+              · exact hcore x z hA_sub hB_sub hxz
+              · exact hcore x S hA_sub hS hxy
+              · exact hcore z S hB_sub hS hyz.symm
+          | inr hSz =>
+              -- S = z, take A = x, B = y
+              subst hSz
+              have hA_sub : x ∈ subfamily := by
+                simp [hsub_eq]
+              have hB_sub : y ∈ subfamily := by
+                simp [hsub_eq]
+              have hA_ins : x ∈ insert S family := h_sub hA_sub
+              have hB_ins : y ∈ insert S family := h_sub hB_sub
+              have hA_fam : x ∈ family := by
+                rcases Finset.mem_insert.mp hA_ins with hA | hA
+                · have : x = S := hA
+                  exact (hxz this).elim
+                · exact hA
+              have hB_fam : y ∈ family := by
+                rcases Finset.mem_insert.mp hB_ins with hB | hB
+                · have : y = S := hB
+                  exact (hyz this).elim
+                · exact hB
+              refine ⟨x, hA_fam, y, hB_fam, hxy, core, ?_, ?_, ?_⟩
+              · exact hcore x y hA_sub hB_sub hxy
+              · exact hcore x S hA_sub hS hxz
+              · exact hcore y S hB_sub hS hyz
+    exact (h_not_bad hbad)
+  · -- S not in subfamily: then subfamily ⊆ family
+    have h_sub' : subfamily ⊆ family := by
+      intro T hT
+      have hmem := h_sub hT
+      rcases Finset.mem_insert.mp hmem with hEq | hmem
+      · simp only [hEq] at hT
+        exact (hS hT).elim
+      · exact hmem
+    exact h_sf subfamily h_sub' ⟨h_card, core, hcore⟩
+
+/-- A good candidate set yields an addable set (uses maximality for sunflower-freeness). -/
+lemma addable_containing_of_good_candidate {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) (S : Finset α) :
+    IsMaximalSunflowerFree family 3 ground →
+    S ⊆ ground → i ∈ S → S ∉ family → ¬ BadSet family S →
+    AddableContaining family ground i := by
+  intro hmax hSground hiS hSnot hnotbad
+  rcases hmax with ⟨hfree, _h_on, _h_max⟩
+  have hfree' : IsSunflowerFree (insert S family) 3 :=
+    good_implies_insert_sf_free family S hfree hnotbad
+  exact addable_of_good family ground i S hSground hiS hSnot hfree'
+
+/-- If there exists a good candidate containing i, then i is addable. -/
+lemma low_case_of_exists_good {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) :
+    IsMaximalSunflowerFree family 3 ground →
+    (∃ S, S ⊆ ground ∧ i ∈ S ∧ S ∉ family ∧ ¬ BadSet family S) →
+    AddableContaining family ground i := by
+  intro hmax hgood
+  rcases hgood with ⟨S, hSground, hiS, hSnot, hnotbad⟩
+  exact addable_containing_of_good_candidate family ground i S hmax hSground hiS hSnot hnotbad
+
+/-- Low case from the counting bound on bad-or-in-family candidates. -/
+lemma low_case_of_count {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (i : α) :
+    IsMaximalSunflowerFree family 3 ground →
+    (BadContaining family ground i).card +
+      (InFamilyContaining family ground i).card <
+      (CandidatesContaining ground i).card →
+    AddableContaining family ground i := by
+  intro hmax hcount
+  have hgood :
+      ∃ S, S ⊆ ground ∧ i ∈ S ∧ S ∉ family ∧ ¬ BadSet family S :=
+    exists_good_not_in_family_of_count family ground i hcount
+  exact low_case_of_exists_good family ground i hmax hgood
+
 
 namespace SunflowerLean
 

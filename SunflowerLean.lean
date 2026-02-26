@@ -3,7 +3,8 @@ import SunflowerLean.Slice
 import SunflowerLean.Recurrence
 import SunflowerLean.Spread
 import SunflowerLean.LocalTuran
-import SunflowerLean.Balance
+import SunflowerLean.BalanceCore
+import SunflowerLean.PairWeight
 import SunflowerLean.UnionBounds
 import SunflowerLean.SpreadBalance
 import SunflowerLean.Container

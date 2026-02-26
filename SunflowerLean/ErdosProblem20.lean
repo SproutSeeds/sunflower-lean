@@ -16,7 +16,7 @@
 -/
 
 import SunflowerLean.Basic
-import SunflowerLean.Balance
+import SunflowerLean.BalanceCore
 import SunflowerLean.LocalTuran
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card

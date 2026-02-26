@@ -1,4 +1,4 @@
-import SunflowerLean.Balance
+import SunflowerLean.BalanceCore
 import SunflowerLean.Spread
 
 namespace SunflowerLean
