@@ -4,24 +4,24 @@ A Lean 4 formalization of exact values and structural properties of sunflower-fr
 
 ## What's here
 
-### Certified exact values (sorry-free)
+### Certified status (non-uniform model, ∅ included)
 
 | Result | Status | Method |
 |--------|--------|--------|
-| M(1,3) = 1 | Verified | Trivial |
+| M(1,3) = 2 | Verified | `native_decide` |
 | M(2,3) = 3 | Verified | `native_decide` |
 | M(3,3) = 5 | Verified | `native_decide` |
 | M(4,3) = 8 | Verified | `native_decide` |
 | M(5,3) = 12 | Verified | SAT + LRAT bridge |
 | M(6,3) = 19 | Verified | SAT + LRAT bridge |
-| M(7,3) = 29 | Certified | 4 independent SAT solvers (UNSAT at 30) |
+| M(7,3) = 29 | SAT-certified | UNSAT at 30; Lean statement has one `sorry` due LRAT size |
 
-M(n,3) is the maximum size of a 3-sunflower-free family on [n].
+`M(n,3)` is the maximum size of a 3-sunflower-free family on `[n]` in this repository's non-uniform convention.
 
 ### Active work (open problems)
 
-- **Erdős Problem #20** (`ErdosProblem20.lean`) — uniform sunflower conjecture, f(r,3) ≤ C^r.
-  Base cases f(1,3) through f(6,3) proved. General bound open.
+- **Erdős Problem #20** (`ErdosProblem20.lean`) — uniform sunflower route, `f(r,3) ≤ C^r`.
+  Framework and finite-`r` components are formalized; global bound remains open.
 
 ## Building
 
@@ -37,17 +37,19 @@ lake build           # build everything (~4 min first time)
 | File | Contents |
 |------|----------|
 | `Basic.lean` | Core definitions: `IsSunflower`, `IsSunflowerFree`, `IsSFreeC` |
-| `SmallCases.lean` | Verified exact values M(1,3)–M(7,3), lower bounds M(5,3)–M(7,3) |
+| `SmallCases.lean` | Exact values for `n=1..4`, plus witness lower bounds including `n=5..7` |
 | `SATBridge.lean` | Sorry-free LRAT bridge theorems for n=5 (253KB) and n=6 (26MB) |
-| `SATUpperBound.lean` | M(5,3)=12 and M(6,3)=19 fully verified |
-| `Balance.lean` | Two-sided degree window theorem |
+| `SATUpperBound.lean` | Exact values `M(5,3)=12`, `M(6,3)=19`; SAT-certified `M(7,3)=29` status |
+| `BalanceCore.lean` | Foundational balance definitions and Local Turan bridge layer |
+| `PairWeight.lean` | Pair-weight counting machinery (public aggregator module) |
+| `UnionBounds.lean` | Union-size bound layer and transfer theorems |
 | `ErdosProblem20.lean` | Erdős Problem #20 framework and base cases |
 
 ## Notes
 
-- All M(n,3) results for n ≤ 6 are fully sorry-free.
-- M(7,3) = 29 is SAT-certified (logs and SHA256 hashes available on request).
-- `ErdosProblem20.lean` contains open `sorry` stubs for the unsolved general bound.
+- Exact values `M(n,3)` for `n ≤ 6` are fully sorry-free in this model.
+- `M(7,3)=29` is SAT-certified; Lean-level ingestion of the full LRAT artifact is currently size-limited.
+- `ErdosProblem20.lean` and parts of the balance program still contain open `sorry` stubs.
 
 ## Author
 
