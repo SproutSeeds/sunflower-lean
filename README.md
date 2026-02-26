@@ -23,6 +23,16 @@ A Lean 4 formalization of exact values and structural properties of sunflower-fr
 - **Erdős Problem #20** (`ErdosProblem20.lean`) — uniform sunflower route, `f(r,3) ≤ C^r`.
   Framework and finite-`r` components are formalized; global bound remains open.
 
+## AI provenance and verification boundary
+
+- Development in this repository includes AI-assisted ideation, drafting,
+  and proof-attempt generation.
+- Public claims are accepted only after local verification:
+  - Lean claims must typecheck under the Lean kernel.
+  - SAT-backed claims must have reproducible local certificate checks.
+- Model output is treated as candidate reasoning, not trusted evidence.
+- See `AI_DISCLOSURE.md` for the full disclosure text.
+
 ## Building
 
 Requires [Lean 4](https://leanprover.github.io/) and [Lake](https://github.com/leanprover/lake).
@@ -44,6 +54,8 @@ lake build           # build everything (~4 min first time)
 | `PairWeight.lean` | Pair-weight counting machinery (public aggregator module) |
 | `UnionBounds.lean` | Union-size bound layer and transfer theorems |
 | `ErdosProblem20.lean` | Erdős Problem #20 framework and base cases |
+| `Provenance.lean` | In-code provenance and verification-boundary declarations |
+| `AI_DISCLOSURE.md` | Public disclosure of AI assistance and acceptance criteria |
 
 ## Notes
 
