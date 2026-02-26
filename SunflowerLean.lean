@@ -12,4 +12,4 @@ import SunflowerLean.SATNative
 import SunflowerLean.SATBridge
 import SunflowerLean.SATUpperBound
 import SunflowerLean.ErdosProblem20
--- Examples (Harmonic/Aristotle proofs) are in examples/
+-- Examples (Harmonic/Aristotle proofs) are in lean-examples/
