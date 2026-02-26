@@ -1,0 +1,95 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["a23e288f0ef6bb2f.olean"],
+  "i": "bdeb69510bf3af24.ilean",
+  "c": "2712793e1d1269be.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean /Users/codymitchell/.elan/toolchains/leanprover--lean4---v4.26.0/bin/lean /Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/BalanceCandidatesA.lean -o /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/BalanceCandidatesA.olean -i /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/BalanceCandidatesA.ilean -c /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/BalanceCandidatesA.c --setup /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/BalanceCandidatesA.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:47:8: declaration uses 'sorry'",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:47:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:51:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:56:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:126:46: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:146:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:233:6: Try `simp at hlow'` instead of `simpa using hlow'`\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:156:5: unused variable `hgap`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:157:58: unused variable `i`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:163:5: unused variable `hlarge`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:336:34: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:342:5: unused variable `hgap`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:343:58: unused variable `i`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:349:5: unused variable `hlarge`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:502:5: unused variable `ht`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:503:5: unused variable `h_uniform`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:504:5: unused variable `h_sf_free`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:523:5: unused variable `h_t_le_r`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:615:56: unused variable `i`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCandidatesA.lean:638:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"}],
+ "inputs":
+ [["SunflowerLean.BalanceCandidatesA:deps",
+   [["deps",
+     [["sunflower_lean/SunflowerLean:extraDep",
+       [["@sunflower_lean:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["SunflowerLean.BalanceCasesB transitive imports (legacy)",
+         "500429d20fa8243f"],
+        ["SunflowerLean.BalanceCasesB:importAllArts", "26f738a9f842696b"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.26.0, commit d8204c9fd894f91bbb2cdfec5912ec8196fd8562",
+   "9c9419104e9584f8"],
+  ["/Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/BalanceCandidatesA.lean",
+   "92383c42bf1a7f6a"],
+  ["options",
+   [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
+    ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
+    ["-DrelaxedAutoImplicit=false", "74a2b5546b55be80"],
+    ["-Dpp.unicode.fun=true", "9b94070140457fab"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "3d997fdac8ad019b"}

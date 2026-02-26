@@ -1,0 +1,41 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["7fe1608f72c6d899.olean"],
+  "i": "8eea34ca79656297.ilean",
+  "c": "be9e70a70da22e84.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean /Users/codymitchell/.elan/toolchains/leanprover--lean4---v4.26.0/bin/lean /Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/BalanceCasesA.lean -o /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/BalanceCasesA.olean -i /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/BalanceCasesA.ilean -c /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/BalanceCasesA.c --setup /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/BalanceCasesA.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "SunflowerLean/BalanceCasesA.lean:154:8: declaration uses 'sorry'",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/BalanceCasesA.lean:161:8: declaration uses 'sorry'",
+   "level": "warning"}],
+ "inputs":
+ [["SunflowerLean.BalanceCasesA:deps",
+   [["deps",
+     [["sunflower_lean/SunflowerLean:extraDep",
+       [["@sunflower_lean:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["SunflowerLean.UnionBounds transitive imports (legacy)",
+         "7458f594113776ab"],
+        ["SunflowerLean.UnionBounds:importAllArts", "73496c366e9c26de"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.26.0, commit d8204c9fd894f91bbb2cdfec5912ec8196fd8562",
+   "9c9419104e9584f8"],
+  ["/Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/BalanceCasesA.lean",
+   "bdfda491a64e1217"],
+  ["options",
+   [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
+    ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
+    ["-DrelaxedAutoImplicit=false", "74a2b5546b55be80"],
+    ["-Dpp.unicode.fun=true", "9b94070140457fab"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "8a8316ddbb44c4b4"}

@@ -1,0 +1,213 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["02470f1de0b43790.olean"],
+  "i": "388b1b32ce8616a0.ilean",
+  "c": "abd09fd1bad542da.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean /Users/codymitchell/.elan/toolchains/leanprover--lean4---v4.26.0/bin/lean /Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/ErdosProblem20.lean -o /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/ErdosProblem20.olean -i /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/ErdosProblem20.ilean -c /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/ErdosProblem20.c --setup /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/ErdosProblem20.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:543:4: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:594:0: `uniform_bound_f6_3_global_card_cap_mono` has the hypothesis:\n  • [DecidableEq α] (#2)\nwhich is not used in the remainder of the type.\n\nConsider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).\n\nNote: This linter can be disabled with `set_option linter.unusedDecidableInType false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:694:4: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:736:2: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:751:34: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:760:2: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:914:10: This simp argument is unused:\n  hab\n\nHint: Omit it from the simp argument list.\n  simp ̵[̵h̵a̵b̵]̵\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:917:10: This simp argument is unused:\n  hab\n\nHint: Omit it from the simp argument list.\n  simp ̵[̵h̵a̵b̵]̵\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:934:15: This simp argument is unused:\n  h12\n\nHint: Omit it from the simp argument list.\n  simp [sub, h12̵,̵ ̵h̵1̵3, h23] at hS\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:934:20: This simp argument is unused:\n  h13\n\nHint: Omit it from the simp argument list.\n  simp [sub, h12, h1̵3̵,̵ ̵h̵23] at hS\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:934:25: This simp argument is unused:\n  h23\n\nHint: Omit it from the simp argument list.\n  simp [sub, h12, h13,̵ ̵h̵2̵3̵] at hS\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:15: This simp argument is unused:\n  h12\n\nHint: Omit it from the simp argument list.\n  simp [sub, h12̵,̵ ̵h̵1̵3, h23] at hS hT\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:20: This simp argument is unused:\n  h13\n\nHint: Omit it from the simp argument list.\n  simp [sub, h12, h1̵3̵,̵ ̵h̵23] at hS hT\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:25: This simp argument is unused:\n  h23\n\nHint: Omit it from the simp argument list.\n  simp [sub, h12, h13,̵ ̵h̵2̵3̵] at hS hT\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:934:4: 'simp [sub, h12, h13, h23] at hS' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:935:4: 'rcases hS with rfl | rfl | rfl' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:934:4: 'simp [sub, h12, h13, h23] at hS' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:935:39: 'assumption' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:934:4: 'simp [sub, h12, h13, h23] at hS' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:935:39: 'assumption' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:934:4: 'simp [sub, h12, h13, h23] at hS' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:935:39: 'assumption' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:939:4: 'rcases hS with rfl | rfl | rfl' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hT'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:939:39: 'rcases hT with rfl | rfl | rfl' uses 'hT'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:939:39: 'rcases hT with rfl | rfl | rfl' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:939:39: 'rcases hT with rfl | rfl | rfl' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hT'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:939:39: 'rcases hT with rfl | rfl | rfl' uses 'hT'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hT'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:939:39: 'rcases hT with rfl | rfl | rfl' uses 'hT'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:939:39: 'rcases hT with rfl | rfl | rfl' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:940:6: 'exact False.elim (hne rfl)' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:944:6: 'exact False.elim (hne rfl)' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:938:4: 'simp [sub, h12, h13, h23] at hS hT' is a flexible tactic modifying 'hS'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.\n\nNote: This linter can be disabled with `set_option linter.flexible false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:948:6: 'exact False.elim (hne rfl)' uses 'hS'!",
+   "level": "info"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1032:55: This simp argument is unused:\n  mul_comm\n\nHint: Omit it from the simp argument list.\n  simp [Finset.sum_const,̵ ̵m̵u̵l̵_̵c̵o̵m̵m̵]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1047:0: `f3_3_type_c_card_le_eighteen_of_link_bounds` has the hypothesis:\n  • [DecidableEq α] (#3)\nwhich is not used in the remainder of the type.\n\nConsider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).\n\nNote: This linter can be disabled with `set_option linter.unusedDecidableInType false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1113:76: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1117:8: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1124:41: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1225:8: declaration uses 'sorry'",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1237:5: unused variable `h_uniform`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1238:5: unused variable `h_sf_free`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1252:8: declaration uses 'sorry'",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1282:4: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1286:20: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1292:4: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/ErdosProblem20.lean:1388:46: This simp argument is unused:\n  Finset.card_fin\n\nHint: Omit it from the simp argument list.\n  simp [Finset.sum_const,̵ ̵F̵i̵n̵s̵e̵t̵.̵c̵a̵r̵d̵_̵f̵i̵n̵]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"}],
+ "inputs":
+ [["SunflowerLean.ErdosProblem20:deps",
+   [["deps",
+     [["sunflower_lean/SunflowerLean:extraDep",
+       [["@sunflower_lean:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["SunflowerLean.Basic transitive imports (legacy)", "3ce917a07698e3d7"],
+        ["SunflowerLean.Basic:importAllArts", "6ee1bccd1d723faf"],
+        ["SunflowerLean.BalanceCore transitive imports (legacy)",
+         "14bf5efddd0d06b9"],
+        ["SunflowerLean.BalanceCore:importAllArts", "3ec1614c5397186b"],
+        ["SunflowerLean.LocalTuran transitive imports (legacy)",
+         "afd69a83fb5ac9c6"],
+        ["SunflowerLean.LocalTuran:importAllArts", "587aaad4301f9c53"],
+        ["Mathlib.Data.Finset.Basic transitive imports (legacy)",
+         "77a84be61c8ea562"],
+        ["Mathlib.Data.Finset.Basic:importAllArts", "c4c3c73d1e5c9d34"],
+        ["Mathlib.Data.Finset.Card transitive imports (legacy)",
+         "2114d0a4bbc2b326"],
+        ["Mathlib.Data.Finset.Card:importAllArts", "31a32c8cd5d267a2"],
+        ["Mathlib.Tactic transitive imports (legacy)", "b8a138cf98cb75bc"],
+        ["Mathlib.Tactic:importAllArts", "2ddee1d062badb4c"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.26.0, commit d8204c9fd894f91bbb2cdfec5912ec8196fd8562",
+   "9c9419104e9584f8"],
+  ["/Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/ErdosProblem20.lean",
+   "caa192c5010ad52a"],
+  ["options",
+   [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
+    ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
+    ["-DrelaxedAutoImplicit=false", "74a2b5546b55be80"],
+    ["-Dpp.unicode.fun=true", "9b94070140457fab"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "4a9187cb8e04a645"}

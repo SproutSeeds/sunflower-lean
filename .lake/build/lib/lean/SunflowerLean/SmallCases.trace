@@ -1,0 +1,87 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["b3f210ca9051b711.olean"],
+  "i": "4e6801ecb6e4d9c7.ilean",
+  "c": "dca01742d889ba7f.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean /Users/codymitchell/.elan/toolchains/leanprover--lean4---v4.26.0/bin/lean /Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/SmallCases.lean -o /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/SmallCases.olean -i /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/SmallCases.ilean -c /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/SmallCases.c --setup /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/SmallCases.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:38:54: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:67:54: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:101:54: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:112:2: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:139:54: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:143:2: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:149:2: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:264:55: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:267:38: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:282:55: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:285:38: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:301:55: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/SmallCases.lean:304:38: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"}],
+ "inputs":
+ [["SunflowerLean.SmallCases:deps",
+   [["deps",
+     [["sunflower_lean/SunflowerLean:extraDep",
+       [["@sunflower_lean:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["SunflowerLean.Basic transitive imports (legacy)", "3ce917a07698e3d7"],
+        ["SunflowerLean.Basic:importAllArts", "6ee1bccd1d723faf"],
+        ["Mathlib.Data.Finset.Basic transitive imports (legacy)",
+         "77a84be61c8ea562"],
+        ["Mathlib.Data.Finset.Basic:importAllArts", "c4c3c73d1e5c9d34"],
+        ["Mathlib.Data.Finset.Card transitive imports (legacy)",
+         "2114d0a4bbc2b326"],
+        ["Mathlib.Data.Finset.Card:importAllArts", "31a32c8cd5d267a2"],
+        ["Mathlib.Data.Finset.Powerset transitive imports (legacy)",
+         "9848e85b2cdbb6bd"],
+        ["Mathlib.Data.Finset.Powerset:importAllArts", "33851771b047f901"],
+        ["Mathlib.Data.Fintype.Basic transitive imports (legacy)",
+         "c175abfe6e3e34c5"],
+        ["Mathlib.Data.Fintype.Basic:importAllArts", "8c1a87bf3267d686"],
+        ["Mathlib.Tactic transitive imports (legacy)", "b8a138cf98cb75bc"],
+        ["Mathlib.Tactic:importAllArts", "2ddee1d062badb4c"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.26.0, commit d8204c9fd894f91bbb2cdfec5912ec8196fd8562",
+   "9c9419104e9584f8"],
+  ["/Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/SmallCases.lean",
+   "a7d2a0710f7fa439"],
+  ["options",
+   [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
+    ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
+    ["-DrelaxedAutoImplicit=false", "74a2b5546b55be80"],
+    ["-Dpp.unicode.fun=true", "9b94070140457fab"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "df472e560b882766"}

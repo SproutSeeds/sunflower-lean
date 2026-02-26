@@ -1,0 +1,189 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["678ab02d0dce8e79.olean"],
+  "i": "df90ed545d6a1d63.ilean",
+  "c": "163526016fa3872a.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean /Users/codymitchell/.elan/toolchains/leanprover--lean4---v4.26.0/bin/lean /Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/UnionBounds.lean -o /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/UnionBounds.olean -i /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/lib/lean/SunflowerLean/UnionBounds.ilean -c /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/UnionBounds.c --setup /Users/codymitchell/Documents/code/sunflower-lean/.lake/build/ir/SunflowerLean/UnionBounds.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:26:4: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:56:4: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:380:2: Try this: intro _ family ground A B h_on _ hA _ _",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:388:5: unused variable `hM5`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:389:5: unused variable `hM6`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:390:5: unused variable `hM7`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:391:5: unused variable `hM8_lb`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:392:5: unused variable `h_window7`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:398:5: unused variable `h_window8`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:404:5: unused variable `h_growth`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:406:5: unused variable `h_turan`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:411:5: unused variable `h_coord`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:415:2: Try this: intro family ground A B h_on _ hA _ _ x hx",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:496:14: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:501:14: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:502:14: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:524:14: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:543:8: Try `simp at hbad` instead of `simpa using hbad`\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:553:8: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:565:10: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:571:12: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:539:22: This simp argument is unused:\n  hsubset_singleton\n\nHint: Omit it from the simp argument list.\n  simp ̵[̵h̵s̵u̵b̵s̵e̵t̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵]̵\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:515:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:574:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:646:16: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:697:8: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:709:10: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:579:5: unused variable `hM6`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:580:5: unused variable `hM7`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:581:5: unused variable `hM8_lb`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:582:5: unused variable `h_window7`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:588:5: unused variable `h_window8`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:594:5: unused variable `h_growth`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:596:5: unused variable `h_turan`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:601:5: unused variable `h_coord`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:604:5: unused variable `h_small_union_pairs`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:649:53: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler (not just the Lean kernel), it could quite possibly be used to prove false.\n\nNote: This linter can be disabled with `set_option linter.style.nativeDecide false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:652:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:715:0: This line exceeds the 100 character limit, please shorten it!\n\nNote: This linter can be disabled with `set_option linter.style.longLine false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:719:5: unused variable `hM5`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:720:5: unused variable `hM6`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:721:5: unused variable `hM7`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:722:5: unused variable `hM8_lb`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:723:5: unused variable `h_window7`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:729:5: unused variable `h_window8`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:735:5: unused variable `h_growth`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:737:5: unused variable `h_local_turan`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:742:5: unused variable `h_degree_square_double_count`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:748:5: unused variable `h_union_sum_rewrite`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "SunflowerLean/UnionBounds.lean:755:5: unused variable `h_floor_route`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"}],
+ "inputs":
+ [["SunflowerLean.UnionBounds:deps",
+   [["deps",
+     [["sunflower_lean/SunflowerLean:extraDep",
+       [["@sunflower_lean:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Mathlib.Data.Finset.Card transitive imports (legacy)",
+         "2114d0a4bbc2b326"],
+        ["Mathlib.Data.Finset.Card:importAllArts", "31a32c8cd5d267a2"],
+        ["SunflowerLean.PairWeightCountingB transitive imports (legacy)",
+         "dd4c25550d9db9e9"],
+        ["SunflowerLean.PairWeightCountingB:importAllArts",
+         "f0cffdb352f77cbc"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.26.0, commit d8204c9fd894f91bbb2cdfec5912ec8196fd8562",
+   "9c9419104e9584f8"],
+  ["/Users/codymitchell/Documents/code/sunflower-lean/SunflowerLean/UnionBounds.lean",
+   "029a59372f9c86c7"],
+  ["options",
+   [["-DmaxSynthPendingDepth=3", "c78e353d34de85d4"],
+    ["-Dweak.linter.mathlibStandardSet=true", "8a155799906f2b42"],
+    ["-DrelaxedAutoImplicit=false", "74a2b5546b55be80"],
+    ["-Dpp.unicode.fun=true", "9b94070140457fab"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "170dedfe7fa2367e"}
