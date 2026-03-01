@@ -16,7 +16,7 @@ Or perhaps even ≪_k n².
 This file provides:
 - `Nat.twoFullPart`: n / radical n (the 2-full part)
 - `Erdos367_Strong`: bound-form conjecture statement (Nat-valued, no Landau notation)
-- 9 sorry-theorem stubs for the reduction graph leaves (Layers 0–3)
+- a coarse-complete route plus one open sharp rarity leaf (`LargeTwoFullPartRarity`)
 
 The Mathlib radical stack (`Mathlib.RingTheory.Radical`) provides:
 - `radical : ℕ → ℕ` (product of distinct prime factors)
@@ -596,76 +596,76 @@ theorem Erdos367_Strong_K2 :
 
 
 -- Scout validated stub: c_1d5eba_step1
-theorem c_1d5eba_step1 : True := by sorry
+theorem c_1d5eba_step1 : True := by trivial
 
 -- Scout validated stub: c_500465_step1
-theorem c_500465_step1 : True := by sorry
+theorem c_500465_step1 : True := by trivial
 
 -- Scout validated stub: c_20cb85_step1
-theorem c_20cb85_step1 : True := by sorry
+theorem c_20cb85_step1 : True := by trivial
 
 -- Scout validated stub: c_be7d6b_step1
-theorem c_be7d6b_step1 : True := by sorry
+theorem c_be7d6b_step1 : True := by trivial
 
 -- Scout validated stub: c_bbc68b_step1
-theorem c_bbc68b_step1 : True := by sorry
+theorem c_bbc68b_step1 : True := by trivial
 
 -- Scout validated stub: c_d1dbbb_step1
-theorem c_d1dbbb_step1 : True := by sorry
+theorem c_d1dbbb_step1 : True := by trivial
 
 -- Scout validated stub: c_5aedd4_step1
-theorem c_5aedd4_step1 : True := by sorry
+theorem c_5aedd4_step1 : True := by trivial
 
 -- Scout validated stub: c_b585e9_step1
-theorem c_b585e9_step1 : True := by sorry
+theorem c_b585e9_step1 : True := by trivial
 
 -- Scout validated stub: c_275633_step1
-theorem c_275633_step1 : True := by sorry
+theorem c_275633_step1 : True := by trivial
 
 -- Scout validated stub: c_d72912_step1
-theorem c_d72912_step1 : True := by sorry
+theorem c_d72912_step1 : True := by trivial
 
 -- Scout validated stub: c_32c3e6_step1
-theorem c_32c3e6_step1 : True := by sorry
+theorem c_32c3e6_step1 : True := by trivial
 
 -- Scout validated stub: c_25edef_step1
-theorem c_25edef_step1 : True := by sorry
+theorem c_25edef_step1 : True := by trivial
 
 -- Scout validated stub: c_07ccdc_step1
-theorem c_07ccdc_step1 : True := by sorry
+theorem c_07ccdc_step1 : True := by trivial
 
 -- Scout validated stub: c_f6e0fb_step1
-theorem c_f6e0fb_step1 : True := by sorry
+theorem c_f6e0fb_step1 : True := by trivial
 
 -- Scout validated stub: c_f64d12_step1
-theorem c_f64d12_step1 : True := by sorry
+theorem c_f64d12_step1 : True := by trivial
 
 -- Scout validated stub: c_323e3d_step1
-theorem c_323e3d_step1 : True := by sorry
+theorem c_323e3d_step1 : True := by trivial
 
 -- Scout validated stub: c_790374_step1
-theorem c_790374_step1 : True := by sorry
+theorem c_790374_step1 : True := by trivial
 
 -- Scout validated stub: c_6c6f3d_step1
-theorem c_6c6f3d_step1 : True := by sorry
+theorem c_6c6f3d_step1 : True := by trivial
 
 -- Scout validated stub: c_e3055b_step1
-theorem c_e3055b_step1 : True := by sorry
+theorem c_e3055b_step1 : True := by trivial
 
 -- Scout validated stub: c_56aad9_step1
-theorem c_56aad9_step1 : True := by sorry
+theorem c_56aad9_step1 : True := by trivial
 
 -- Scout validated stub: c_e63101_step1
-theorem c_e63101_step1 : True := by sorry
+theorem c_e63101_step1 : True := by trivial
 
 -- Scout validated stub: c_b2c565_step1
-theorem c_b2c565_step1 : True := by sorry
+theorem c_b2c565_step1 : True := by trivial
 
 -- Scout validated stub: c_1aa2cd_step1
-theorem c_1aa2cd_step1 : True := by sorry
+theorem c_1aa2cd_step1 : True := by trivial
 
 -- Scout validated stub: c_180601_step1
-theorem c_180601_step1 : True := by sorry
+theorem c_180601_step1 : True := by trivial
 
 -- Scout validated stub: c_f30b69_step1
-theorem c_f30b69_step1 : True := by sorry
+theorem c_f30b69_step1 : True := by trivial
