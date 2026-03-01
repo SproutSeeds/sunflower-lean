@@ -1,17 +1,11 @@
 import SunflowerLean.Basic
 import SunflowerLean.Slice
+import SunflowerLean.Obstruction
 import SunflowerLean.Recurrence
 import SunflowerLean.Spread
 import SunflowerLean.LocalTuran
-import SunflowerLean.BalanceCore
-import SunflowerLean.PairWeight
+import SunflowerLean.Balance
 import SunflowerLean.UnionBounds
 import SunflowerLean.SpreadBalance
 import SunflowerLean.Container
-import SunflowerLean.SmallCases
-import SunflowerLean.SATNative
-import SunflowerLean.SATBridge
-import SunflowerLean.SATUpperBound
 import SunflowerLean.ErdosProblem20
-import SunflowerLean.Provenance
--- Examples (Harmonic/Aristotle proofs) are in lean-examples/
