@@ -540,7 +540,7 @@ theorem uniform_bound_f5_3_fin8_card_bound_num
   have hpow : family.card ≤ 2 ^ Fintype.card (Fin 8) :=
     uniform_bound_f5_3_fin8_card_bound family h_uniform h_sf_free
   have hEq : (2 ^ Fintype.card (Fin 8) : ℕ) = 256 := by
-    native_decide
+    decide
   exact hEq ▸ hpow
 
 /-- [Status-corrected] The previous fixed target `f(6,3) ≤ 20` is refuted under the
@@ -592,7 +592,7 @@ theorem uniform_bound_f6_3_of_card_cap_mono {α : Type*} [DecidableEq α]
     (uniform_bound_f6_3_card_cap_mono hcap hBB')
 
 /-- Monotonicity helper for global family-cardinality caps. -/
-theorem uniform_bound_f6_3_global_card_cap_mono {α : Type*} [DecidableEq α]
+theorem uniform_bound_f6_3_global_card_cap_mono {α : Type*}
     {B B' : ℕ}
     (hcap : ∀ family : Finset (Finset α), family.card ≤ B)
     (hBB' : B ≤ B') :
@@ -691,7 +691,7 @@ theorem uniform_bound_f6_3_fin14_card_bound
   have hpow : family.card ≤ 2 ^ Fintype.card (Fin 14) :=
     uniform_bound_f6_3_fin14_card_bound_pow family h_uniform h_sf_free
   have hEq : (2 ^ Fintype.card (Fin 14) : ℕ) = 16384 := by
-    native_decide
+    decide
   exact hEq ▸ hpow
 
 /-- Concrete closure for `UniformBound_f3_3` on `Fin 4`.
@@ -706,7 +706,7 @@ theorem uniform_bound_f3_3_fin4 : UniformBound_f3_3 (α := Fin 4) := by
       family.card ≤ (Finset.univ : Finset (Finset (Fin 4))).card :=
     Finset.card_le_card hsub
   have hcard : (Finset.univ : Finset (Finset (Fin 4))).card = 16 := by
-    native_decide
+    decide
   have h16 : family.card ≤ 16 := by
     simpa [hcard] using hle
   exact Nat.le_trans h16 (by decide : 16 ≤ 20)
@@ -723,7 +723,7 @@ theorem uniform_bound_f4_3_fin4 : UniformBound_f4_3 (α := Fin 4) := by
       family.card ≤ (Finset.univ : Finset (Finset (Fin 4))).card :=
     Finset.card_le_card hsub
   have hcard : (Finset.univ : Finset (Finset (Fin 4))).card = 16 := by
-    native_decide
+    decide
   have h16 : family.card ≤ 16 := by
     simpa [hcard] using hle
   exact Nat.le_trans h16 (by decide : 16 ≤ 41)
@@ -794,7 +794,7 @@ def f6_3_counterexample_family : Finset (Finset (Fin 14)) :=
   (Finset.univ : Finset (Fin 6 × Fin 6)).image f6_3_counterexample_set
 
 theorem f6_3_counterexample_set_injective : Function.Injective f6_3_counterexample_set := by
-  native_decide
+  decide
 
 theorem f6_3_counterexample_card : f6_3_counterexample_family.card = 36 := by
   calc
@@ -809,8 +809,11 @@ theorem f6_3_counterexample_card : f6_3_counterexample_family.card = 36 := by
 theorem f6_3_counterexample_uniform : IsUniform f6_3_counterexample_family 6 := by
   intro S hS
   rcases Finset.mem_image.mp hS with ⟨⟨i, j⟩, -, rfl⟩
-  fin_cases i <;> fin_cases j <;> native_decide
+  fin_cases i <;> fin_cases j <;> decide
 
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 20000000 in
+-- Exhaustive kernel reduction over the 36-index witness triples needs extra resource budget.
 theorem f6_3_counterexample_no_sunflower_indices :
     ¬ ∃ a b c : Fin 6 × Fin 6,
       a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
@@ -818,7 +821,7 @@ theorem f6_3_counterexample_no_sunflower_indices :
           f6_3_counterexample_set a ∩ f6_3_counterexample_set c) ∧
         (f6_3_counterexample_set a ∩ f6_3_counterexample_set b =
           f6_3_counterexample_set b ∩ f6_3_counterexample_set c) := by
-  native_decide
+  decide
 
 theorem f6_3_counterexample_sf_free : IsSunflowerFree f6_3_counterexample_family 3 := by
   intro sub hsub hsun
@@ -885,7 +888,6 @@ theorem edge_count_bound_of_degree_two_and_matching_two {α : Type*} [DecidableE
   have h7 : 7 ≤ family.card := Nat.succ_le_of_lt (Nat.lt_of_not_ge h_not)
   have h_pos : 0 < family.card := lt_of_lt_of_le (by decide : 0 < 7) h7
   obtain ⟨e1, he1⟩ := Finset.card_pos.mp h_pos
-
   have h_intersect_le_three :
       ∀ e : Finset α, e ∈ family →
         (family.filter (fun S => ¬ Disjoint S e)).card ≤ 3 := by
@@ -933,7 +935,6 @@ theorem edge_count_bound_of_degree_two_and_matching_two {α : Type*} [DecidableE
       (family.filter (fun S => ¬ Disjoint S ({a, b} : Finset α))).card ≤ (Fa ∪ Fb).card :=
         Finset.card_le_card h_subset
       _ ≤ 3 := hUnionLe3
-
   let D1 : Finset (Finset α) := family.filter (fun S => Disjoint S e1)
   have hD1_part : D1.card + (family.filter (fun S => ¬ Disjoint S e1)).card = family.card := by
     simpa [D1] using
@@ -946,7 +947,6 @@ theorem edge_count_bound_of_degree_two_and_matching_two {α : Type*} [DecidableE
   obtain ⟨e2, he2D1⟩ := Finset.card_pos.mp hD1_pos
   have he2 : e2 ∈ family := (Finset.mem_filter.mp he2D1).1
   have h21 : Disjoint e2 e1 := (Finset.mem_filter.mp he2D1).2
-
   let D2 : Finset (Finset α) := D1.filter (fun S => Disjoint S e2)
   have hD2_part : D2.card + (D1.filter (fun S => ¬ Disjoint S e2)).card = D1.card := by
     simpa [D2] using
@@ -969,13 +969,12 @@ theorem edge_count_bound_of_degree_two_and_matching_two {α : Type*} [DecidableE
   have h32 : Disjoint e3 e2 := (Finset.mem_filter.mp he3D2).2
   have he3 : e3 ∈ family := (Finset.mem_filter.mp he3D1).1
   have h31 : Disjoint e3 e1 := (Finset.mem_filter.mp he3D1).2
-
   have h11_not : ¬ Disjoint e1 e1 := by
     rcases Finset.card_eq_two.mp (h_uniform e1 he1) with ⟨a, b, hab, rfl⟩
-    simp [hab]
+    simp
   have h22_not : ¬ Disjoint e2 e2 := by
     rcases Finset.card_eq_two.mp (h_uniform e2 he2) with ⟨a, b, hab, rfl⟩
-    simp [hab]
+    simp
   have h12 : e1 ≠ e2 := by
     intro hEq
     have : Disjoint e1 e1 := by simpa [hEq] using h21
@@ -988,16 +987,19 @@ theorem edge_count_bound_of_degree_two_and_matching_two {α : Type*} [DecidableE
     intro hEq
     have : Disjoint e2 e2 := by simpa [hEq] using h32
     exact h22_not this
-
   let sub : Finset (Finset α) := {e1, e2, e3}
   have hsub_subset : sub ⊆ family := by
     intro S hS
-    simp [sub, h12, h13, h23] at hS
-    rcases hS with rfl | rfl | rfl <;> assumption
+    have hS' : S = e1 ∨ S = e2 ∨ S = e3 := by
+      simpa [sub] using hS
+    rcases hS' with rfl | rfl | rfl <;> assumption
   have hsub_disj : IsPairwiseDisjoint sub := by
     intro S T hS hT hne
-    simp [sub, h12, h13, h23] at hS hT
-    rcases hS with rfl | rfl | rfl <;> rcases hT with rfl | rfl | rfl
+    have hS' : S = e1 ∨ S = e2 ∨ S = e3 := by
+      simpa [sub] using hS
+    have hT' : T = e1 ∨ T = e2 ∨ T = e3 := by
+      simpa [sub] using hT
+    rcases hS' with rfl | rfl | rfl <;> rcases hT' with rfl | rfl | rfl
     · exact False.elim (hne rfl)
     · simpa [Finset.disjoint_iff_inter_eq_empty] using h21.symm
     · simpa [Finset.disjoint_iff_inter_eq_empty] using h31.symm
@@ -1101,7 +1103,7 @@ theorem f3_3_type_b_card_le_eighteen_of_link_bounds {α : Type*} [DecidableEq α
       pairs.card * 2 := by
     calc pairs.sum (fun p => (typeB.filter (fun S => p.1 ∈ S ∧ p.2 ∈ S)).card)
         ≤ pairs.sum (fun _ => 2) := Finset.sum_le_sum (fun p hp => hcap p hp)
-      _ = pairs.card * 2 := by simp [Finset.sum_const, mul_comm]
+      _ = pairs.card * 2 := by simp [Finset.sum_const]
   omega
 
 /-- Absorption wrapper for the `r = 3, k = 3` cap-56 route:
@@ -1119,7 +1121,7 @@ theorem f3_3_card_cap56_of_matching_neighborhood_absorption {α : Type*} [Decida
 /-- Type-C counting closure: if `typeC` is covered by three link slices,
     each of size at most `6`, then `typeC.card ≤ 18`. -/
 theorem f3_3_type_c_card_le_eighteen_of_link_bounds
-    {α β : Type*} [DecidableEq α] [DecidableEq β]
+    {α β : Type*} [DecidableEq β]
     (typeC : Finset β) (M2 : Finset α) (link : α → Finset β)
     (hM2_card : M2.card = 3)
     (h_cover : typeC ⊆ M2.biUnion link)
@@ -1182,18 +1184,18 @@ theorem c_d63d84_near_full_core_codegree_bound_k3 {α : Type*} [DecidableEq α]
     have hLower : r - 1 ≤ (S ∩ U).card := by
       simpa [hT] using Finset.card_le_card hTsubInter
     have hInterLeR : (S ∩ U).card ≤ r := by
-      exact Nat.le_trans (Finset.card_le_card Finset.inter_subset_left) (by simpa [hScard])
+      exact Nat.le_trans (Finset.card_le_card Finset.inter_subset_left) (by simp [hScard])
     have hInterNeR : (S ∩ U).card ≠ r := by
       intro hEqR
       have hSleInter : S.card ≤ (S ∩ U).card := by
-        simpa [hScard, hEqR]
+        simp [hScard, hEqR]
       have hInterEqS : S ∩ U = S :=
         Finset.eq_of_subset_of_card_le Finset.inter_subset_left hSleInter
       have hSsubU : S ⊆ U := by
         intro x hxS
         have hxInter : x ∈ S ∩ U := by simpa [hInterEqS] using hxS
         exact (Finset.mem_inter.mp hxInter).2
-      have hUleS : U.card ≤ S.card := by simpa [hScard, hUcard]
+      have hUleS : U.card ≤ S.card := by simp [hScard, hUcard]
       have hSU : S = U := Finset.eq_of_subset_of_card_le hSsubU hUleS
       exact hne hSU
     have hInterLePred : (S ∩ U).card ≤ r - 1 := by
@@ -1338,6 +1340,9 @@ theorem c_971ddc_t_codegree_bound_of_iterated_link_prev_max {α : Type*} [Decida
   exact h_target
 
 -- Scout validated stub: c_7852aa_f3_3_fin7_native_decide_witness_exists
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 5000000 in
+-- Exhaustive kernel reduction over the 12-set witness triples also needs extra resource budget.
 theorem c_7852aa_f3_3_fin7_native_decide_witness_exists :
     ∃ family : Finset (Finset (Fin 7)),
       IsUniform family 3 ∧ IsSunflowerFree family 3 ∧ family.card = 12 := by
@@ -1357,17 +1362,17 @@ theorem c_7852aa_f3_3_fin7_native_decide_witness_exists :
   let family : Finset (Finset (Fin 7)) := (Finset.univ : Finset (Fin 12)).image witnessSet
   refine ⟨family, ?_⟩
   have h_witness_injective : Function.Injective witnessSet := by
-    native_decide
+    decide
   have h_uniform : IsUniform family 3 := by
     intro S hS
     rcases Finset.mem_image.mp hS with ⟨i, -, rfl⟩
-    fin_cases i <;> native_decide
+    fin_cases i <;> decide
   have h_no_sunflower_indices :
       ¬ ∃ a b c : Fin 12,
         a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
           (witnessSet a ∩ witnessSet b = witnessSet a ∩ witnessSet c) ∧
           (witnessSet a ∩ witnessSet b = witnessSet b ∩ witnessSet c) := by
-    native_decide
+    decide
   have h_sf_free : IsSunflowerFree family 3 := by
     intro sub hsub hsun
     rcases (Finset.card_eq_three.mp hsun.1) with ⟨A, B, C, hAB, hAC, hBC, rfl⟩
@@ -1463,6 +1468,6 @@ theorem c_7852aa_f3_3_fin7_native_decide_no_card21 :
     calc (Finset.univ : Finset (Fin 7)).sum (fun x => coordDegree family x)
         ≤ (Finset.univ : Finset (Fin 7)).sum (fun _ => 6) :=
           Finset.sum_le_sum (fun x _ => h_deg_bound x)
-      _ = 7 * 6 := by simp [Finset.sum_const, Finset.card_fin]
+      _ = 7 * 6 := by simp [Finset.sum_const]
   -- 63 ≤ 42 contradiction
   omega

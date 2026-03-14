@@ -35,7 +35,7 @@ namespace SunflowerLean
 /-- Witness: all subsets of Fin 1 -/
 def witness_1_3 : Finset (Finset (Fin 1)) := {∅, {0}}
 
-theorem witness_1_3_card : witness_1_3.card = 2 := by native_decide
+theorem witness_1_3_card : witness_1_3.card = 2 := by decide
 
 theorem witness_1_3_sf_free : IsSunflowerFree witness_1_3 3 := by
   unfold IsSunflowerFree IsSunflower
@@ -64,7 +64,7 @@ theorem M_1_3 : ∃ F : Finset (Finset (Fin 1)),
 def witness_2_3 : Finset (Finset (Fin 2)) :=
   {(∅ : Finset (Fin 2)), ({0} : Finset (Fin 2)), ({0, 1} : Finset (Fin 2))}
 
-theorem witness_2_3_card : witness_2_3.card = 3 := by native_decide
+theorem witness_2_3_card : witness_2_3.card = 3 := by decide
 
 theorem witness_2_3_sf_free : IsSunflowerFree witness_2_3 3 := by
   unfold IsSunflowerFree IsSunflower
@@ -98,14 +98,16 @@ def witness_3_3 : Finset (Finset (Fin 3)) :=
    ({1, 2} : Finset (Fin 3)),
    ({0, 1, 2} : Finset (Fin 3))}
 
-theorem witness_3_3_card : witness_3_3.card = 5 := by native_decide
+theorem witness_3_3_card : witness_3_3.card = 5 := by decide
 
 theorem witness_3_3_sf_free : IsSunflowerFree witness_3_3 3 := by
   unfold IsSunflowerFree IsSunflower
   decide
 
 -- n=3 upper bound: 256 families to check. Try native_decide for speed.
+set_option linter.style.nativeDecide false in
 set_option maxRecDepth 1000 in
+-- Exhaustive search over all families on `Fin 3` is still practical only via native code here.
 theorem M_3_3_upper : ∀ F : Finset (Finset (Fin 3)),
     IsSunflowerFree F 3 → F.card ≤ 5 := by
   unfold IsSunflowerFree IsSunflower
@@ -136,13 +138,17 @@ def witness_4_3 : Finset (Finset (Fin 4)) :=
    ({0, 2, 3} : Finset (Fin 4)),
    ({0, 1, 2, 3} : Finset (Fin 4))}
 
-theorem witness_4_3_card : witness_4_3.card = 8 := by native_decide
+theorem witness_4_3_card : witness_4_3.card = 8 := by decide
 
+set_option linter.style.nativeDecide false in
+-- The fixed `Fin 4` witness is small, but the native checker keeps this proof fast and stable.
 theorem witness_4_3_sf_free : IsSunflowerFree witness_4_3 3 := by
   unfold IsSunflowerFree IsSunflower
   native_decide
 
 -- n=4 upper bound: 65536 families. native_decide compiles to native code.
+set_option linter.style.nativeDecide false in
+-- Exhaustively checking all `Fin 4` families is intentionally delegated to native code.
 theorem M_4_3_upper : ∀ F : Finset (Finset (Fin 4)),
     IsSunflowerFree F 3 → F.card ≤ 8 := by
   unfold IsSunflowerFree IsSunflower
@@ -261,8 +267,10 @@ def witness_5_3 : Finset (Finset (Fin 5)) :=
    ({0, 1, 3, 4} : Finset (Fin 5)),
    ({0, 1, 2, 3, 4} : Finset (Fin 5))}
 
-theorem witness_5_3_card : witness_5_3.card = 12 := by native_decide
+theorem witness_5_3_card : witness_5_3.card = 12 := by decide
 
+set_option linter.style.nativeDecide false in
+-- The existential-free sunflower check on this explicit witness remains a native computation.
 theorem witness_5_3_sf_free : IsSunflowerFree witness_5_3 3 :=
   (isSFreeC_iff witness_5_3 3).mp (by native_decide)
 
@@ -279,8 +287,10 @@ theorem M_5_3_lower : ∃ F : Finset (Finset (Fin 5)),
 def witness_6_3 : Finset (Finset (Fin 6)) :=
   decodeFamily 6 [0, 3, 7, 25, 26, 29, 30, 31, 41, 42, 45, 46, 47, 49, 50, 53, 54, 55, 63]
 
-theorem witness_6_3_card : witness_6_3.card = 19 := by native_decide
+theorem witness_6_3_card : witness_6_3.card = 19 := by decide
 
+set_option linter.style.nativeDecide false in
+-- The explicit `Fin 6` witness is verified by native evaluation of `isSFreeC`.
 theorem witness_6_3_sf_free : IsSunflowerFree witness_6_3 3 :=
   (isSFreeC_iff witness_6_3 3).mp (by native_decide)
 
@@ -298,8 +308,10 @@ def witness_7_3 : Finset (Finset (Fin 7)) :=
   decodeFamily 7 [2, 14, 21, 25, 30, 39, 43, 55, 59, 63, 71, 75, 76, 80,
     87, 91, 92, 95, 101, 102, 105, 106, 117, 118, 121, 122, 125, 126, 127]
 
-theorem witness_7_3_card : witness_7_3.card = 29 := by native_decide
+theorem witness_7_3_card : witness_7_3.card = 29 := by decide
 
+set_option linter.style.nativeDecide false in
+-- The certified `Fin 7` witness is large enough that native evaluation is the practical checker.
 theorem witness_7_3_sf_free : IsSunflowerFree witness_7_3 3 :=
   (isSFreeC_iff witness_7_3 3).mp (by native_decide)
 

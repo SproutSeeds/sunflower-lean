@@ -50,14 +50,13 @@ def Erdos367_Strong (k : ℕ) : Prop :=
 theorem BaseCase_K1 : Erdos367_Strong 1 := by
   refine ⟨1, ?_⟩
   intro n hn
-  simp [Nat.twoFullPart]
   have hdiv : n / radical n ≤ n := Nat.div_le_self n (radical n)
   have hpow : n ≤ n ^ 2 := by
     calc
       n = n * 1 := by simp
       _ ≤ n * n := Nat.mul_le_mul_left n hn
       _ = n ^ 2 := by simp [pow_two]
-  exact le_trans hdiv hpow
+  simpa [Nat.twoFullPart] using le_trans hdiv hpow
 
 /-- **L0 leaf**: Computable version of `Nat.twoFullPart` for `native_decide`.
     States that twoFullPart agrees with a trial-division implementation. -/
@@ -70,7 +69,7 @@ theorem ComputableTwoFullPart :
   have hpf : UniqueFactorizationMonoid.primeFactors n = n.primeFactors := by
     simpa using congrArg (fun f => f n)
       UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors
-  simpa [hpf]
+  simp [hpf]
 
 -- ===========================================================================
 -- Layer 1: Factor structure (B₂ multiplicativity)
@@ -124,7 +123,7 @@ theorem LargeTwoFullPartRarityCoarse :
         (Finset.Icc 1 n).card := by
     exact Finset.card_filter_le (s := Finset.Icc 1 n) (p := fun m => Nat.twoFullPart m > T)
   have hicc : (Finset.Icc 1 n).card = n := by
-    simpa using Nat.card_Icc 1 n
+    simp [Nat.card_Icc]
   simpa [hicc] using hfilter
 
 /-- Bridge lemma for the rarity lane:
@@ -194,7 +193,7 @@ theorem LargeTwoFullPartRarity_sharp_of_dyadic
       (C₀ * n / (2 ^ j)) * T ≤ (C₀ * n / (2 ^ j)) * (2 ^ (j + 1)) := by
         exact Nat.mul_le_mul_left _ (Nat.le_of_lt hlt_pow_succ)
       _ = ((C₀ * n / (2 ^ j)) * (2 ^ j)) * 2 := by
-        simp [pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
+        rw [pow_succ, Nat.mul_assoc]
       _ ≤ (C₀ * n) * 2 := by
         exact Nat.mul_le_mul_right 2 (Nat.div_mul_le_self (C₀ * n) (2 ^ j))
       _ = (2 * C₀) * n := by
@@ -311,7 +310,8 @@ theorem LargeTwoFullPartRarity_mul_of_sum_bound
       intro m hm
       exact Nat.le_of_lt (Finset.mem_filter.mp hm).2)
   have hsubset : sf ⊆ s := by
-    simpa [sf] using Finset.filter_subset (fun m => Nat.twoFullPart m > T) s
+    dsimp [sf]
+    exact Finset.filter_subset (fun m => Nat.twoFullPart m > T) s
   have hle_sum : sf.sum Nat.twoFullPart ≤ s.sum Nat.twoFullPart := by
     exact Finset.sum_le_sum_of_subset (h := hsubset)
   have hbound_s : s.sum Nat.twoFullPart ≤ B n := by
@@ -433,8 +433,8 @@ theorem TwoFullPartSumQuadratic :
         (by intro x hx; rfl)
     _ = n * n := by
       have hicc : (Finset.Icc 1 n).card = n := by
-        simpa using Nat.card_Icc 1 n
-      simp [hicc, Nat.mul_comm]
+        simp [Nat.card_Icc]
+      simp [hicc]
     _ = n ^ 2 := by simp [pow_two]
 
 /-- Pointwise half-bound: for `m ≥ 2`, `B₂(m) ≤ m/2`.
@@ -477,8 +477,8 @@ theorem TwoFullPartSumHalfQuadratic :
         (by intro x hx; rfl)
     _ = n * (n / 2) := by
       have hicc : (Finset.Icc 1 n).card = n := by
-        simpa using Nat.card_Icc 1 n
-      simp [hicc, Nat.mul_comm]
+        simp [Nat.card_Icc]
+      simp [hicc]
 
 /-- All-`n` bridge envelope for the half-quadratic lane:
     `∑_{m≤n} B₂(m) ≤ n*(n/2) + 1` for `n ≥ 1`. -/
