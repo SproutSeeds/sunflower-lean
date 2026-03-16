@@ -5474,7 +5474,8 @@ theorem candidate_cc68758_lowCaseCountingBoundSmall_of_projection_savings_induct
     have hpred : ground.card ≤ n0 - 1 := Nat.le_pred_of_lt hlt
     exact h_base family ground i hpred hmax hi hlow
 
--- Scout validated stub: candidate_c0ff074_lowCaseCountingBoundSmall_n10_of_refined_weight_stratification
+-- Scout validated stub:
+-- candidate_c0ff074_lowCaseCountingBoundSmall_n10_of_refined_weight_stratification
 theorem candidate_c0ff074_lowCaseCountingBoundSmall_n10_of_refined_weight_stratification
     {α : Type*} [DecidableEq α]
     (h_close :
@@ -5495,8 +5496,7 @@ theorem candidate_c4c77b1_lowCaseCountingBoundLarge_of_weight_sum_template
     {α : Type*} [DecidableEq α] (n0 : ℕ) :
     LowCaseLargeWeightTemplate (α := α) n0 →
     LowCaseCountingBoundLarge (α := α) n0 := by
-  intro hweight_template
-  intro family ground i hground hmax hi hlow
+  intro hweight_template family ground i hground hmax hi hlow
   have hweight := hweight_template family ground i hground hmax hi hlow
   exact (low_case_counting_bound_of_weight_sum_offDiag family ground i hmax hi hweight) hlow
 
@@ -5510,7 +5510,8 @@ theorem lowCaseCountingBoundLarge_of_weight_template
   exact candidate_c4c77b1_lowCaseCountingBoundLarge_of_weight_sum_template
     (α := α) n₀ htemplate
 
--- Scout validated stub: candidate_c3a0eb4_highCaseUniformDecompositionHyp_of_avoiding_weight_sum_template
+-- Scout validated stub:
+-- candidate_c3a0eb4_highCaseUniformDecompositionHyp_of_avoiding_weight_sum_template
 theorem candidate_c3a0eb4_highCaseUniformDecompositionHyp_of_avoiding_weight_sum_template
     {α : Type*} [DecidableEq α] :
     (∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
@@ -5521,8 +5522,7 @@ theorem candidate_c3a0eb4_highCaseUniformDecompositionHyp_of_avoiding_weight_sum
         (family.card - coordDegree family i) <
         2 ^ (ground.card - 1)) →
     HighCaseUniformDecompositionHyp (α := α) := by
-  intro hweight_template
-  intro family ground i hmax hhf hunif
+  intro hweight_template family ground i hmax hhf hunif
   have hi_ground : i ∈ ground := mem_ground_of_highFreq_of_maximal family ground i hmax hhf
   have hweight :
       (∑ p ∈ family.offDiag, pairWeightAvoiding ground i p) +
@@ -5536,8 +5536,7 @@ theorem candidate_c40c1ef_highCaseCountingBoundLarge_of_weight_sum_template
     {α : Type*} [DecidableEq α] (n0 : ℕ) :
     HighCaseLargeWeightTemplate (α := α) n0 →
     HighCaseCountingBoundLarge (α := α) n0 := by
-  intro hweight_template
-  intro family ground i hground hmax hhf
+  intro hweight_template family ground i hground hmax hhf
   have hi_ground : i ∈ ground := mem_ground_of_highFreq_of_maximal family ground i hmax hhf
   have hweight := hweight_template family ground i hground hmax hi_ground hhf
   exact (high_case_counting_bound_of_weight_sum_offDiag family ground i hmax hi_ground hweight) hhf
@@ -5567,7 +5566,8 @@ theorem large_lane_bounds_of_weight_templates
   · exact candidate_c40c1ef_highCaseCountingBoundLarge_of_weight_sum_template
       (α := α) n₀ hhigh_template
 
--- Scout validated stub: candidate_ce57866_highCaseCountingBoundSmall_n7_of_sat_certificate_cascade_calibrated
+-- Scout validated stub:
+-- candidate_ce57866_highCaseCountingBoundSmall_n7_of_sat_certificate_cascade_calibrated
 theorem candidate_ce57866_highCaseCountingBoundSmall_n7_of_sat_certificate_cascade_calibrated
     {α : Type*} [DecidableEq α]
     (h_sat_cascade :
@@ -5581,7 +5581,8 @@ theorem candidate_ce57866_highCaseCountingBoundSmall_n7_of_sat_certificate_casca
     HighCaseCountingBoundSmall (α := α) 7 := by
   exact h_sat_cascade
 
--- Scout validated stub: candidate_c5452b5_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmall_via_complement
+-- Scout validated stub:
+-- candidate_c5452b5_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmall_via_complement
 theorem candidate_c5452b5_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmall_via_complement
     {α : Type*} [DecidableEq α] (n₀ : ℕ) :
     (∀ (family : Finset (Finset α)) (ground : Finset α),
@@ -5599,8 +5600,7 @@ theorem candidate_c5452b5_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmal
         (CandidatesAvoiding ground i).card) →
     LowCaseCountingBoundSmall (α := α) n₀ →
     HighCaseCountingBoundSmall (α := α) n₀ := by
-  intro hmax_complement hhigh_to_low hcount_transfer hlow_small
-  intro family ground i hground hmax hhf
+  intro hmax_complement hhigh_to_low hcount_transfer hlow_small family ground i hground hmax hhf
   have hi_ground : i ∈ ground := mem_ground_of_highFreq_of_maximal family ground i hmax hhf
   rcases hmax with ⟨hfree, h_on, hmax_insert⟩
   let familyCompl : Finset (Finset α) := family.image (fun S => ground \ S)
@@ -6223,7 +6223,7 @@ theorem candidate_c7f7f84_highFreq_to_lowFreq_complement
         family.card - coordDegree family i := by
     trans (family.filter (fun S => i ∉ S)).card
     · -- coordDegree (image) i = |family.filter (i ∉ ·)|
-      show ((family.image (fun S => ground \ S)).filter (fun S => i ∈ S)).card =
+      change ((family.image (fun S => ground \ S)).filter (fun S => i ∈ S)).card =
         (family.filter (fun S => i ∉ S)).card
       rw [hfilt_eq]
       exact Finset.card_image_of_injOn hinj_sub
@@ -6259,7 +6259,8 @@ theorem candidate_c7f7f84_count_transfer_complement
   intro htransfer hcont
   exact htransfer family ground i hcont
 
--- Scout validated stub: candidate_c7f7f84_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmall_via_complement
+-- Scout validated stub:
+-- candidate_c7f7f84_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmall_via_complement
 theorem candidate_c7f7f84_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmall_via_complement
     {α : Type*} [DecidableEq α] (n0 : ℕ) :
     (∀ (family : Finset (Finset α)) (ground : Finset α),
@@ -6269,13 +6270,12 @@ theorem candidate_c7f7f84_highCaseCountingBoundSmall_of_lowCaseCountingBoundSmal
       (BadContaining (family.image (fun S => ground \ S)) ground i).card +
         (InFamilyContaining (family.image (fun S => ground \ S)) ground i).card <
         (CandidatesContaining ground i).card →
-      (BadAvoiding family ground i).card +
+    (BadAvoiding family ground i).card +
         (InFamilyAvoiding family ground i).card <
         (CandidatesAvoiding ground i).card) →
     LowCaseCountingBoundSmall (α := α) n0 →
     HighCaseCountingBoundSmall (α := α) n0 := by
-  intro hmax_complement hcount_transfer hlow_small
-  intro family ground i hground hmax hhf
+  intro hmax_complement hcount_transfer hlow_small family ground i hground hmax hhf
   have hi_ground : i ∈ ground := mem_ground_of_highFreq_of_maximal family ground i hmax hhf
   rcases hmax with ⟨hfree, h_on, hmax_insert⟩
   let familyCompl : Finset (Finset α) := family.image (fun S => ground \ S)
@@ -6325,7 +6325,8 @@ theorem candidate_c5160c_lowCaseCountingBoundAll_guarded_of_uniform_hyp
   intro hdecomp hunif family ground i hmax hi hlow
   exact hdecomp family ground i hmax hi hlow hunif
 
--- Scout validated stub: candidate_c25996f_highCaseUniformDecompositionHyp_of_layerwise_weight_cancellation
+-- Scout validated stub:
+-- candidate_c25996f_highCaseUniformDecompositionHyp_of_layerwise_weight_cancellation
 theorem candidate_c25996f_highCaseUniformDecompositionHyp_of_layerwise_weight_cancellation
     {α : Type*} [DecidableEq α] :
     (∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
@@ -6337,8 +6338,7 @@ theorem candidate_c25996f_highCaseUniformDecompositionHyp_of_layerwise_weight_ca
         (family.card - coordDegree family i) <
         2 ^ (ground.card - 1)) →
     HighCaseUniformDecompositionHyp (α := α) := by
-  intro hweight_template
-  intro family ground i hmax hhf hunif
+  intro hweight_template family ground i hmax hhf hunif
   have hi_ground : i ∈ ground := mem_ground_of_highFreq_of_maximal family ground i hmax hhf
   have hweight :
       (∑ p ∈ family.offDiag, pairWeightAvoiding ground i p) +
