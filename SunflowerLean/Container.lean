@@ -29,6 +29,55 @@ theorem container_density_gap_consequence {α : Type*} [DecidableEq α]
   intro h
   exact h ground
 
+/-- V2 reformulation: on admissible grounds (`|ground| ≥ 3`), the gap witness is
+packaged directly as a half-card cap for each covering container. -/
+def ContainerDensityGapConjectureNat_reformulated_v2 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (ground : Finset α), 3 ≤ ground.card →
+    ∃ (containers : Finset (Finset (Finset α))),
+      IsContainerCollection containers ground 3 ∧
+      ∀ C ∈ containers, C.card ≤ 2 ^ (ground.card - 1)
+
+/-- Fixed-ground unpacking for the v2 reformulation. -/
+theorem container_density_gap_reformulated_v2_consequence
+    {α : Type*} [DecidableEq α] (ground : Finset α) (hground : 3 ≤ ground.card) :
+    ContainerDensityGapConjectureNat_reformulated_v2 (α := α) →
+    ∃ (containers : Finset (Finset (Finset α))),
+      IsContainerCollection containers ground 3 ∧
+      ∀ C ∈ containers, C.card ≤ 2 ^ (ground.card - 1) := by
+  intro h
+  exact h ground hground
+
+/-- The original gap-form conjecture implies the admissible-ground v2
+reformulation by reducing any positive gap to the explicit half-card cap. -/
+theorem ContainerDensityGapConjectureNatReformulatedV2
+    {α : Type*} [DecidableEq α] :
+    ContainerDensityGapConjectureNat (α := α) →
+      ContainerDensityGapConjectureNat_reformulated_v2 (α := α) := by
+  intro hgap ground hground
+  rcases container_density_gap_consequence (α := α) ground hgap with
+    ⟨containers, gap, hgap_pos, hcover, hbound⟩
+  refine ⟨containers, hcover, ?_⟩
+  intro C hCmem
+  have hgap_ge1 : 1 ≤ gap := Nat.succ_le_of_lt hgap_pos
+  have hpow_ge2 : 2 ≤ 2 ^ gap := by
+    calc
+      2 = 2 ^ 1 := by simp
+      _ ≤ 2 ^ gap := Nat.pow_le_pow_right (by decide) hgap_ge1
+  have hCtimes2 : C.card * 2 ≤ 2 ^ ground.card := by
+    calc
+      C.card * 2 ≤ C.card * 2 ^ gap := Nat.mul_le_mul_left _ hpow_ge2
+      _ ≤ 2 ^ ground.card := hbound C hCmem
+  have hground_ge1 : 1 ≤ ground.card := le_trans (by decide : 1 ≤ 3) hground
+  have hpow_split : 2 ^ ground.card = 2 ^ (ground.card - 1) * 2 := by
+    calc
+      2 ^ ground.card = 2 ^ ((ground.card - 1) + 1) := by
+        rw [Nat.sub_add_cancel hground_ge1]
+      _ = 2 ^ (ground.card - 1) * 2 ^ 1 := by rw [Nat.pow_add]
+      _ = 2 ^ (ground.card - 1) * 2 := by simp
+  have hCtimes2' : C.card * 2 ≤ 2 ^ (ground.card - 1) * 2 := by
+    simpa [hpow_split] using hCtimes2
+  omega
+
 /-- Obstruction witness: the current `ContainerDensityGapConjectureNat` shape
 is false on a one-point ground set (`Fin 1`). On this ground, the full
 power-set family has size `2`, so any covering container must have cardinality
@@ -51,7 +100,9 @@ theorem not_container_density_gap_conjecture_nat_fin1 :
       simp [fullFam]
     rcases hsun with ⟨hcard, _⟩
     have : ¬ (3 ≤ 2) := by decide
-    exact this (by simpa [hcard, hfull_card] using hle)
+    have hle' : 3 ≤ 2 := by
+      simpa [hcard, hfull_card] using hle
+    exact this hle'
   rcases hcover fullFam hfull_sf_free hfull_on_ground with ⟨C, hCmem, hfull_sub_C⟩
   have hfull_card : fullFam.card = 2 := by
     simp [fullFam]
