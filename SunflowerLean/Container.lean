@@ -99,10 +99,9 @@ theorem not_container_density_gap_conjecture_nat_fin1 :
     have hfull_card : fullFam.card = 2 := by
       simp [fullFam]
     rcases hsun with ⟨hcard, _⟩
-    have : ¬ (3 ≤ 2) := by decide
     have hle' : 3 ≤ 2 := by
-      simpa [hcard, hfull_card] using hle
-    exact this hle'
+      omega
+    exact (by decide : ¬ (3 ≤ 2)) hle'
   rcases hcover fullFam hfull_sf_free hfull_on_ground with ⟨C, hCmem, hfull_sub_C⟩
   have hfull_card : fullFam.card = 2 := by
     simp [fullFam]
