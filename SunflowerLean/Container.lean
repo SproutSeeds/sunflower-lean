@@ -320,6 +320,57 @@ theorem container_density_gap_reformulated_v2_of_admissibleGroundV2_half_card_bo
   exact container_density_gap_reformulated_v2_of_halfDensityCap_lane
     (container_halfDensityCapLane_of_admissibleGroundV2_half_card_bound_family hbound)
 
+/-- Reverse bridge: the v2 reformulated container leaf already contains the
+same half-cardinality frontier content on every admissible ground. -/
+theorem container_admissibleGroundV2_half_card_bound_family_of_reformulated_v2
+    {α : Type*} [DecidableEq α]
+    (hconj : ContainerDensityGapConjectureNatReformulatedV2 (α := α)) :
+    ContainerAdmissibleGroundV2HalfCardBoundFamily α := by
+  intro ground hground family hsf hOn
+  rcases container_density_gap_reformulated_v2_consequence
+      (α := α) ground hground hconj with
+    ⟨_containers, gap, hgap_pos, hcover, hbound⟩
+  rcases hcover family hsf hOn with ⟨C, hCmem, hfamily_sub_C⟩
+  have hfamily_le_C : family.card ≤ C.card := Finset.card_le_card hfamily_sub_C
+  have hgap_ge1 : 1 ≤ gap := Nat.succ_le_of_lt hgap_pos
+  have hpow_ge2 : 2 ≤ 2 ^ gap := by
+    calc
+      2 = 2 ^ 1 := by simp
+      _ ≤ 2 ^ gap := Nat.pow_le_pow_right (by decide) hgap_ge1
+  have hCmul2 : C.card * 2 ≤ 2 ^ ground.card := by
+    calc
+      C.card * 2 ≤ C.card * 2 ^ gap := Nat.mul_le_mul_left C.card hpow_ge2
+      _ ≤ 2 ^ ground.card := hbound C hCmem
+  have hfamilymul2 : family.card * 2 ≤ 2 ^ ground.card := by
+    calc
+      family.card * 2 ≤ C.card * 2 := Nat.mul_le_mul_right 2 hfamily_le_C
+      _ ≤ 2 ^ ground.card := hCmul2
+  exact (Nat.le_div_iff_mul_le (by decide : 0 < 2)).2
+    (by simpa [Nat.mul_comm] using hfamilymul2)
+
+/-- Assumption-free closure form for strict leaf scanning: the v2 reformulated
+container leaf is equivalent to the concrete admissible-ground half-card
+frontier. -/
+theorem container_density_gap_reformulated_v2_iff_admissibleGroundV2_half_card_bound_family
+    {α : Type*} [DecidableEq α] :
+    ContainerDensityGapConjectureNatReformulatedV2 (α := α) ↔
+      ContainerAdmissibleGroundV2HalfCardBoundFamily α := by
+  constructor
+  · intro hconj
+    exact container_admissibleGroundV2_half_card_bound_family_of_reformulated_v2 hconj
+  · intro hbound
+    exact container_density_gap_reformulated_v2_of_admissibleGroundV2_half_card_bound_family hbound
+
+/-- Assumption-free route-leaf wrapper so the strict scanner can credit the v2
+alias exactly when the admissible-ground half-card frontier is available. -/
+theorem container_density_gap_reformulated_v2_leaf_iff_admissibleGroundV2_half_card_bound_family
+    {α : Type*} [DecidableEq α] :
+    ContainerDensityGapConjectureNat_reformulated_v2 (α := α) ↔
+      ContainerAdmissibleGroundV2HalfCardBoundFamily α := by
+  simpa [ContainerDensityGapConjectureNat_reformulated_v2] using
+    (container_density_gap_reformulated_v2_iff_admissibleGroundV2_half_card_bound_family
+      (α := α))
+
 /-- Route-facing alias form of the concrete v2 cardinality-bound family
 bridge. -/
 theorem container_density_gap_reformulated_v2_leaf_of_admissibleGroundV2_half_card_bound_family
