@@ -439,6 +439,58 @@ theorem o1aSingletonCoreBucket_eq_biUnion_pairUniverse
     rcases Finset.mem_biUnion.mp hS with ⟨p, hp, hFiber⟩
     exact (mem_o1aSingletonCoreFiber_iff.mp (by simpa using hFiber)).1
 
+theorem o1aChainBucket_subset_powerset_sdiff_singleton
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {h : α}
+    (hground : family ⊆ ground.powerset) :
+    o1aChainBucket family h ⊆ (ground \ ({h} : Finset α)).powerset := by
+  classical
+  intro S hS
+  have hDom : S ∈ o1aWitnessLiftDom family h := (Finset.mem_filter.mp hS).1
+  have hSAvoid : S ∈ coreSliceAvoid family h := (Finset.mem_filter.mp hDom).1
+  have hSfam : S ∈ family := (Finset.mem_filter.mp hSAvoid).1
+  have hhnS : h ∉ S := (Finset.mem_filter.mp hSAvoid).2
+  have hSsub : S ⊆ ground := Finset.mem_powerset.mp (hground hSfam)
+  refine Finset.mem_powerset.mpr ?_
+  intro x hxS
+  refine Finset.mem_sdiff.mpr ⟨hSsub hxS, ?_⟩
+  intro hxH
+  have hxEq : x = h := Finset.mem_singleton.mp hxH
+  exact hhnS (hxEq ▸ hxS)
+
+
+theorem sunflowerFree_o1aChainBucket
+    {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (h : α) (k : ℕ)
+    (hfree : IsSunflowerFree family k) :
+    IsSunflowerFree (o1aChainBucket family h) k := by
+  classical
+  intro sub hsub
+  have hsub' : sub ⊆ family := by
+    intro S hS
+    have hBucket : S ∈ o1aChainBucket family h := hsub hS
+    have hDom : S ∈ o1aWitnessLiftDom family h := (Finset.mem_filter.mp hBucket).1
+    have hSAvoid : S ∈ coreSliceAvoid family h := (Finset.mem_filter.mp hDom).1
+    exact (Finset.mem_filter.mp hSAvoid).1
+  exact hfree sub hsub'
+
+
+theorem card_o1aChainBucket_le_maxSunflowerFreeCard_sdiff
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {h : α}
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3) :
+    (o1aChainBucket family h).card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 := by
+  exact
+    card_le_maxSunflowerFreeCard
+      (family := o1aChainBucket family h)
+      (ground := ground \ ({h} : Finset α)) (k := 3)
+      (o1aChainBucket_subset_powerset_sdiff_singleton
+        (family := family) (ground := ground) (h := h) hground)
+      (sunflowerFree_o1aChainBucket family h 3 hfree)
+
+
 theorem card_o1aSingletonCoreBucket_le_sum_pairUniverse
     {α : Type*} [DecidableEq α]
     {family : Finset (Finset α)} {ground : Finset α} {h : α}
@@ -783,5 +835,674 @@ theorem global_family_card_export_with_singletonCore_sum_under_O1aUpgradeRegime
           ∑ p ∈ o1aSingletonCorePairUniverse family h,
             maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3 := by
       ac_rfl
+
+theorem global_family_card_export_with_chain_bound_under_O1aUpgradeRegime
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ) (A : ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+      let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+        wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+          (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+      let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+      ∀ k : WLcertKey α, k ∈ keyImage →
+        let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+        ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+          (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+            ∃ x,
+              x ∈ realizedXSet
+                (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+              x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+          ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+              ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+            Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+          KeyBadAggZeroAt
+            (family := family) (ground := ground) (A0 := A0) (h0 := h)
+            hreg k Sstar (by simpa [fiber] using hSstar))
+    (hRemainder :
+      (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) ≤ A) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      A +
+      (o1aSingletonCoreBucket family h).card := by
+  let M := maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3
+  have hBase :=
+    global_family_card_export_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) (B := B) (A := A)
+      hreg h2 hKeyImage hSplitBuilder hRemainder
+  have hChain : (o1aChainBucket family h).card ≤ M := by
+    simpa [M] using
+      card_o1aChainBucket_le_maxSunflowerFreeCard_sdiff
+        (family := family) (ground := ground) (h := h) hreg.1 hreg.2.1
+  have hStep :
+      M + M + M + A + (o1aChainBucket family h).card +
+          (o1aSingletonCoreBucket family h).card ≤
+        M + M + M + M + A + (o1aSingletonCoreBucket family h).card := by
+    have h' :
+        (o1aChainBucket family h).card + (A + (o1aSingletonCoreBucket family h).card) ≤
+          M + (A + (o1aSingletonCoreBucket family h).card) :=
+      Nat.add_le_add_right hChain _
+    have h'' :
+        M + M + M +
+            ((o1aChainBucket family h).card + (A + (o1aSingletonCoreBucket family h).card)) ≤
+          M + M + M + (M + (A + (o1aSingletonCoreBucket family h).card)) :=
+      Nat.add_le_add_left h' (M + M + M)
+    simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using h''
+  have hBase' :
+      family.card ≤
+        M + M + M + A + (o1aChainBucket family h).card +
+          (o1aSingletonCoreBucket family h).card := by
+    simpa [M, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hBase
+  exact hBase'.trans hStep
+
+
+theorem global_family_card_export_with_chain_bound_and_singletonCore_sum_under_O1aUpgradeRegime
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ) (A : ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+      let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+        wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+          (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+      let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+      ∀ k : WLcertKey α, k ∈ keyImage →
+        let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+        ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+          (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+            ∃ x,
+              x ∈ realizedXSet
+                (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+              x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+          ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+              ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+            Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+          KeyBadAggZeroAt
+            (family := family) (ground := ground) (A0 := A0) (h0 := h)
+            hreg k Sstar (by simpa [fiber] using hSstar))
+    (hRemainder :
+      (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) ≤ A) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      A +
+      ∑ p ∈ o1aSingletonCorePairUniverse family h,
+        maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3 := by
+  let M := maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3
+  have hBase :=
+    global_family_card_export_with_singletonCore_sum_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) (B := B) (A := A)
+      hreg h2 hKeyImage hSplitBuilder hRemainder
+  have hChain : (o1aChainBucket family h).card ≤ M := by
+    simpa [M] using
+      card_o1aChainBucket_le_maxSunflowerFreeCard_sdiff
+        (family := family) (ground := ground) (h := h) hreg.1 hreg.2.1
+  have hStep :
+      M + M + M + A + (o1aChainBucket family h).card +
+          (∑ p ∈ o1aSingletonCorePairUniverse family h,
+            maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) ≤
+        M + M + M + M + A +
+          (∑ p ∈ o1aSingletonCorePairUniverse family h,
+            maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) := by
+    have h' :
+        (o1aChainBucket family h).card +
+            (A +
+              ∑ p ∈ o1aSingletonCorePairUniverse family h,
+                maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) ≤
+          M +
+            (A +
+              ∑ p ∈ o1aSingletonCorePairUniverse family h,
+                maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) :=
+      Nat.add_le_add_right hChain _
+    have h'' :
+        M + M + M +
+            ((o1aChainBucket family h).card +
+              (A +
+                ∑ p ∈ o1aSingletonCorePairUniverse family h,
+                  maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3)) ≤
+          M + M + M +
+            (M +
+              (A +
+                ∑ p ∈ o1aSingletonCorePairUniverse family h,
+                  maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3)) :=
+      Nat.add_le_add_left h' (M + M + M)
+    simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using h''
+  have hBase' :
+      family.card ≤
+        M + M + M + A + (o1aChainBucket family h).card +
+          (∑ p ∈ o1aSingletonCorePairUniverse family h,
+            maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) := by
+    simpa [M, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hBase
+  exact hBase'.trans hStep
+
+theorem maxSunflowerFreeCard_mono_of_subset
+    {α : Type*} [DecidableEq α]
+    {ground₁ ground₂ : Finset α} {k : ℕ}
+    (hsub : ground₁ ⊆ ground₂) :
+    maxSunflowerFreeCard ground₁ k ≤ maxSunflowerFreeCard ground₂ k := by
+  classical
+  unfold maxSunflowerFreeCard
+  refine Finset.sup_le ?_
+  intro F hF
+  have hpow₁ : F ⊆ ground₁.powerset := Finset.mem_powerset.mp ((Finset.mem_filter.mp hF).1)
+  have hpow₂ : F ⊆ ground₂.powerset := by
+    intro S hS
+    refine Finset.mem_powerset.mpr ?_
+    intro x hx
+    exact hsub ((Finset.mem_powerset.mp (hpow₁ hS)) hx)
+  have hF₂ :
+      F ∈ ground₂.powerset.powerset.filter (fun G : Finset (Finset α) => IsSunflowerFree G k) := by
+    refine Finset.mem_filter.mpr ?_
+    exact ⟨Finset.mem_powerset.mpr hpow₂, (Finset.mem_filter.mp hF).2⟩
+  exact
+    Finset.le_sup
+      (s := ground₂.powerset.powerset.filter (fun G : Finset (Finset α) => IsSunflowerFree G k))
+      (f := Finset.card) hF₂
+
+theorem o1aSingletonCorePairUniverse_subset_product_coreSliceContains
+    {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (h : α) :
+    o1aSingletonCorePairUniverse family h ⊆
+      (coreSliceContains family h).product (coreSliceContains family h) := by
+  intro p hp
+  rcases (mem_o1aSingletonCorePairUniverse_iff.mp hp) with ⟨hA, hB, _hne, _hAB⟩
+  exact Finset.mem_product.mpr ⟨hA, hB⟩
+
+theorem card_o1aSingletonCorePairUniverse_le_coreSliceContains_sq
+    {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (h : α) :
+    (o1aSingletonCorePairUniverse family h).card ≤ (coreSliceContains family h).card ^ 2 := by
+  calc
+    (o1aSingletonCorePairUniverse family h).card ≤
+        ((coreSliceContains family h).product (coreSliceContains family h)).card := by
+          exact Finset.card_le_card
+            (o1aSingletonCorePairUniverse_subset_product_coreSliceContains family h)
+    _ = (coreSliceContains family h).card * (coreSliceContains family h).card := by
+          simp [Finset.card_product]
+    _ = (coreSliceContains family h).card ^ 2 := by
+          simp [pow_two]
+
+theorem sdiff_union_subset_sdiff_singleton_of_mem_o1aSingletonCorePairUniverse
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {h : α}
+    {p : Finset α × Finset α}
+    (hp : p ∈ o1aSingletonCorePairUniverse family h) :
+    ground \ (p.1 ∪ p.2) ⊆ ground \ ({h} : Finset α) := by
+  rcases (mem_o1aSingletonCorePairUniverse_iff.mp hp) with ⟨hA, _hB, _hne, _hAB⟩
+  have hhA : h ∈ p.1 := (Finset.mem_filter.mp hA).2
+  intro x hx
+  rcases Finset.mem_sdiff.mp hx with ⟨hxg, hxnot⟩
+  refine Finset.mem_sdiff.mpr ⟨hxg, ?_⟩
+  intro hxh
+  have hxEq : x = h := Finset.mem_singleton.mp hxh
+  have hxUnion : x ∈ p.1 ∪ p.2 := Finset.mem_union.mpr (Or.inl (hxEq ▸ hhA))
+  exact hxnot hxUnion
+
+theorem sum_o1aSingletonCorePairUniverse_le_card_mul_maxSunflowerFreeCard_sdiff
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {h : α} :
+    ∑ p ∈ o1aSingletonCorePairUniverse family h,
+      maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3 ≤
+        (o1aSingletonCorePairUniverse family h).card *
+          maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 := by
+  let M := maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3
+  have hterm :
+      ∀ p ∈ o1aSingletonCorePairUniverse family h,
+        maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3 ≤ M := by
+    intro p hp
+    exact
+      (maxSunflowerFreeCard_mono_of_subset (k := 3)
+        (sdiff_union_subset_sdiff_singleton_of_mem_o1aSingletonCorePairUniverse
+          (family := family) (ground := ground) (h := h) hp))
+  calc
+    ∑ p ∈ o1aSingletonCorePairUniverse family h,
+        maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3
+      ≤ ∑ p ∈ o1aSingletonCorePairUniverse family h, M := by
+          refine Finset.sum_le_sum ?_
+          intro p hp
+          exact hterm p hp
+    _ = (o1aSingletonCorePairUniverse family h).card * M := by
+          simp [M, Finset.sum_const_nat]
+
+theorem global_family_card_export_with_pair_count_under_O1aUpgradeRegime
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ) (A : ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+      let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+        wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+          (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+      let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+      ∀ k : WLcertKey α, k ∈ keyImage →
+        let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+        ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+          (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+            ∃ x,
+              x ∈ realizedXSet
+                (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+              x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+          ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+              ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+            Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+          KeyBadAggZeroAt
+            (family := family) (ground := ground) (A0 := A0) (h0 := h)
+            hreg k Sstar (by simpa [fiber] using hSstar))
+    (hRemainder :
+      (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) ≤ A) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      A +
+      (o1aSingletonCorePairUniverse family h).card *
+        maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 := by
+  let M := maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3
+  have hBase :=
+    global_family_card_export_with_chain_bound_and_singletonCore_sum_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) (B := B) (A := A)
+      hreg h2 hKeyImage hSplitBuilder hRemainder
+  have hSum :
+      ∑ p ∈ o1aSingletonCorePairUniverse family h,
+        maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3 ≤
+          (o1aSingletonCorePairUniverse family h).card * M := by
+    simpa [M] using
+      sum_o1aSingletonCorePairUniverse_le_card_mul_maxSunflowerFreeCard_sdiff
+        (family := family) (ground := ground) (h := h)
+  have hStep :
+      M + M + M + M + A +
+          (∑ p ∈ o1aSingletonCorePairUniverse family h,
+            maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) ≤
+        M + M + M + M + A +
+          (o1aSingletonCorePairUniverse family h).card * M := by
+    have h' :
+        A +
+            (∑ p ∈ o1aSingletonCorePairUniverse family h,
+              maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) ≤
+          A + (o1aSingletonCorePairUniverse family h).card * M :=
+      Nat.add_le_add_left hSum A
+    have h'' :
+        M + M + M + M +
+            (A +
+              ∑ p ∈ o1aSingletonCorePairUniverse family h,
+                maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) ≤
+          M + M + M + M + (A + (o1aSingletonCorePairUniverse family h).card * M) :=
+      Nat.add_le_add_left h' (M + M + M + M)
+    simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using h''
+  have hBase' :
+      family.card ≤
+        M + M + M + M + A +
+          (∑ p ∈ o1aSingletonCorePairUniverse family h,
+            maxSunflowerFreeCard (ground \ (p.1 ∪ p.2)) 3) := by
+    simpa [M, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hBase
+  exact hBase'.trans hStep
+
+theorem global_family_card_export_with_coreSliceContains_sq_under_O1aUpgradeRegime
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ) (A : ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+      let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+        wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+          (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+      let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+      ∀ k : WLcertKey α, k ∈ keyImage →
+        let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+        ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+          (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+            ∃ x,
+              x ∈ realizedXSet
+                (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+              x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+          ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+              ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+            Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+          KeyBadAggZeroAt
+            (family := family) (ground := ground) (A0 := A0) (h0 := h)
+            hreg k Sstar (by simpa [fiber] using hSstar))
+    (hRemainder :
+      (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) ≤ A) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      A +
+      (coreSliceContains family h).card ^ 2 *
+        maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 := by
+  let M := maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3
+  have hBase :=
+    global_family_card_export_with_pair_count_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) (B := B) (A := A)
+      hreg h2 hKeyImage hSplitBuilder hRemainder
+  have hPairs :
+      (o1aSingletonCorePairUniverse family h).card * M ≤
+        (coreSliceContains family h).card ^ 2 * M := by
+    exact Nat.mul_le_mul_right M
+      (card_o1aSingletonCorePairUniverse_le_coreSliceContains_sq family h)
+  have hStep :
+      M + M + M + M + A + (o1aSingletonCorePairUniverse family h).card * M ≤
+        M + M + M + M + A + (coreSliceContains family h).card ^ 2 * M := by
+    have h' :
+        A + (o1aSingletonCorePairUniverse family h).card * M ≤
+          A + (coreSliceContains family h).card ^ 2 * M :=
+      Nat.add_le_add_left hPairs A
+    have h'' :
+        M + M + M + M + (A + (o1aSingletonCorePairUniverse family h).card * M) ≤
+          M + M + M + M + (A + (coreSliceContains family h).card ^ 2 * M) :=
+      Nat.add_le_add_left h' (M + M + M + M)
+    simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using h''
+  have hBase' :
+      family.card ≤
+        M + M + M + M + A + (o1aSingletonCorePairUniverse family h).card * M := by
+    simpa [M, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hBase
+  exact hBase'.trans hStep
+
+theorem global_family_card_export_with_M_cube_under_O1aUpgradeRegime
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ) (A : ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+      let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+        wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+          (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+      let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+      ∀ k : WLcertKey α, k ∈ keyImage →
+        let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+        ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+          (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+            ∃ x,
+              x ∈ realizedXSet
+                (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+              x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+          ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+              ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+            Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+          KeyBadAggZeroAt
+            (family := family) (ground := ground) (A0 := A0) (h0 := h)
+            hreg k Sstar (by simpa [fiber] using hSstar))
+    (hRemainder :
+      (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) ≤ A) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      A +
+      (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 3 := by
+  let M := maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3
+  have hBase :=
+    global_family_card_export_with_coreSliceContains_sq_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) (B := B) (A := A)
+      hreg h2 hKeyImage hSplitBuilder hRemainder
+  have hCore : (coreSliceContains family h).card ≤ M := by
+    simpa [M] using
+      card_coreSliceContains_le_maxSunflowerFreeCard_sdiff
+        (family := family) (ground := ground) (h := h) hreg.1 hreg.2.1
+  have hSq : (coreSliceContains family h).card ^ 2 ≤ M ^ 2 := by
+    simpa [pow_two] using Nat.mul_le_mul hCore hCore
+  have hCube :
+      (coreSliceContains family h).card ^ 2 * M ≤ M ^ 2 * M := by
+    exact Nat.mul_le_mul_right M hSq
+  have hStep :
+      M + M + M + M + A + (coreSliceContains family h).card ^ 2 * M ≤
+        M + M + M + M + A + M ^ 3 := by
+    have h' :
+        A + (coreSliceContains family h).card ^ 2 * M ≤ A + M ^ 3 := by
+      have h'' : A + (coreSliceContains family h).card ^ 2 * M ≤ A + (M ^ 2 * M) :=
+        Nat.add_le_add_left hCube A
+      simpa [pow_succ, Nat.add_assoc, Nat.mul_assoc] using h''
+    have h'' :
+        M + M + M + M + (A + (coreSliceContains family h).card ^ 2 * M) ≤
+          M + M + M + M + (A + M ^ 3) :=
+      Nat.add_le_add_left h' (M + M + M + M)
+    simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using h''
+  have hBase' :
+      family.card ≤
+        M + M + M + M + A + (coreSliceContains family h).card ^ 2 * M := by
+    simpa [M, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hBase
+  exact hBase'.trans hStep
+
+theorem global_family_card_export_with_explicit_remainder_under_O1aUpgradeRegime
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+      let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+        wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+          (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+      let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+      ∀ k : WLcertKey α, k ∈ keyImage →
+        let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+        ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+          (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+            ∃ x,
+              x ∈ realizedXSet
+                (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+              x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+          ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+              ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+            Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+          KeyBadAggZeroAt
+            (family := family) (ground := ground) (A0 := A0) (h0 := h)
+            hreg k Sstar (by simpa [fiber] using hSstar)) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) +
+      (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 3 := by
+  exact
+    global_family_card_export_with_M_cube_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h)
+      (B := B)
+      (A := (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20))
+      hreg h2 hKeyImage hSplitBuilder (le_rfl)
+
+theorem global_family_card_export_with_explicit_M_remainder_under_O1aUpgradeRegime
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+      let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+        wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+          (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+      let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+      ∀ k : WLcertKey α, k ∈ keyImage →
+        let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+        ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+          (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+            ∃ x,
+              x ∈ realizedXSet
+                (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+              x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+          ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+              ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+            Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+          KeyBadAggZeroAt
+            (family := family) (ground := ground) (A0 := A0) (h0 := h)
+            hreg k Sstar (by simpa [fiber] using hSstar)) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      (B ground.card * (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 2) *
+        (ground.card ^ 20) +
+      (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 3 := by
+  let M := maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3
+  have hBase :=
+    global_family_card_export_with_explicit_remainder_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) (B := B)
+      hreg h2 hKeyImage hSplitBuilder
+  have hCore : (coreSliceContains family h).card ≤ M := by
+    simpa [M] using
+      card_coreSliceContains_le_maxSunflowerFreeCard_sdiff
+        (family := family) (ground := ground) (h := h) hreg.1 hreg.2.1
+  have hSq : (coreSliceContains family h).card ^ 2 ≤ M ^ 2 := by
+    simpa [pow_two] using Nat.mul_le_mul hCore hCore
+  have hRem :
+      (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) ≤
+        (B ground.card * M ^ 2) * (ground.card ^ 20) := by
+    exact Nat.mul_le_mul_right (ground.card ^ 20) (Nat.mul_le_mul_left (B ground.card) hSq)
+  have hStep :
+      M + M + M + M +
+          (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) +
+          M ^ 3 ≤
+        M + M + M + M + (B ground.card * M ^ 2) * (ground.card ^ 20) + M ^ 3 := by
+    have h' :
+        (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) + M ^ 3 ≤
+          (B ground.card * M ^ 2) * (ground.card ^ 20) + M ^ 3 :=
+      Nat.add_le_add_right hRem (M ^ 3)
+    simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using
+      (Nat.add_le_add_left h' (M + M + M + M))
+  have hBase' :
+      family.card ≤
+        M + M + M + M +
+          (B ground.card * (coreSliceContains family h).card ^ 2) * (ground.card ^ 20) +
+          M ^ 3 := by
+    simpa [M, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hBase
+  have hStep' :
+      M + M + M + M +
+          (B ground.card * M ^ 2) * (ground.card ^ 20) +
+          M ^ 3 =
+        M + M + M + M +
+          (B ground.card * (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 2) *
+            (ground.card ^ 20) +
+          (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 3 := by
+    simp [M]
+  exact (hBase'.trans hStep).trans_eq hStep'
+
+/--
+Reusable packaged builder target for the O₁a global-export lane.
+
+This names the exact split-to-`KeyBadAgg` builder hypothesis that feeds the
+explicit polynomial remainder export, so later route theorems can quantify over
+one compact predicate instead of repeating the full witness-lift domain shape.
+-/
+def o1aSplitBuilderTarget
+    {α : Type u} [DecidableEq α]
+    (family : Finset (Finset α)) (ground : Finset α) (A0 : ℕ) (h : α)
+    (hreg : O1aUpgradeRegime family ground A0 h) : Prop :=
+  let dom : Finset (Finset α) := o1aWitnessLiftDomWL family h
+  let hdom : ∀ S ∈ dom, Nonempty (WLcert family S) :=
+    wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+  let keyImage := dom.attach.image (wlcertKeyOnDom (family := family) dom hdom)
+  ∀ k : WLcertKey α, k ∈ keyImage →
+    let fiber : Finset {S // S ∈ dom} := wlcertAdmissibleFiber_hNotMem (family := family) dom k
+    ∀ Sstar : {S // S ∈ dom}, ∀ hSstar : Sstar ∈ fiber,
+      (∀ Ssub ∈ fiber, Ssub ≠ Sstar →
+        ∃ x,
+          x ∈ realizedXSet
+            (dom := dom) fiber Sstar.1 (ground \ (k.2.2.1 ∪ k.2.2.2.1)) ∧
+          x ∈ Ssub.1 ∧ x ∉ Sstar.1) →
+      ((∃ j, j ∈ Sstar.1 ∧ j ∈ Nmax family ground h ∧
+          ∃ U ∈ WmaxAt family ground h j, ∃ V ∈ WmaxAt family ground h j, U ≠ V) ∨
+        Sstar.1 ∩ supportMaxCoDegreePairs family ground = ∅) →
+      KeyBadAggZeroAt
+        (family := family) (ground := ground) (A0 := A0) (h0 := h)
+        hreg k Sstar (by simpa [fiber] using hSstar)
+
+/--
+Compact interface form of the explicit polynomial remainder export.
+
+This is the same global export theorem as
+`global_family_card_export_with_explicit_M_remainder_under_O1aUpgradeRegime`,
+but with the long split-builder hypothesis compressed into
+`o1aSplitBuilderTarget`.
+-/
+theorem global_family_card_export_with_explicit_M_remainder_under_O1aUpgradeRegime_pkg
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (B : ℕ → ℕ)
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder : o1aSplitBuilderTarget family ground A0 h hreg) :
+    family.card ≤
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+      (B ground.card * (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 2) *
+        (ground.card ^ 20) +
+      (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 3 := by
+  simpa [o1aSplitBuilderTarget] using
+    global_family_card_export_with_explicit_M_remainder_under_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) (B := B)
+      hreg h2 hKeyImage hSplitBuilder
+
+/--
+Problem-facing O₁a export package above the anchored explicit-remainder theorem.
+
+Given an `O₁a` obstruction witness and a packaged split-builder target, we can
+choose an anchored coordinate `h` and export the whole family into the explicit
+polynomial-remainder inequality on `ground \\ {h}`.
+-/
+theorem exists_anchor_with_explicit_M_remainder_export_of_ObstructionO1a
+    {α : Type u} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ}
+    (B : ℕ → ℕ)
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3)
+    (hmax : ∀ T ⊆ ground, T ∉ family → ¬ IsSunflowerFree (insert T family) 3)
+    (hfail : hiFail family ground A0)
+    (hO1a : ObstructionO1a family ground)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hKeyImage : o1a_wlcert_key_image_bound_target.{u} B)
+    (hSplitBuilder :
+      ∀ {h : α}, (hreg : O1aUpgradeRegime family ground A0 h) →
+        o1aSplitBuilderTarget family ground A0 h hreg) :
+    ∃ h, maxPairsAnchoredAt family ground h ∧
+      family.card ≤
+        maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+        maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+        maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+        maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3 +
+        (B ground.card * (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 2) *
+          (ground.card ^ 20) +
+        (maxSunflowerFreeCard (ground \ ({h} : Finset α)) 3) ^ 3 := by
+  rcases hO1a with ⟨h, hanch⟩
+  let hreg : O1aUpgradeRegime family ground A0 h :=
+    ⟨hground, hfree, hmax, hfail, hanch⟩
+  refine ⟨h, hanch, ?_⟩
+  exact global_family_card_export_with_explicit_M_remainder_under_O1aUpgradeRegime_pkg
+    (family := family) (ground := ground) (A0 := A0) (h := h) (B := B)
+    hreg h2 hKeyImage (hSplitBuilder hreg)
+
 
 end SunflowerLean

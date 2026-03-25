@@ -1,68 +1,87 @@
-# sunflower-lean
+# Sunflower Lean - Formal Verification Project
 
-A Lean 4 formalization of exact values and structural properties of sunflower-free families.
+Lean 4 formalization of sunflower combinatorics, using Mathlib and Aristotle verification.
 
-## What's here
+## Purpose
 
-### Certified status (non-uniform model, ∅ included)
+After a failed proof attempt (see [/CORRECTION_NOTICE.md](../CORRECTION_NOTICE.md)), we are now:
 
-| Result | Status | Method |
-|--------|--------|--------|
-| M(1,3) = 2 | Verified | `native_decide` |
-| M(2,3) = 3 | Verified | `native_decide` |
-| M(3,3) = 5 | Verified | `native_decide` |
-| M(4,3) = 8 | Verified | `native_decide` |
-| M(5,3) = 12 | Verified | SAT + LRAT bridge |
-| M(6,3) = 19 | Verified | SAT + LRAT bridge |
-| M(7,3) = 29 | SAT-certified | UNSAT at 30; Lean statement has one `sorry` due LRAT size |
+1. **Learning the correct approach** — Studying ALWZ (2019) via Rao's survey
+2. **Formalizing our understanding** — Machine-verifying definitions and lemmas in Lean 4
+3. **Building rigorous foundations** — Before claiming any new results
 
-`M(n,3)` is the maximum size of a 3-sunflower-free family on `[n]` in this repository's non-uniform convention.
+## Current Status
 
-### Active work (open problems)
+### Verified (Lean build)
 
-- **Erdős Problem #20** (`ErdosProblem20.lean`) — uniform sunflower route, `f(r,3) ≤ C^r`.
-  Framework and finite-`r` components are formalized; global bound remains open.
+| File | Theorem | Status |
+|------|---------|--------|
+| `SunflowerLean/Basic.lean` | `entanglement` | Verified |
+| `SunflowerLean/Basic.lean` | `reduction_lemma` | Verified |
+| `SunflowerLean/Basic.lean` | `disjoint_is_sunflower` | Verified |
+| `SunflowerLean/LocalTuran.lean` | `count_triples` | Verified |
+| `SunflowerLean/LocalTuran.lean` | `sum_degrees_uniform` | Verified |
+| `SunflowerLean/LocalTuran.lean` | `three_sunflower_iff_not_blocked` | Verified |
+| `SunflowerLean/LocalTuran.lean` | `local_turan_inequality` | Verified |
+| `SunflowerLean/LocalTuran.lean` | `local_turan_growth_constraint` | Verified |
 
-## AI provenance and verification boundary
+### In Progress
 
-- Development in this repository includes AI-assisted ideation, drafting,
-  and proof-attempt generation.
-- Public claims are accepted only after local verification:
-  - Lean claims must typecheck under the Lean kernel.
-  - SAT-backed claims must have reproducible local certificate checks.
-- Model output is treated as candidate reasoning, not trusted evidence.
-- See `AI_DISCLOSURE.md` for the full disclosure text.
+| File | Content | Status |
+|------|---------|--------|
+| `SunflowerLean/Spread.lean` | Spread family definitions | Draft (not verified) |
+
+## Key Definitions
+
+### Sunflower (Basic.lean)
+
+```lean
+def IsSunflower {α : Type*} [DecidableEq α] (family : Finset (Finset α)) (k : ℕ) : Prop :=
+  family.card = k ∧
+  ∃ core : Finset α, ∀ S T : Finset α, S ∈ family → T ∈ family → S ≠ T → S ∩ T = core
+```
+
+### r-Spread Family (Spread.lean)
+
+```lean
+def IsRSpread {α : Type*} [DecidableEq α] (family : Finset (Finset α)) (r : ℕ) : Prop :=
+  r > 0 ∧ family.Nonempty ∧
+  ∀ Z : Finset α, (family.filter (fun S => Z ⊆ S)).card * r ^ Z.card ≤ family.card
+```
+
+This is the key concept from ALWZ: "no subset is too popular."
 
 ## Building
 
-Requires [Lean 4](https://leanprover.github.io/) and [Lake](https://github.com/leanprover/lake).
-
 ```bash
-lake exe cache get   # download Mathlib cache (fast)
-lake build           # build everything (~4 min first time)
+lake build
 ```
 
-## Key files
+## Verification with Aristotle
 
-| File | Contents |
-|------|----------|
-| `Basic.lean` | Core definitions: `IsSunflower`, `IsSunflowerFree`, `IsSFreeC` |
-| `SmallCases.lean` | Exact values for `n=1..4`, plus witness lower bounds including `n=5..7` |
-| `SATBridge.lean` | Sorry-free LRAT bridge theorems for n=5 (253KB) and n=6 (26MB) |
-| `SATUpperBound.lean` | Exact values `M(5,3)=12`, `M(6,3)=19`; SAT-certified `M(7,3)=29` status |
-| `BalanceCore.lean` | Foundational balance definitions and Local Turan bridge layer |
-| `PairWeight.lean` | Pair-weight counting machinery (public aggregator module) |
-| `UnionBounds.lean` | Union-size bound layer and transfer theorems |
-| `ErdosProblem20.lean` | Erdős Problem #20 framework and base cases |
-| `Provenance.lean` | In-code provenance and verification-boundary declarations |
-| `AI_DISCLOSURE.md` | Public disclosure of AI assistance and acceptance criteria |
+```python
+from aristotlelib import AristotleClient
 
-## Notes
+client = AristotleClient(api_key="...")
+project = client.create_project_from_lake(
+    ".",
+    description="Sunflower combinatorics formalization"
+)
+client.submit_project(project)
+```
 
-- Exact values `M(n,3)` for `n ≤ 6` are fully sorry-free in this model.
-- `M(7,3)=29` is SAT-certified; Lean-level ingestion of the full LRAT artifact is currently size-limited.
-- `ErdosProblem20.lean` and parts of the balance program still contain open `sorry` stubs.
+Notes:
+- Aristotle submission is optional; `lake build` already certifies the current proofs locally.
+- If you submit, treat it like sharing code with a third-party service; avoid including non-public data.
 
-## Author
+## References
 
-Cody Mitchell
+- **Rao (2020):** "Sunflowers: from Soil to Oil" — Survey paper we're studying
+- **ALWZ (2019):** "Improved bounds for the sunflower lemma" — Breakthrough paper
+- **Aristotle:** Formal verification system for Lean 4
+
+## Authors
+
+Cody Mitchell & Claude (Opus)
+
+January 2026
