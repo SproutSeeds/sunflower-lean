@@ -1840,6 +1840,118 @@ theorem noLowFreqGuardedWindow57_iff_lowCaseCountingBoundSmallGuarded
     exact lowCaseCountingBoundSmallGuarded_forces_not_lowFreq
       (α := α) hsmall family ground i hge5 hle7 hmax hi
 
+/-- Normalized low-frequency bad-event form at exact ground size `5`.
+This isolates the strict counting contradiction shape used in the first
+window case of `NoLowFreqGuardedWindow57`. -/
+def LowFreqBadEventFormEq5 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 5 →
+    IsMaximalSunflowerFree family 3 ground →
+    i ∈ ground →
+    LowFreq family i →
+    (BadContaining family ground i).card +
+      (InFamilyContaining family ground i).card <
+      (CandidatesContaining ground i).card
+
+/-- Size-local low-frequency elimination milestone at exact ground size `5`. -/
+def NoLowFreqGuardedEq5 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 5 →
+    IsMaximalSunflowerFree family 3 ground →
+    i ∈ ground →
+    ¬ LowFreq family i
+
+/-- Size-local low-frequency elimination milestone at exact ground size `6`. -/
+def NoLowFreqGuardedEq6 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 6 →
+    IsMaximalSunflowerFree family 3 ground →
+    i ∈ ground →
+    ¬ LowFreq family i
+
+/-- Size-local low-frequency elimination milestone at exact ground size `7`. -/
+def NoLowFreqGuardedEq7 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 7 →
+    IsMaximalSunflowerFree family 3 ground →
+    i ∈ ground →
+    ¬ LowFreq family i
+
+/-- Any guarded small-case low counting bound normalizes to the exact-size
+`|ground|=5` bad-event form. -/
+theorem lowFreqBadEventFormEq5_of_lowCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    LowCaseCountingBoundSmallGuarded (α := α) →
+    LowFreqBadEventFormEq5 (α := α) := by
+  intro hsmall family ground i h5 hmax hi hlow
+  have hge5 : 5 ≤ ground.card := by omega
+  have hle7 : ground.card ≤ 7 := by omega
+  exact hsmall family ground i hge5 hle7 hmax hi hlow
+
+/-- The normalized exact-size `|ground|=5` bad-event form closes the
+corresponding low-frequency guarded case by maximality contradiction. -/
+theorem noLowFreqGuardedEq5_of_lowFreqBadEventFormEq5
+    {α : Type*} [DecidableEq α] :
+    LowFreqBadEventFormEq5 (α := α) →
+    NoLowFreqGuardedEq5 (α := α) := by
+  intro hbad family ground i h5 hmax hi hlow
+  have hcount :
+      (BadContaining family ground i).card +
+        (InFamilyContaining family ground i).card <
+        (CandidatesContaining ground i).card :=
+    hbad family ground i h5 hmax hi hlow
+  exact (not_counting_strict_of_maximal_containing family ground i hmax) hcount
+
+/-- Exact-size `|ground|=5` closure extracted from guarded small-case low
+counting. -/
+theorem noLowFreqGuardedEq5_of_lowCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    LowCaseCountingBoundSmallGuarded (α := α) →
+    NoLowFreqGuardedEq5 (α := α) := by
+  intro hsmall
+  exact noLowFreqGuardedEq5_of_lowFreqBadEventFormEq5
+    (lowFreqBadEventFormEq5_of_lowCaseCountingBoundSmallGuarded (α := α) hsmall)
+
+/-- Exact-size `|ground|=6` closure extracted from guarded small-case low
+counting. -/
+theorem noLowFreqGuardedEq6_of_lowCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    LowCaseCountingBoundSmallGuarded (α := α) →
+    NoLowFreqGuardedEq6 (α := α) := by
+  intro hsmall family ground i h6 hmax hi
+  have hge5 : 5 ≤ ground.card := by omega
+  have hle7 : ground.card ≤ 7 := by omega
+  exact lowCaseCountingBoundSmallGuarded_forces_not_lowFreq
+    (α := α) hsmall family ground i hge5 hle7 hmax hi
+
+/-- Exact-size `|ground|=7` closure extracted from guarded small-case low
+counting. -/
+theorem noLowFreqGuardedEq7_of_lowCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    LowCaseCountingBoundSmallGuarded (α := α) →
+    NoLowFreqGuardedEq7 (α := α) := by
+  intro hsmall family ground i h7 hmax hi
+  have hge5 : 5 ≤ ground.card := by omega
+  have hle7 : ground.card ≤ 7 := by omega
+  exact lowCaseCountingBoundSmallGuarded_forces_not_lowFreq
+    (α := α) hsmall family ground i hge5 hle7 hmax hi
+
+/-- Bundle exact-size `5/6/7` low-frequency guarded closures into the
+window-local milestone `NoLowFreqGuardedWindow57`. -/
+theorem noLowFreqGuardedWindow57_of_eq_cases
+    {α : Type*} [DecidableEq α] :
+    NoLowFreqGuardedEq5 (α := α) →
+    NoLowFreqGuardedEq6 (α := α) →
+    NoLowFreqGuardedEq7 (α := α) →
+    NoLowFreqGuardedWindow57 (α := α) := by
+  intro h5 h6 h7 family ground i hge5 hle7 hmax hi
+  have hcases : ground.card = 5 ∨ ground.card = 6 ∨ ground.card = 7 := by
+    omega
+  rcases hcases with hcard | hcard | hcard
+  · exact h5 family ground i hcard hmax hi
+  · exact h6 family ground i hcard hmax hi
+  · exact h7 family ground i hcard hmax hi
+
 lemma lowCaseCountingBoundSmall_le_candidates {α : Type*} [DecidableEq α]
     (family : Finset (Finset α)) (ground : Finset α) (i : α) :
     (BadContaining family ground i).card +
@@ -2789,6 +2901,114 @@ theorem noHighFreqGuardedWindow57_iff_highCaseCountingBoundSmallGuarded
   · intro hsmall family ground i hge5 hle7 hmax
     exact highCaseCountingBoundSmallGuarded_forces_not_highFreq
       (α := α) hsmall family ground i hge5 hle7 hmax
+
+/-- Normalized high-frequency bad-event form at exact ground size `5`.
+This isolates the strict counting contradiction shape used in the first
+window case of `NoHighFreqGuardedWindow57`. -/
+def HighFreqBadEventFormEq5 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 5 →
+    IsMaximalSunflowerFree family 3 ground →
+    HighFreq family i →
+    (BadAvoiding family ground i).card +
+      (InFamilyAvoiding family ground i).card <
+      (CandidatesAvoiding ground i).card
+
+/-- Size-local high-frequency elimination milestone at exact ground size `5`. -/
+def NoHighFreqGuardedEq5 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 5 →
+    IsMaximalSunflowerFree family 3 ground →
+    ¬ HighFreq family i
+
+/-- Size-local high-frequency elimination milestone at exact ground size `6`. -/
+def NoHighFreqGuardedEq6 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 6 →
+    IsMaximalSunflowerFree family 3 ground →
+    ¬ HighFreq family i
+
+/-- Size-local high-frequency elimination milestone at exact ground size `7`. -/
+def NoHighFreqGuardedEq7 {α : Type*} [DecidableEq α] : Prop :=
+  ∀ (family : Finset (Finset α)) (ground : Finset α) (i : α),
+    ground.card = 7 →
+    IsMaximalSunflowerFree family 3 ground →
+    ¬ HighFreq family i
+
+/-- Any guarded small-case high counting bound normalizes to the exact-size
+`|ground|=5` bad-event form. -/
+theorem highFreqBadEventFormEq5_of_highCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    HighCaseCountingBoundSmallGuarded (α := α) →
+    HighFreqBadEventFormEq5 (α := α) := by
+  intro hsmall family ground i h5 hmax hhf
+  have hge5 : 5 ≤ ground.card := by omega
+  have hle7 : ground.card ≤ 7 := by omega
+  exact hsmall family ground i hge5 hle7 hmax hhf
+
+/-- The normalized exact-size `|ground|=5` bad-event form closes the
+corresponding high-frequency guarded case by maximality contradiction. -/
+theorem noHighFreqGuardedEq5_of_highFreqBadEventFormEq5
+    {α : Type*} [DecidableEq α] :
+    HighFreqBadEventFormEq5 (α := α) →
+    NoHighFreqGuardedEq5 (α := α) := by
+  intro hbad family ground i h5 hmax hhf
+  have hcount :
+      (BadAvoiding family ground i).card +
+        (InFamilyAvoiding family ground i).card <
+        (CandidatesAvoiding ground i).card :=
+    hbad family ground i h5 hmax hhf
+  exact (not_counting_strict_of_maximal_avoiding family ground i hmax) hcount
+
+/-- Exact-size `|ground|=5` closure extracted from guarded small-case high
+counting. -/
+theorem noHighFreqGuardedEq5_of_highCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    HighCaseCountingBoundSmallGuarded (α := α) →
+    NoHighFreqGuardedEq5 (α := α) := by
+  intro hsmall
+  exact noHighFreqGuardedEq5_of_highFreqBadEventFormEq5
+    (highFreqBadEventFormEq5_of_highCaseCountingBoundSmallGuarded (α := α) hsmall)
+
+/-- Exact-size `|ground|=6` closure extracted from guarded small-case high
+counting. -/
+theorem noHighFreqGuardedEq6_of_highCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    HighCaseCountingBoundSmallGuarded (α := α) →
+    NoHighFreqGuardedEq6 (α := α) := by
+  intro hsmall family ground i h6 hmax
+  have hge5 : 5 ≤ ground.card := by omega
+  have hle7 : ground.card ≤ 7 := by omega
+  exact highCaseCountingBoundSmallGuarded_forces_not_highFreq
+    (α := α) hsmall family ground i hge5 hle7 hmax
+
+/-- Exact-size `|ground|=7` closure extracted from guarded small-case high
+counting. -/
+theorem noHighFreqGuardedEq7_of_highCaseCountingBoundSmallGuarded
+    {α : Type*} [DecidableEq α] :
+    HighCaseCountingBoundSmallGuarded (α := α) →
+    NoHighFreqGuardedEq7 (α := α) := by
+  intro hsmall family ground i h7 hmax
+  have hge5 : 5 ≤ ground.card := by omega
+  have hle7 : ground.card ≤ 7 := by omega
+  exact highCaseCountingBoundSmallGuarded_forces_not_highFreq
+    (α := α) hsmall family ground i hge5 hle7 hmax
+
+/-- Bundle exact-size `5/6/7` high-frequency guarded closures into the
+window-local milestone `NoHighFreqGuardedWindow57`. -/
+theorem noHighFreqGuardedWindow57_of_eq_cases
+    {α : Type*} [DecidableEq α] :
+    NoHighFreqGuardedEq5 (α := α) →
+    NoHighFreqGuardedEq6 (α := α) →
+    NoHighFreqGuardedEq7 (α := α) →
+    NoHighFreqGuardedWindow57 (α := α) := by
+  intro h5 h6 h7 family ground i hge5 hle7 hmax
+  have hcases : ground.card = 5 ∨ ground.card = 6 ∨ ground.card = 7 := by
+    omega
+  rcases hcases with hcard | hcard | hcard
+  · exact h5 family ground i hcard hmax
+  · exact h6 family ground i hcard hmax
+  · exact h7 family ground i hcard hmax
 
 /-- Finite ground used for the explicit high-case obstruction witness. -/
 abbrev highCaseCounterGround : Finset (Fin 3) := ({0, 1, 2} : Finset (Fin 3))
@@ -4686,6 +4906,50 @@ theorem guarded_lane_bounds_of_split_noFreqGuarded
   exact guarded_lane_bounds_of_guardedBalanceWindowNatHyp
     (α := α)
     (guardedBalanceWindowNatHyp_of_split (α := α) hlow hhigh)
+
+/-- Split-lane projection (low small counting):
+the split guarded no-frequency assumptions imply the guarded low small-counting
+leaf. -/
+theorem lowCaseCountingBoundSmallGuarded_of_split_noFreqGuarded
+    {α : Type*} [DecidableEq α] :
+    NoLowFreqGuarded (α := α) →
+    NoHighFreqGuarded (α := α) →
+    LowCaseCountingBoundSmallGuarded (α := α) := by
+  intro hlow hhigh
+  exact (guarded_lane_bounds_of_split_noFreqGuarded (α := α) hlow hhigh).1
+
+/-- Split-lane projection (high small counting):
+the split guarded no-frequency assumptions imply the guarded high small-counting
+leaf. -/
+theorem highCaseCountingBoundSmallGuarded_of_split_noFreqGuarded
+    {α : Type*} [DecidableEq α] :
+    NoLowFreqGuarded (α := α) →
+    NoHighFreqGuarded (α := α) →
+    HighCaseCountingBoundSmallGuarded (α := α) := by
+  intro hlow hhigh
+  exact (guarded_lane_bounds_of_split_noFreqGuarded (α := α) hlow hhigh).2.2.1
+
+/-- Split-lane projection (low decomposition):
+the split guarded no-frequency assumptions imply the guarded low decomposition
+leaf. -/
+theorem lowCaseUniformDecompositionHypGuarded_of_split_noFreqGuarded
+    {α : Type*} [DecidableEq α] :
+    NoLowFreqGuarded (α := α) →
+    NoHighFreqGuarded (α := α) →
+    LowCaseUniformDecompositionHypGuarded (α := α) := by
+  intro hlow hhigh
+  exact (guarded_lane_bounds_of_split_noFreqGuarded (α := α) hlow hhigh).2.1
+
+/-- Split-lane projection (high decomposition):
+the split guarded no-frequency assumptions imply the guarded high decomposition
+leaf. -/
+theorem highCaseUniformDecompositionHypGuarded_of_split_noFreqGuarded
+    {α : Type*} [DecidableEq α] :
+    NoLowFreqGuarded (α := α) →
+    NoHighFreqGuarded (α := α) →
+    HighCaseUniformDecompositionHypGuarded (α := α) := by
+  intro hlow hhigh
+  exact (guarded_lane_bounds_of_split_noFreqGuarded (α := α) hlow hhigh).2.2.2
 
 /-- Window-local split guarded-small packager:
 if low/high frequency elimination is available exactly on `5 ≤ |ground| ≤ 7`,

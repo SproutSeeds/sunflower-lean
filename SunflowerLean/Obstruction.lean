@@ -1812,6 +1812,45 @@ theorem o1a_router_hasH_or_chain {α : Type*} [DecidableEq α]
       (family := family) (S := S) (h := h) hS hhnS hfree hBlocked
     exact Or.inr this
 
+/--
+Provable router split (v1): under maximality + O₁a, each `h=0` set either lifts,
+falls into the singleton-core bucket, falls into the non-singleton-core bucket,
+or is a chain extension.
+
+This is the first theorem-level split that matches the current post-counting
+redesign frontier. It does not yet solve the upgrade leaf, but it exposes the
+exact residual buckets we have to eliminate next.
+-/
+theorem o1a_router_split_core_or_chain {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α}
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3)
+    (hmax : ∀ T ⊆ ground, T ∉ family → ¬ IsSunflowerFree (insert T family) 3)
+    (hO1a : ObstructionO1a family ground) :
+    ∃ h, maxPairsAnchoredAt family ground h ∧
+      ∀ S ∈ family, h ∉ S →
+        liftAt S h ∈ family ∨
+          WitnessHasHSingletonCore family (liftAt S h) h ∨
+          WitnessHasHNonSingletonCore family (liftAt S h) h ∨
+          ChainExtension family S h := by
+  classical
+  rcases o1a_router_hasH_or_chain
+      (family := family) (ground := ground) hground hfree hmax hO1a with
+    ⟨h, hanch, hrouter⟩
+  refine ⟨h, hanch, ?_⟩
+  intro S hS hhnS
+  rcases hrouter S hS hhnS with hLift | hrest
+  · exact Or.inl hLift
+  · rcases hrest with hW | hChain
+    · rcases witnessHasH_cases_core (family := family) (T := liftAt S h) (h := h) hW with
+        hSing | hNonSing
+      · exact Or.inr (Or.inl hSing)
+      · exact Or.inr (Or.inr (Or.inl hNonSing))
+    · exact Or.inr (Or.inr (Or.inr hChain))
+
+
+
+
 /-- Target statement (no proof yet): strong witness ⇒ Nmax-style remainder class. -/
 def o1a_rclass (r : ℕ) : Prop :=
   ∀ {α : Type*} [DecidableEq α] (family : Finset (Finset α)) (ground : Finset α),
@@ -2403,6 +2442,260 @@ either the v3 residual, or the core-misses-`Nmax` case.
 def ResidualV4 {α : Type*} [DecidableEq α]
     (family : Finset (Finset α)) (ground : Finset α) (A : ℕ) : Prop :=
   ResidualV3 family ground A ∨ ObstructionCoreMissesNmax family ground
+/--
+Residual-aware router (v2): under maximality + `O₁a`, either every `h=0` set routes into
+lift / singleton-core / an explicit `S ∩ Nmax(h)` hit / chain, or there is a genuine
+`ObstructionCoreMissesNmax` witness.
+-/
+theorem o1a_router_hitsNmax_or_residual {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α}
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3)
+    (hmax : ∀ T ⊆ ground, T ∉ family → ¬ IsSunflowerFree (insert T family) 3)
+    (hO1a : ObstructionO1a family ground) :
+    (∃ h, maxPairsAnchoredAt family ground h ∧
+      ∀ S ∈ family, h ∉ S →
+        liftAt S h ∈ family ∨
+          WitnessHasHSingletonCore family (liftAt S h) h ∨
+          (∃ j, j ∈ S ∧ j ∈ Nmax family ground h) ∨
+          ChainExtension family S h) ∨
+      ObstructionCoreMissesNmax family ground := by
+  classical
+  rcases o1a_router_split_core_or_chain
+      (family := family) (ground := ground) hground hfree hmax hO1a with
+    ⟨h, hanch, hrouter⟩
+  by_cases hbad :
+      ∃ S ∈ family, h ∉ S ∧
+        WitnessHasHNonSingletonCore family (liftAt S h) h ∧
+        (S ∩ Nmax family ground h) = ∅
+  · rcases hbad with ⟨S, hS, hhnS, hNon, hmiss⟩
+    exact Or.inr ⟨h, hanch.1, S, hS, hhnS, hNon, hmiss⟩
+  · refine Or.inl ?_
+    refine ⟨h, hanch, ?_⟩
+    intro S hS hhnS
+    rcases hrouter S hS hhnS with hLift | hrest
+    · exact Or.inl hLift
+    · rcases hrest with hSing | hrest
+      · exact Or.inr (Or.inl hSing)
+      · rcases hrest with hNon | hChain
+        · by_cases hInt : (S ∩ Nmax family ground h).Nonempty
+          · rcases hInt with ⟨j, hjInt⟩
+            exact Or.inr (Or.inr (Or.inl ⟨j, (Finset.mem_inter.mp hjInt).1,
+              (Finset.mem_inter.mp hjInt).2⟩))
+          · have hmiss : (S ∩ Nmax family ground h) = ∅ := by
+              simpa [Finset.not_nonempty_iff_eq_empty] using hInt
+            exfalso
+            exact hbad ⟨S, hS, hhnS, hNon, hmiss⟩
+        · exact Or.inr (Or.inr (Or.inr hChain))
+
+/--
+Residual-aware router (v3): if `maxCoDegree ≥ 2`, every non-singleton branch that hits `Nmax(h)`
+comes with a concrete two-set reservoir inside `WmaxAt(h,j)`; otherwise we expose
+`ObstructionCoreMissesNmax` honestly.
+-/
+theorem o1a_router_WmaxAt_reservoir_or_residual {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α}
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3)
+    (hmax : ∀ T ⊆ ground, T ∉ family → ¬ IsSunflowerFree (insert T family) 3)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hO1a : ObstructionO1a family ground) :
+    (∃ h, maxPairsAnchoredAt family ground h ∧
+      ∀ S ∈ family, h ∉ S →
+        liftAt S h ∈ family ∨
+          WitnessHasHSingletonCore family (liftAt S h) h ∨
+          (∃ j, j ∈ S ∧ j ∈ Nmax family ground h ∧
+            ∃ A ∈ WmaxAt family ground h j, ∃ B ∈ WmaxAt family ground h j, A ≠ B) ∨
+          ChainExtension family S h) ∨
+      ObstructionCoreMissesNmax family ground := by
+  classical
+  rcases o1a_router_hitsNmax_or_residual
+      (family := family) (ground := ground) hground hfree hmax hO1a with hgood | hbad
+  · refine Or.inl ?_
+    rcases hgood with ⟨h, hanch, hrouter⟩
+    refine ⟨h, hanch, ?_⟩
+    intro S hS hhnS
+    rcases hrouter S hS hhnS with hLift | hrest
+    · exact Or.inl hLift
+    · rcases hrest with hSing | hrest
+      · exact Or.inr (Or.inl hSing)
+      · rcases hrest with hHit | hChain
+        · rcases hHit with ⟨j, hjS, hjN⟩
+          rcases exists_two_mem_WmaxAt_of_mem_Nmax_of_two_le_maxCoDegree
+              (family := family) (ground := ground) (h := h) (j := j) hjN h2 with
+            ⟨A, hA, B, hB, hAB⟩
+          exact Or.inr (Or.inr (Or.inl ⟨j, hjS, hjN, A, hA, B, hB, hAB⟩))
+        · exact Or.inr (Or.inr (Or.inr hChain))
+  · exact Or.inr hbad
+
+/--
+On the hard witness-lift domain, the residual-aware router collapses to the lift branch or
+a concrete `WmaxAt` reservoir branch; the singleton-core and chain branches are excluded by
+definition of `o1aWitnessLiftDomWL`. Any remaining failure is therefore a genuine
+`ObstructionCoreMissesNmax` witness.
+-/
+theorem o1a_witnessLiftDomWL_to_WmaxAt_reservoir_or_residual {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α}
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3)
+    (hmax : ∀ T ⊆ ground, T ∉ family → ¬ IsSunflowerFree (insert T family) 3)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hO1a : ObstructionO1a family ground) :
+    (∃ h, maxPairsAnchoredAt family ground h ∧
+      ∀ S ∈ o1aWitnessLiftDomWL family h,
+        liftAt S h ∈ family ∨
+          ∃ j, j ∈ S ∧ j ∈ Nmax family ground h ∧
+            ∃ A ∈ WmaxAt family ground h j, ∃ B ∈ WmaxAt family ground h j, A ≠ B) ∨
+      ObstructionCoreMissesNmax family ground := by
+  classical
+  rcases o1a_router_WmaxAt_reservoir_or_residual
+      (family := family) (ground := ground) hground hfree hmax h2 hO1a with hgood | hbad
+  · refine Or.inl ?_
+    rcases hgood with ⟨h, hanch, hrouter⟩
+    refine ⟨h, hanch, ?_⟩
+    intro S hSdom
+    have hS' :
+        S ∈
+          (o1aWitnessLiftDom family h).filter
+            (fun S => ¬ ChainExtension family S h ∧
+              ¬ WitnessHasHSingletonCore family (liftAt S h) h) := by
+      simpa [o1aWitnessLiftDomWL] using hSdom
+    have hS0 : S ∈ o1aWitnessLiftDom family h := (Finset.mem_filter.mp hS').1
+    have hno : ¬ ChainExtension family S h ∧
+        ¬ WitnessHasHSingletonCore family (liftAt S h) h :=
+      (Finset.mem_filter.mp hS').2
+    have hSAvoid : S ∈ coreSliceAvoid family h := (Finset.mem_filter.mp hS0).1
+    have hSfam : S ∈ family := (Finset.mem_filter.mp hSAvoid).1
+    have hhnS : h ∉ S := (Finset.mem_filter.mp hSAvoid).2
+    rcases hrouter S hSfam hhnS with hLift | hrest
+    · exact Or.inl hLift
+    · rcases hrest with hSing | hrest
+      · exact False.elim (hno.2 hSing)
+      · rcases hrest with hHit | hChain
+        · exact Or.inr hHit
+        · exact False.elim (hno.1 hChain)
+  · exact Or.inr hbad
+
+/--
+On the hard witness-lift domain, even the lift branch is impossible by definition, so the
+residual-aware router collapses all the way to a concrete `WmaxAt` reservoir unless there is a
+genuine `ObstructionCoreMissesNmax` witness.
+-/
+theorem o1a_witnessLiftDomWL_to_WmaxAt_reservoir_only_or_residual {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α}
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3)
+    (hmax : ∀ T ⊆ ground, T ∉ family → ¬ IsSunflowerFree (insert T family) 3)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hO1a : ObstructionO1a family ground) :
+    (∃ h, maxPairsAnchoredAt family ground h ∧
+      ∀ S ∈ o1aWitnessLiftDomWL family h,
+        ∃ j, j ∈ S ∧ j ∈ Nmax family ground h ∧
+          ∃ A ∈ WmaxAt family ground h j, ∃ B ∈ WmaxAt family ground h j, A ≠ B) ∨
+      ObstructionCoreMissesNmax family ground := by
+  classical
+  rcases o1a_witnessLiftDomWL_to_WmaxAt_reservoir_or_residual
+      (family := family) (ground := ground) hground hfree hmax h2 hO1a with hgood | hbad
+  · refine Or.inl ?_
+    rcases hgood with ⟨h, hanch, hrouter⟩
+    refine ⟨h, hanch, ?_⟩
+    intro S hSdom
+    rcases hrouter S hSdom with hLift | hHit
+    · have hS' :
+          S ∈
+            (o1aWitnessLiftDom family h).filter
+              (fun S => ¬ ChainExtension family S h ∧
+                ¬ WitnessHasHSingletonCore family (liftAt S h) h) := by
+        simpa [o1aWitnessLiftDomWL] using hSdom
+      have hS0 : S ∈ o1aWitnessLiftDom family h := (Finset.mem_filter.mp hS').1
+      have hnotLift : liftAt S h ∉ family := (Finset.mem_filter.mp hS0).2
+      exact False.elim (hnotLift hLift)
+    · exact hHit
+  · exact Or.inr hbad
+
+/--
+Under an anchored hub, missing `Nmax(h)` is equivalent to missing the max-coDegree support
+outside the hub itself. This repackages the residual branch into a support-avoidance statement
+that is better suited for later pigeonhole arguments.
+-/
+theorem inter_supportMaxCoDegreePairs_eq_empty_of_anchor_of_inter_Nmax_eq_empty
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {h : α} {S : Finset α}
+    (hanch : maxPairsAnchoredAt family ground h)
+    (hhnS : h ∉ S)
+    (hmiss : (S ∩ Nmax family ground h) = ∅) :
+    S ∩ supportMaxCoDegreePairs family ground = ∅ := by
+  classical
+  apply Finset.eq_empty_iff_forall_not_mem.mpr
+  intro x hx
+  have hxS : x ∈ S := (Finset.mem_inter.mp hx).1
+  have hxSupp : x ∈ supportMaxCoDegreePairs family ground := (Finset.mem_inter.mp hx).2
+  by_cases hxh : x = h
+  · exact hhnS (hxh ▸ hxS)
+  · have hxErase : x ∈ (supportMaxCoDegreePairs family ground).erase h := by
+      exact Finset.mem_erase.mpr ⟨hxh, hxSupp⟩
+    have hxN : x ∈ Nmax family ground h := by
+      simpa [supportMaxCoDegreePairs_erase_eq_Nmax_of_anchor (family := family) (ground := ground) (h := h) hanch] using hxErase
+    have hxBad : x ∈ S ∩ Nmax family ground h := Finset.mem_inter.mpr ⟨hxS, hxN⟩
+    have : x ∈ (∅ : Finset α) := by simpa [hmiss] using hxBad
+    exact Finset.not_mem_empty x this
+
+/--
+Hard-domain router collapse, support form: on `o1aWitnessLiftDomWL`, every set either carries a
+concrete `WmaxAt` reservoir or misses the anchored max-coDegree support entirely. This removes
+`ObstructionCoreMissesNmax` as a named output of the hard-domain router stage.
+-/
+theorem o1a_witnessLiftDomWL_to_WmaxAt_reservoir_or_supportMiss
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α}
+    (hground : family ⊆ ground.powerset)
+    (hfree : IsSunflowerFree family 3)
+    (hmax : ∀ T ⊆ ground, T ∉ family → ¬ IsSunflowerFree (insert T family) 3)
+    (h2 : 2 ≤ maxCoDegree family ground)
+    (hO1a : ObstructionO1a family ground) :
+    ∃ h, maxPairsAnchoredAt family ground h ∧
+      ∀ S ∈ o1aWitnessLiftDomWL family h,
+        (∃ j, j ∈ S ∧ j ∈ Nmax family ground h ∧
+          ∃ A ∈ WmaxAt family ground h j, ∃ B ∈ WmaxAt family ground h j, A ≠ B) ∨
+        (S ∩ supportMaxCoDegreePairs family ground = ∅) := by
+  classical
+  rcases o1a_router_split_core_or_chain
+      (family := family) (ground := ground) hground hfree hmax hO1a with ⟨h, hanch, hrouter⟩
+  refine ⟨h, hanch, ?_⟩
+  intro S hSdom
+  have hS' :
+      S ∈
+        (o1aWitnessLiftDom family h).filter
+          (fun S => ¬ ChainExtension family S h ∧
+            ¬ WitnessHasHSingletonCore family (liftAt S h) h) := by
+    simpa [o1aWitnessLiftDomWL] using hSdom
+  have hS0 : S ∈ o1aWitnessLiftDom family h := (Finset.mem_filter.mp hS').1
+  have hno : ¬ ChainExtension family S h ∧
+      ¬ WitnessHasHSingletonCore family (liftAt S h) h :=
+    (Finset.mem_filter.mp hS').2
+  have hSAvoid : S ∈ coreSliceAvoid family h := (Finset.mem_filter.mp hS0).1
+  have hSfam : S ∈ family := (Finset.mem_filter.mp hSAvoid).1
+  have hhnS : h ∉ S := (Finset.mem_filter.mp hSAvoid).2
+  have hnotLift : liftAt S h ∉ family := (Finset.mem_filter.mp hS0).2
+  rcases hrouter S hSfam hhnS with hLift | hrest
+  · exact False.elim (hnotLift hLift)
+  · rcases hrest with hSing | hrest
+    · exact False.elim (hno.2 hSing)
+    · rcases hrest with _hNon | hChain
+      · by_cases hInt : (S ∩ Nmax family ground h).Nonempty
+        · rcases hInt with ⟨j, hjInt⟩
+          have hjS : j ∈ S := (Finset.mem_inter.mp hjInt).1
+          have hjN : j ∈ Nmax family ground h := (Finset.mem_inter.mp hjInt).2
+          rcases exists_two_mem_WmaxAt_of_mem_Nmax_of_two_le_maxCoDegree
+              (family := family) (ground := ground) (h := h) (j := j) hjN h2 with
+            ⟨A, hA, B, hB, hAB⟩
+          exact Or.inl ⟨j, hjS, hjN, A, hA, B, hB, hAB⟩
+        · have hmiss : (S ∩ Nmax family ground h) = ∅ := by
+            simpa [Finset.not_nonempty_iff_eq_empty] using hInt
+          exact Or.inr
+            (inter_supportMaxCoDegreePairs_eq_empty_of_anchor_of_inter_Nmax_eq_empty
+              (family := family) (ground := ground) (h := h) (S := S) hanch hhnS hmiss)
+      · exact False.elim (hno.1 hChain)
 
 /-- Type II bridge (v1, stub): `HI_FAIL_A(F)` implies `O₁a(F)` or falls into `ResidualV1`. -/
 theorem typeII_bridge_v1 {α : Type*} [DecidableEq α]

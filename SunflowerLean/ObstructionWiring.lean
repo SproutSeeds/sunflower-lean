@@ -179,6 +179,89 @@ theorem wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime {α : Type*} [D
       (family := family) (ground := ground) (A0 := A0) (h := h) (S := S)
       hreg hSfam hhnS hliftNot hno.1 hno.2
 
+
+theorem o1a_witnessLiftDomWL_to_WmaxAt_reservoir_or_supportMiss_of_O1aUpgradeRegime
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground) :
+    ∀ S ∈ o1aWitnessLiftDomWL family h,
+      (∃ j, j ∈ S ∧ j ∈ Nmax family ground h ∧
+        ∃ A ∈ WmaxAt family ground h j, ∃ B ∈ WmaxAt family ground h j, A ≠ B) ∨
+      S ∩ supportMaxCoDegreePairs family ground = ∅ := by
+  intro S hSdom
+  classical
+  rcases hreg with ⟨hground, hfree, hmax, _hfail, hanch⟩
+  have hS' :
+      S ∈
+        (o1aWitnessLiftDom family h).filter
+          (fun S => ¬ ChainExtension family S h ∧
+            ¬ WitnessHasHSingletonCore family (liftAt S h) h) := by
+    simpa [o1aWitnessLiftDomWL] using hSdom
+  have hS0 : S ∈ o1aWitnessLiftDom family h := (Finset.mem_filter.mp hS').1
+  have hno : ¬ ChainExtension family S h ∧
+      ¬ WitnessHasHSingletonCore family (liftAt S h) h :=
+    (Finset.mem_filter.mp hS').2
+  have hSAvoid : S ∈ coreSliceAvoid family h := (Finset.mem_filter.mp hS0).1
+  have hSfam : S ∈ family := (Finset.mem_filter.mp hSAvoid).1
+  have hhnS : h ∉ S := (Finset.mem_filter.mp hSAvoid).2
+  have hnotLift : liftAt S h ∉ family := (Finset.mem_filter.mp hS0).2
+  have hSsub : S ⊆ ground := Finset.mem_powerset.mp (hground hSfam)
+  have hLiftSub : liftAt S h ⊆ ground := by
+    intro x hx
+    have hx' : x ∈ S ∨ x = h := by
+      simpa [liftAt] using (Finset.mem_union.mp hx)
+    rcases hx' with hxS | rfl
+    · exact hSsub hxS
+    · exact hanch.1
+  have hnot : ¬ IsSunflowerFree (insert (liftAt S h) family) 3 :=
+    hmax (liftAt S h) hLiftSub hnotLift
+  have hblocked : BlockedByTwo family (liftAt S h) :=
+    blockedByTwo_of_not_sunflowerFree_insert (family := family) (T := liftAt S h)
+      hfree hnotLift hnot
+  have hrouter :=
+    blockedByTwoFrom_contains_h_or_chainExtension
+      (family := family) (S := S) (h := h) hSfam hhnS hfree hblocked
+  rcases hrouter with hHasH | hChain
+  · rcases witnessHasH_cases_core (family := family) (T := liftAt S h) (h := h) hHasH with
+      hSing | hNonSing
+    · exact False.elim (hno.2 hSing)
+    · by_cases hInt : (S ∩ Nmax family ground h).Nonempty
+      · rcases hInt with ⟨j, hjInt⟩
+        have hjS : j ∈ S := (Finset.mem_inter.mp hjInt).1
+        have hjN : j ∈ Nmax family ground h := (Finset.mem_inter.mp hjInt).2
+        rcases exists_two_mem_WmaxAt_of_mem_Nmax_of_two_le_maxCoDegree
+            (family := family) (ground := ground) (h := h) (j := j) hjN h2 with
+          ⟨A, hA, B, hB, hAB⟩
+        exact Or.inl ⟨j, hjS, hjN, A, hA, B, hB, hAB⟩
+      · have hmiss : (S ∩ Nmax family ground h) = ∅ := by
+          simpa [Finset.not_nonempty_iff_eq_empty] using hInt
+        exact Or.inr
+          (inter_supportMaxCoDegreePairs_eq_empty_of_anchor_of_inter_Nmax_eq_empty
+            (family := family) (ground := ground) (h := h) (S := S) hanch hhnS hmiss)
+  · exact False.elim (hno.1 hChain)
+
+/--
+Reusable hard-upgrade package on the witness-lift domain: in the O₁a upgrade regime,
+every hard-domain set has a WL certificate and also falls into the sharpened
+reservoir-vs-support-miss split.
+-/
+theorem o1aWitnessLiftDomWL_hardUpgrade_package_of_O1aUpgradeRegime
+    {α : Type*} [DecidableEq α]
+    {family : Finset (Finset α)} {ground : Finset α} {A0 : ℕ} {h : α}
+    (hreg : O1aUpgradeRegime family ground A0 h)
+    (h2 : 2 ≤ maxCoDegree family ground) :
+    (∀ S ∈ o1aWitnessLiftDomWL family h, Nonempty (WLcert family S)) ∧
+      (∀ S ∈ o1aWitnessLiftDomWL family h,
+        (∃ j, j ∈ S ∧ j ∈ Nmax family ground h ∧
+          ∃ A ∈ WmaxAt family ground h j, ∃ B ∈ WmaxAt family ground h j, A ≠ B) ∨
+        S ∩ supportMaxCoDegreePairs family ground = ∅) := by
+  refine ⟨?_, ?_⟩
+  · exact wlcert_exists_on_o1aWitnessLiftDomWL_of_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) hreg
+  · exact o1a_witnessLiftDomWL_to_WmaxAt_reservoir_or_supportMiss_of_O1aUpgradeRegime
+      (family := family) (ground := ground) (A0 := A0) (h := h) hreg h2
+
 /-!
 Arithmetic helper for the final multiplicity combination step.
 

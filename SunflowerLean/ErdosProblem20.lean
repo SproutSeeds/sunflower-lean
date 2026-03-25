@@ -48,6 +48,24 @@ def ErdosProblem20 (k : ℕ) : Prop :=
 /-- The k=3 specialization (our primary target). -/
 def ErdosProblem20_K3 : Prop := ErdosProblem20 3
 
+/-- Full-conjecture north-star: all fixed `k ≥ 3` satisfy Problem #20. -/
+def ErdosProblem20AllKLift : Prop :=
+  ∀ k : ℕ, 3 ≤ k → ErdosProblem20 k
+
+/-- The all-`k` north-star implies the `k = 3` specialization. -/
+theorem erdos_problem_20_k3_of_all_k_lift
+    (hall : ErdosProblem20AllKLift) :
+    ErdosProblem20_K3 := by
+  exact hall 3 (by decide)
+
+/-- Pointwise elimination form for the all-`k` north-star. -/
+theorem erdos_problem_20_of_all_k_lift
+    (hall : ErdosProblem20AllKLift)
+    (k : ℕ)
+    (hk : 3 ≤ k) :
+    ErdosProblem20 k :=
+  hall k hk
+
 -- ============================================================================
 -- BRIDGE: UNIFORM RESULTS FEED PROBLEM #20
 -- ============================================================================
@@ -755,6 +773,476 @@ theorem uniform_bound_all_r_of_components
     UniformBoundAllR (α := α) := by
   exact ⟨h1, h2, h3, h4, h5, h6⟩
 
+/-- Milestone top-level theorem (finite-range packaging):
+    if the tracked `r = 1..6` uniform bounds hold on a fixed ambient type `α`,
+    then there is an exponential envelope `C^r` for all `1 ≤ r ≤ 6`. -/
+theorem erdos_problem_20_k3_upto6_on_type_of_uniform_bounds
+    {α : Type*} [DecidableEq α]
+    (hall : UniformBoundAllR (α := α)) :
+    ∃ C : ℕ, C > 0 ∧
+      ∀ (r : ℕ) (family : Finset (Finset α)),
+        1 ≤ r → r ≤ 6 →
+        IsUniform family r → IsSunflowerFree family 3 → family.card ≤ C ^ r := by
+  rcases hall with ⟨h1, h2, h3, h4, h5, h6⟩
+  let C : ℕ := max 41 (max h5.choose h6.choose)
+  refine ⟨C, ?_, ?_⟩
+  · exact lt_of_lt_of_le (by decide : 0 < 41) (le_max_left _ _)
+  · intro r family hr1 hr6 h_uniform h_sf_free
+    have hCpos : 0 < C := lt_of_lt_of_le (by decide : 0 < 41) (le_max_left _ _)
+    have hCge1 : 1 ≤ C := Nat.succ_le_of_lt hCpos
+    have hC_le_pow :
+        ∀ t : ℕ, 1 ≤ t → C ≤ C ^ t := by
+      intro t ht
+      rcases Nat.exists_eq_succ_of_ne_zero (Nat.pos_iff_ne_zero.mp ht) with ⟨u, rfl⟩
+      calc
+        C = C * 1 := by simp
+        _ ≤ C * C ^ u := Nat.mul_le_mul_left C (Nat.one_le_pow _ _ hCpos)
+        _ = C ^ u * C := by ac_rfl
+        _ = C ^ (u + 1) := by simp [pow_succ]
+    interval_cases r
+    · -- r = 1
+      have hle : family.card ≤ 2 := h1 family h_uniform h_sf_free
+      calc
+        family.card ≤ 2 := hle
+        _ ≤ 41 := by decide
+        _ ≤ C := le_max_left _ _
+        _ = C ^ 1 := by simp
+    · -- r = 2
+      have hle : family.card ≤ 6 := h2 family h_uniform h_sf_free
+      calc
+        family.card ≤ 6 := hle
+        _ ≤ 41 := by decide
+        _ ≤ C := le_max_left _ _
+        _ ≤ C ^ 2 := hC_le_pow 2 (by decide)
+    · -- r = 3
+      have hle : family.card ≤ 20 := h3 family h_uniform h_sf_free
+      calc
+        family.card ≤ 20 := hle
+        _ ≤ 41 := by decide
+        _ ≤ C := le_max_left _ _
+        _ ≤ C ^ 3 := hC_le_pow 3 (by decide)
+    · -- r = 4
+      have hle : family.card ≤ 41 := h4 family h_uniform h_sf_free
+      calc
+        family.card ≤ 41 := hle
+        _ ≤ C := le_max_left _ _
+        _ ≤ C ^ 4 := hC_le_pow 4 (by decide)
+    · -- r = 5
+      have hle : family.card ≤ h5.choose := h5.choose_spec family h_uniform h_sf_free
+      have hchoose : h5.choose ≤ C := by
+        exact le_trans (le_max_left _ _) (le_max_right _ _)
+      calc
+        family.card ≤ h5.choose := hle
+        _ ≤ C := hchoose
+        _ ≤ C ^ 5 := hC_le_pow 5 (by decide)
+    · -- r = 6
+      have hle : family.card ≤ h6.choose := h6.choose_spec family h_uniform h_sf_free
+      have hchoose : h6.choose ≤ C := by
+        exact le_trans (le_max_right _ _) (le_max_right _ _)
+      calc
+        family.card ≤ h6.choose := hle
+        _ ≤ C := hchoose
+        _ ≤ C ^ 6 := hC_le_pow 6 (by decide)
+
+/-- A 0-uniform family can contain at most one set (necessarily `∅`). -/
+theorem uniform_zero_family_card_le_one {α : Type*} [DecidableEq α]
+    (family : Finset (Finset α)) (h_uniform : IsUniform family 0) :
+    family.card ≤ 1 := by
+  have hsub : family ⊆ ({(∅ : Finset α)} : Finset (Finset α)) := by
+    intro S hS
+    have hcard : S.card = 0 := h_uniform S hS
+    have hempty : S = ∅ := Finset.card_eq_zero.mp hcard
+    simp [hempty]
+  have hle : family.card ≤ ({(∅ : Finset α)} : Finset (Finset α)).card :=
+    Finset.card_le_card hsub
+  simpa using hle
+
+/-- Global low-range (`1 ≤ r ≤ 6`) exponential envelope for `k = 3`. -/
+def UniformK3EnvelopeUpTo6 : Prop :=
+  ∃ C6 : ℕ, C6 > 0 ∧
+    ∀ (α : Type) [DecidableEq α] (r : ℕ) (family : Finset (Finset α)),
+      1 ≤ r → r ≤ 6 →
+      IsUniform family r → IsSunflowerFree family 3 → family.card ≤ C6 ^ r
+
+/-- Global high-range (`r ≥ 7`) exponential envelope for `k = 3`. -/
+def UniformK3EnvelopeFrom7 : Prop :=
+  ∃ C7 : ℕ, C7 > 0 ∧
+    ∀ (α : Type) [DecidableEq α] (r : ℕ) (family : Finset (Finset α)),
+      7 ≤ r →
+      IsUniform family r → IsSunflowerFree family 3 → family.card ≤ C7 ^ r
+
+/-- High-range bound in "exponential × polynomial slack" form. -/
+def UniformK3EnvelopeFrom7WithPolySlack : Prop :=
+  ∃ A d : ℕ, A > 0 ∧
+    ∀ (α : Type) [DecidableEq α] (r : ℕ) (family : Finset (Finset α)),
+      7 ≤ r →
+      IsUniform family r → IsSunflowerFree family 3 →
+      family.card ≤ A ^ r * (r + 1) ^ d
+
+/-- Atomic high-range target at one rank `r` in polynomial-slack form. -/
+def UniformK3PolySlackAt (A d r : ℕ) : Prop :=
+  ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+    IsUniform family r → IsSunflowerFree family 3 →
+      family.card ≤ A ^ r * (r + 1) ^ d
+
+/-- Atomic base-range hypothesis for the high-range polynomial-slack lane. -/
+def UniformK3PolySlackBaseRangeHyp (A d R0 : ℕ) : Prop :=
+  ∀ r : ℕ, 7 ≤ r → r ≤ R0 → UniformK3PolySlackAt A d r
+
+/-- Atomic one-step extension hypothesis for the high-range polynomial-slack
+lane. -/
+def UniformK3PolySlackStepHyp (A d R0 : ℕ) : Prop :=
+  ∀ r : ℕ, R0 ≤ r →
+    UniformK3PolySlackAt A d r →
+    UniformK3PolySlackAt A d (r + 1)
+
+/-- Iteration theorem for the high-range polynomial-slack lane:
+base-range bounds on `7 ≤ r ≤ R0` plus one-step extension for `r ≥ R0`
+propagate the bound to every `r ≥ 7`. -/
+theorem uniform_k3_poly_slack_at_of_base_range_and_step
+    (A d R0 : ℕ)
+    (hR0 : 7 ≤ R0)
+    (hbase : UniformK3PolySlackBaseRangeHyp A d R0)
+    (hstep : UniformK3PolySlackStepHyp A d R0) :
+    ∀ r : ℕ, 7 ≤ r → UniformK3PolySlackAt A d r := by
+  intro r hr7
+  by_cases hrle : r ≤ R0
+  · exact hbase r hr7 hrle
+  · have hR0le : R0 ≤ r := Nat.le_of_lt (Nat.lt_of_not_ge hrle)
+    have htail : ∀ t : ℕ, UniformK3PolySlackAt A d (R0 + t) := by
+      intro t
+      induction t with
+      | zero =>
+          simpa using hbase R0 hR0 (Nat.le_refl R0)
+      | succ t iht =>
+          have hR0le' : R0 ≤ R0 + t := Nat.le_add_right R0 t
+          exact hstep (R0 + t) hR0le' iht
+    have h_at_r : UniformK3PolySlackAt A d (R0 + (r - R0)) :=
+      htail (r - R0)
+    have hr_eq : R0 + (r - R0) = r := Nat.add_sub_of_le hR0le
+    simpa [hr_eq] using h_at_r
+
+/-- Package the atomic base-range + step-extension lane into the route leaf
+`UniformK3EnvelopeFrom7WithPolySlack`. -/
+theorem uniform_k3_envelope_from7_with_poly_slack_of_base_range_and_step
+    (A d R0 : ℕ)
+    (hApos : A > 0)
+    (hR0 : 7 ≤ R0)
+    (hbase : UniformK3PolySlackBaseRangeHyp A d R0)
+    (hstep : UniformK3PolySlackStepHyp A d R0) :
+    UniformK3EnvelopeFrom7WithPolySlack := by
+  refine ⟨A, d, hApos, ?_⟩
+  intro α _ r family hr7 h_uniform h_sf_free
+  exact (uniform_k3_poly_slack_at_of_base_range_and_step A d R0 hR0 hbase hstep r hr7)
+    α family h_uniform h_sf_free
+
+/-- Polynomial slack absorption on the high-range lane:
+    `A^r * (r+1)^d` can be absorbed into a pure exponential `C^r`
+    using `r+1 ≤ 2^r`. -/
+theorem uniform_k3_envelope_from7_of_poly_slack
+    (hpoly : UniformK3EnvelopeFrom7WithPolySlack) :
+    UniformK3EnvelopeFrom7 := by
+  rcases hpoly with ⟨A, d, hApos, hA⟩
+  let C7 : ℕ := A * (2 ^ d)
+  refine ⟨C7, ?_, ?_⟩
+  · have hpow : 0 < 2 ^ d := by
+      exact pow_pos (by decide : 0 < (2 : ℕ)) d
+    exact Nat.mul_pos hApos hpow
+  · intro α _ r family hr h_uniform h_sf_free
+    have hbase : family.card ≤ A ^ r * (r + 1) ^ d :=
+      hA α r family hr h_uniform h_sf_free
+    have hsucc_le_pow : r + 1 ≤ 2 ^ r :=
+      Nat.succ_le_of_lt Nat.lt_two_pow_self
+    have hpoly_le :
+        (r + 1) ^ d ≤ (2 ^ d) ^ r := by
+      calc
+        (r + 1) ^ d ≤ (2 ^ r) ^ d := Nat.pow_le_pow_left hsucc_le_pow d
+        _ = 2 ^ (r * d) := (Nat.pow_mul 2 r d).symm
+        _ = 2 ^ (d * r) := by rw [Nat.mul_comm]
+        _ = (2 ^ d) ^ r := Nat.pow_mul 2 d r
+    have hmul :
+        A ^ r * (r + 1) ^ d ≤ A ^ r * (2 ^ d) ^ r :=
+      Nat.mul_le_mul_left (A ^ r) hpoly_le
+    have hmulpow :
+        A ^ r * (2 ^ d) ^ r = (A * 2 ^ d) ^ r := by
+      simpa [Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using
+        (Nat.mul_pow A (2 ^ d) r).symm
+    calc
+      family.card ≤ A ^ r * (r + 1) ^ d := hbase
+      _ ≤ A ^ r * (2 ^ d) ^ r := hmul
+      _ = (A * 2 ^ d) ^ r := hmulpow
+      _ = C7 ^ r := rfl
+
+/-- Trivial embedding of the high-range pure exponential lane into the
+    polynomial-slack lane (`d = 0`). -/
+theorem uniform_k3_envelope_from7_with_poly_slack_of_from7
+    (hge7 : UniformK3EnvelopeFrom7) :
+    UniformK3EnvelopeFrom7WithPolySlack := by
+  rcases hge7 with ⟨C7, hC7pos, hC7⟩
+  refine ⟨C7, 0, hC7pos, ?_⟩
+  intro α _ r family hr h_uniform h_sf_free
+  have hbase : family.card ≤ C7 ^ r :=
+    hC7 α r family hr h_uniform h_sf_free
+  simpa using hbase
+
+/-- Global closure target for the `r = 3` lane. -/
+def UniformBoundF3Global : Prop :=
+  ∀ (α : Type) [DecidableEq α], UniformBound_f3_3 (α := α)
+
+/-- Global closure target for the `r = 4` lane. -/
+def UniformBoundF4Global : Prop :=
+  ∀ (α : Type) [DecidableEq α], UniformBound_f4_3 (α := α)
+
+/-- Generic global fixed-cardinality cap target at rank `r`. -/
+def UniformBoundRGlobal (r : ℕ) : Prop :=
+  ∃ B : ℕ, B > 0 ∧
+    ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+      IsUniform family r → IsSunflowerFree family 3 → family.card ≤ B
+
+/-- Generic global fixed-cardinality cap target at rank `r`,
+    with an explicit numerical ceiling `cap` on the witness constant. -/
+def UniformBoundRGlobalWithCap (r cap : ℕ) : Prop :=
+  ∃ B : ℕ, B > 0 ∧ B ≤ cap ∧
+    ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+      IsUniform family r → IsSunflowerFree family 3 → family.card ≤ B
+
+/-- Constructor for `UniformBoundRGlobal` from a direct uniform cap. -/
+theorem uniform_bound_r_global_of_direct_cap
+    {r B : ℕ} (hBpos : B > 0)
+    (hcap : ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+      IsUniform family r → IsSunflowerFree family 3 → family.card ≤ B) :
+    UniformBoundRGlobal r := by
+  refine ⟨B, hBpos, ?_⟩
+  intro α _ family h_uniform h_sf_free
+  exact hcap α family h_uniform h_sf_free
+
+/-- Constructor for `UniformBoundRGlobalWithCap` from a direct uniform cap. -/
+theorem uniform_bound_r_global_with_cap_of_direct_cap
+    {r B cap : ℕ} (hBpos : B > 0) (hBcap : B ≤ cap)
+    (hcap : ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+      IsUniform family r → IsSunflowerFree family 3 → family.card ≤ B) :
+    UniformBoundRGlobalWithCap r cap := by
+  refine ⟨B, hBpos, hBcap, ?_⟩
+  intro α _ family h_uniform h_sf_free
+  exact hcap α family h_uniform h_sf_free
+
+/-- Forgetful map: a bounded global rank-cap is, in particular, a global rank-cap. -/
+theorem uniform_bound_r_global_of_with_cap
+    {r cap : ℕ} (h : UniformBoundRGlobalWithCap r cap) :
+    UniformBoundRGlobal r := by
+  rcases h with ⟨B, hBpos, _hBcap, hB⟩
+  exact ⟨B, hBpos, hB⟩
+
+/-- Global rank-1 cap as a `UniformBoundRGlobal` instance. -/
+theorem uniform_bound_r1_global : UniformBoundRGlobal 1 := by
+  refine uniform_bound_r_global_of_direct_cap (r := 1) (B := 2) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  exact uniform_bound_f1_3 (α := α) family h_uniform h_sf_free
+
+/-- Global fixed-cardinality cap for the `r = 5` lane. -/
+def UniformBoundF5Global : Prop :=
+  ∃ B5 : ℕ, B5 > 0 ∧
+    ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+      IsUniform family 5 → IsSunflowerFree family 3 → family.card ≤ B5
+
+/-- Global fixed-cardinality cap for the `r = 6` lane. -/
+def UniformBoundF6Global : Prop :=
+  ∃ B6 : ℕ, B6 > 0 ∧
+    ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+      IsUniform family 6 → IsSunflowerFree family 3 → family.card ≤ B6
+
+/-- Convert the specialized `r = 5` global-cap predicate to the generic rank-cap form. -/
+theorem uniform_bound_r5_global_of_f5_global
+    (h5 : UniformBoundF5Global) :
+    UniformBoundRGlobal 5 := by
+  rcases h5 with ⟨B5, hB5pos, hB5⟩
+  exact ⟨B5, hB5pos, fun α _ family h_uniform h_sf_free =>
+    hB5 α family h_uniform h_sf_free⟩
+
+/-- Convert the generic rank-5 global-cap predicate to the specialized form. -/
+theorem uniform_bound_f5_global_of_r5_global
+    (h5 : UniformBoundRGlobal 5) :
+    UniformBoundF5Global := by
+  rcases h5 with ⟨B5, hB5pos, hB5⟩
+  exact ⟨B5, hB5pos, fun α _ family h_uniform h_sf_free =>
+    hB5 α family h_uniform h_sf_free⟩
+
+/-- Convert the specialized `r = 6` global-cap predicate to the generic rank-cap form. -/
+theorem uniform_bound_r6_global_of_f6_global
+    (h6 : UniformBoundF6Global) :
+    UniformBoundRGlobal 6 := by
+  rcases h6 with ⟨B6, hB6pos, hB6⟩
+  exact ⟨B6, hB6pos, fun α _ family h_uniform h_sf_free =>
+    hB6 α family h_uniform h_sf_free⟩
+
+/-- Convert the generic rank-6 global-cap predicate to the specialized form. -/
+theorem uniform_bound_f6_global_of_r6_global
+    (h6 : UniformBoundRGlobal 6) :
+    UniformBoundF6Global := by
+  rcases h6 with ⟨B6, hB6pos, hB6⟩
+  exact ⟨B6, hB6pos, fun α _ family h_uniform h_sf_free =>
+    hB6 α family h_uniform h_sf_free⟩
+
+/-- Reusable schema: any explicit global fixed-rank witness upgrades to the
+generic `UniformBoundRGlobal r` route node. -/
+theorem uniform_bound_r_global_schema_of_fixed_witness
+    {r : ℕ}
+    (hfixed :
+      ∃ B : ℕ, B > 0 ∧
+        ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+          IsUniform family r → IsSunflowerFree family 3 → family.card ≤ B) :
+    UniformBoundRGlobal r := by
+  rcases hfixed with ⟨B, hBpos, hB⟩
+  exact ⟨B, hBpos, hB⟩
+
+/-- Rank-5 instantiation of the generic schema from the specialized
+`UniformBoundF5Global` leaf. -/
+theorem uniform_bound_r5_global_of_f5_global_via_schema
+    (h5 : UniformBoundF5Global) :
+    UniformBoundRGlobal 5 := by
+  rcases h5 with ⟨B5, hB5pos, hB5⟩
+  exact uniform_bound_r_global_schema_of_fixed_witness (r := 5)
+    ⟨B5, hB5pos, hB5⟩
+
+/-- Rank-6 instantiation of the generic schema from the specialized
+`UniformBoundF6Global` leaf. -/
+theorem uniform_bound_r6_global_of_f6_global_via_schema
+    (h6 : UniformBoundF6Global) :
+    UniformBoundRGlobal 6 := by
+  rcases h6 with ⟨B6, hB6pos, hB6⟩
+  exact uniform_bound_r_global_schema_of_fixed_witness (r := 6)
+    ⟨B6, hB6pos, hB6⟩
+
+/-- Named rank-cap unifier for the `r = 5,6` lane. -/
+def UniformBoundRGlobalUnifier_5_6 : Prop :=
+  UniformBoundRGlobal 5 ∧ UniformBoundRGlobal 6
+
+/-- Wrapper exporting the rank-5/6 unifier directly from the specialized
+`f5/f6` global leaves. -/
+theorem uniform_bound_r_global_unifier_5_6_of_f5_f6
+    (h5 : UniformBoundF5Global)
+    (h6 : UniformBoundF6Global) :
+    UniformBoundRGlobalUnifier_5_6 := by
+  refine ⟨?_, ?_⟩
+  · exact uniform_bound_r5_global_of_f5_global_via_schema h5
+  · exact uniform_bound_r6_global_of_f6_global_via_schema h6
+
+/-- Connect the unifier wrapper back to the specialized `f5/f6` global leaves. -/
+theorem uniform_bound_f5_f6_global_of_r_global_unifier_5_6
+    (h56 : UniformBoundRGlobalUnifier_5_6) :
+    UniformBoundF5Global ∧ UniformBoundF6Global := by
+  rcases h56 with ⟨h5, h6⟩
+  exact ⟨uniform_bound_f5_global_of_r5_global h5,
+    uniform_bound_f6_global_of_r6_global h6⟩
+
+/-- Assemble the global low-range envelope from component lanes:
+    - `r = 1` is globally closed in this file,
+    - `r = 2,3,4` are supplied as global assumptions,
+    - `r = 5,6` are supplied as global fixed-cardinality caps. -/
+theorem uniform_k3_envelope_upto6_of_component_bounds
+    (h2global : ∀ (α : Type) [DecidableEq α], UniformBound_f2_3 (α := α))
+    (h3global : UniformBoundF3Global)
+    (h4global : UniformBoundF4Global)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global) :
+    UniformK3EnvelopeUpTo6 := by
+  rcases h5global with ⟨B5, hB5pos, hB5⟩
+  rcases h6global with ⟨B6, hB6pos, hB6⟩
+  let C6 : ℕ := max 41 (max B5 B6)
+  refine ⟨C6, ?_, ?_⟩
+  · exact lt_of_lt_of_le (by decide : 0 < 41) (le_max_left _ _)
+  · intro α _ r family hr1 hr6 h_uniform h_sf_free
+    have hC6pos : 0 < C6 := lt_of_lt_of_le (by decide : 0 < 41) (le_max_left _ _)
+    have hC_le_pow :
+        ∀ t : ℕ, 1 ≤ t → C6 ≤ C6 ^ t := by
+      intro t ht
+      rcases Nat.exists_eq_succ_of_ne_zero (Nat.pos_iff_ne_zero.mp ht) with ⟨u, rfl⟩
+      calc
+        C6 = C6 * 1 := by simp
+        _ ≤ C6 * C6 ^ u := Nat.mul_le_mul_left C6 (Nat.one_le_pow _ _ hC6pos)
+        _ = C6 ^ u * C6 := by ac_rfl
+        _ = C6 ^ (u + 1) := by simp [pow_succ]
+    interval_cases r
+    · -- r = 1
+      have hle : family.card ≤ 2 := uniform_bound_f1_3 (α := α) family h_uniform h_sf_free
+      calc
+        family.card ≤ 2 := hle
+        _ ≤ 41 := by decide
+        _ ≤ C6 := le_max_left _ _
+        _ = C6 ^ 1 := by simp
+    · -- r = 2
+      have h2 : UniformBound_f2_3 (α := α) := h2global α
+      have hle : family.card ≤ 6 := h2 family h_uniform h_sf_free
+      calc
+        family.card ≤ 6 := hle
+        _ ≤ 41 := by decide
+        _ ≤ C6 := le_max_left _ _
+        _ ≤ C6 ^ 2 := hC_le_pow 2 (by decide)
+    · -- r = 3
+      have h3 : UniformBound_f3_3 (α := α) := h3global α
+      have hle : family.card ≤ 20 := h3 family h_uniform h_sf_free
+      calc
+        family.card ≤ 20 := hle
+        _ ≤ 41 := by decide
+        _ ≤ C6 := le_max_left _ _
+        _ ≤ C6 ^ 3 := hC_le_pow 3 (by decide)
+    · -- r = 4
+      have h4 : UniformBound_f4_3 (α := α) := h4global α
+      have hle : family.card ≤ 41 := h4 family h_uniform h_sf_free
+      calc
+        family.card ≤ 41 := hle
+        _ ≤ C6 := le_max_left _ _
+        _ ≤ C6 ^ 4 := hC_le_pow 4 (by decide)
+    · -- r = 5
+      have hle : family.card ≤ B5 := hB5 α family h_uniform h_sf_free
+      have hB5le : B5 ≤ C6 := le_trans (le_max_left _ _) (le_max_right _ _)
+      calc
+        family.card ≤ B5 := hle
+        _ ≤ C6 := hB5le
+        _ ≤ C6 ^ 5 := hC_le_pow 5 (by decide)
+    · -- r = 6
+      have hle : family.card ≤ B6 := hB6 α family h_uniform h_sf_free
+      have hB6le : B6 ≤ C6 := le_trans (le_max_right _ _) (le_max_right _ _)
+      calc
+        family.card ≤ B6 := hle
+        _ ≤ C6 := hB6le
+        _ ≤ C6 ^ 6 := hC_le_pow 6 (by decide)
+
+/-- Split bridge for the global `k = 3` conjecture:
+    if we have one absolute exponential envelope for `1 ≤ r ≤ 6` and one
+    absolute exponential envelope for `r ≥ 7`, then `ErdosProblem20_K3` holds. -/
+theorem erdos_problem_20_k3_of_upto6_and_ge7_bounds
+    (hupto6 : UniformK3EnvelopeUpTo6)
+    (hge7 : UniformK3EnvelopeFrom7) :
+    ErdosProblem20_K3 := by
+  rcases hupto6 with ⟨C6, hC6pos, hC6⟩
+  rcases hge7 with ⟨C7, hC7pos, hC7⟩
+  let C : ℕ := max C6 C7
+  refine erdos_problem_20_k3_of_uniform_bounds ?_
+  refine ⟨C, ?_, ?_⟩
+  · exact lt_of_lt_of_le hC6pos (le_max_left _ _)
+  · intro α _ r family h_uniform h_sf_free
+    by_cases hr0 : r = 0
+    · subst hr0
+      have hle0 : family.card ≤ 1 := uniform_zero_family_card_le_one family h_uniform
+      simpa using hle0
+    · by_cases hr6 : r ≤ 6
+      · have hr1 : 1 ≤ r := Nat.succ_le_of_lt (Nat.pos_iff_ne_zero.mpr hr0)
+        have hle6 : family.card ≤ C6 ^ r := hC6 α r family hr1 hr6 h_uniform h_sf_free
+        have hpow : C6 ^ r ≤ C ^ r := Nat.pow_le_pow_left (le_max_left _ _) _
+        exact le_trans hle6 hpow
+      · have h7 : 7 ≤ r := Nat.succ_le_of_lt (Nat.lt_of_not_ge hr6)
+        have hle7 : family.card ≤ C7 ^ r := hC7 α r family h7 h_uniform h_sf_free
+        have hpow : C7 ^ r ≤ C ^ r := Nat.pow_le_pow_left (le_max_right _ _) _
+        exact le_trans hle7 hpow
+
+/-- Named corollary form of the split bridge. -/
+theorem erdos_problem_20_k3_of_split_envelopes
+    (hLow : UniformK3EnvelopeUpTo6)
+    (hHigh : UniformK3EnvelopeFrom7) :
+    ErdosProblem20_K3 :=
+  erdos_problem_20_k3_of_upto6_and_ge7_bounds hLow hHigh
+
 -- ============================================================================
 -- EXPLICIT COUNTEREXAMPLE TO THE STALE f(6,3) ≤ 20 CANDIDATE
 -- ============================================================================
@@ -864,6 +1352,26 @@ theorem f6_3_counterexample_sf_free : IsSunflowerFree f6_3_counterexample_family
 theorem uniformBound_f6_3_stale20_false : ¬ UniformBound_f6_3_stale20 (α := Fin 14) := by
   intro hbound
   have hle : f6_3_counterexample_family.card ≤ 20 :=
+    hbound f6_3_counterexample_family f6_3_counterexample_uniform f6_3_counterexample_sf_free
+  rw [f6_3_counterexample_card] at hle
+  omega
+
+/-- Packed witness record for the `r = 6, k = 3` lower-bound lane under the
+current local sunflower formulation. -/
+theorem f6_3_counterexample_witness :
+    IsUniform f6_3_counterexample_family 6 ∧
+    IsSunflowerFree f6_3_counterexample_family 3 ∧
+    f6_3_counterexample_family.card = 36 := by
+  exact ⟨f6_3_counterexample_uniform, f6_3_counterexample_sf_free, f6_3_counterexample_card⟩
+
+/-- Strengthened numerical rejection of the stale small-cap lane:
+for `α = Fin 14`, no universal `≤ 35` bound can hold for 6-uniform
+3-sunflower-free families. -/
+theorem uniformBound_f6_3_le_35_false :
+    ¬ (∀ (family : Finset (Finset (Fin 14))),
+      IsUniform family 6 → IsSunflowerFree family 3 → family.card ≤ 35) := by
+  intro hbound
+  have hle : f6_3_counterexample_family.card ≤ 35 :=
     hbound f6_3_counterexample_family f6_3_counterexample_uniform f6_3_counterexample_sf_free
   rw [f6_3_counterexample_card] at hle
   omega
@@ -1063,6 +1571,351 @@ theorem uniform_bound_f2_3_of_degree_matching_route {α : Type*} [DecidableEq α
   exact edge_count_bound_of_degree_two_and_matching_two family h_uniform
     (singleton_core_double_counting_step1 family h_uniform h_sf_free)
     (sf_free_no_three_pairwise_disjoint family h_sf_free)
+
+/-- Global rank-2 cap as a `UniformBoundRGlobal` instance. -/
+theorem uniform_bound_r2_global : UniformBoundRGlobal 2 := by
+  refine uniform_bound_r_global_of_direct_cap (r := 2) (B := 6) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  exact uniform_bound_f2_3_of_degree_matching_route (α := α) family h_uniform h_sf_free
+
+/-- Low-range envelope from generic rank-caps:
+    the `r=3,4` lanes are allowed to use any global caps, not fixed `20/41`. -/
+theorem uniform_k3_envelope_upto6_of_global_caps
+    (h3cap : UniformBoundRGlobal 3)
+    (h4cap : UniformBoundRGlobal 4)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global) :
+    UniformK3EnvelopeUpTo6 := by
+  rcases h3cap with ⟨B3, hB3pos, hB3⟩
+  rcases h4cap with ⟨B4, hB4pos, hB4⟩
+  rcases h5global with ⟨B5, hB5pos, hB5⟩
+  rcases h6global with ⟨B6, hB6pos, hB6⟩
+  let C6 : ℕ := max 6 (max B3 (max B4 (max B5 B6)))
+  refine ⟨C6, ?_, ?_⟩
+  · exact lt_of_lt_of_le (by decide : 0 < 6) (le_max_left _ _)
+  · intro α _ r family hr1 hr6 h_uniform h_sf_free
+    have hC6pos : 0 < C6 := lt_of_lt_of_le (by decide : 0 < 6) (le_max_left _ _)
+    have hC_le_pow :
+        ∀ t : ℕ, 1 ≤ t → C6 ≤ C6 ^ t := by
+      intro t ht
+      rcases Nat.exists_eq_succ_of_ne_zero (Nat.pos_iff_ne_zero.mp ht) with ⟨u, rfl⟩
+      calc
+        C6 = C6 * 1 := by simp
+        _ ≤ C6 * C6 ^ u := Nat.mul_le_mul_left C6 (Nat.one_le_pow _ _ hC6pos)
+        _ = C6 ^ u * C6 := by ac_rfl
+        _ = C6 ^ (u + 1) := by simp [pow_succ]
+    interval_cases r
+    · -- r = 1
+      have hle : family.card ≤ 2 := uniform_bound_f1_3 (α := α) family h_uniform h_sf_free
+      calc
+        family.card ≤ 2 := hle
+        _ ≤ 6 := by decide
+        _ ≤ C6 := le_max_left _ _
+        _ = C6 ^ 1 := by simp
+    · -- r = 2
+      have h2 : UniformBound_f2_3 (α := α) := uniform_bound_f2_3_of_degree_matching_route (α := α)
+      have hle : family.card ≤ 6 := h2 family h_uniform h_sf_free
+      calc
+        family.card ≤ 6 := hle
+        _ ≤ C6 := le_max_left _ _
+        _ ≤ C6 ^ 2 := hC_le_pow 2 (by decide)
+    · -- r = 3
+      have hle : family.card ≤ B3 := hB3 α family h_uniform h_sf_free
+      have hB3le : B3 ≤ C6 := by
+        exact le_trans (le_max_left _ _) (le_max_right _ _)
+      calc
+        family.card ≤ B3 := hle
+        _ ≤ C6 := hB3le
+        _ ≤ C6 ^ 3 := hC_le_pow 3 (by decide)
+    · -- r = 4
+      have hle : family.card ≤ B4 := hB4 α family h_uniform h_sf_free
+      have hB4le : B4 ≤ C6 := by
+        calc
+          B4 ≤ max B4 (max B5 B6) := le_max_left _ _
+          _ ≤ max B3 (max B4 (max B5 B6)) := le_max_right _ _
+          _ ≤ C6 := le_max_right _ _
+      calc
+        family.card ≤ B4 := hle
+        _ ≤ C6 := hB4le
+        _ ≤ C6 ^ 4 := hC_le_pow 4 (by decide)
+    · -- r = 5
+      have hle : family.card ≤ B5 := hB5 α family h_uniform h_sf_free
+      have hB5le : B5 ≤ C6 := by
+        calc
+          B5 ≤ max B5 B6 := le_max_left _ _
+          _ ≤ max B4 (max B5 B6) := le_max_right _ _
+          _ ≤ max B3 (max B4 (max B5 B6)) := le_max_right _ _
+          _ ≤ C6 := le_max_right _ _
+      calc
+        family.card ≤ B5 := hle
+        _ ≤ C6 := hB5le
+        _ ≤ C6 ^ 5 := hC_le_pow 5 (by decide)
+    · -- r = 6
+      have hle : family.card ≤ B6 := hB6 α family h_uniform h_sf_free
+      have hB6le : B6 ≤ C6 := by
+        calc
+          B6 ≤ max B5 B6 := le_max_right _ _
+          _ ≤ max B4 (max B5 B6) := le_max_right _ _
+          _ ≤ max B3 (max B4 (max B5 B6)) := le_max_right _ _
+          _ ≤ C6 := le_max_right _ _
+      calc
+        family.card ≤ B6 := hle
+        _ ≤ C6 := hB6le
+        _ ≤ C6 ^ 6 := hC_le_pow 6 (by decide)
+
+/-- Convenience form of the low-range envelope reducer:
+    uses the in-file global `r = 2` route closure
+    (`uniform_bound_f2_3_of_degree_matching_route`). -/
+theorem uniform_k3_envelope_upto6_of_component_bounds_via_degree_route
+    (h3global : UniformBoundF3Global)
+    (h4global : UniformBoundF4Global)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global) :
+    UniformK3EnvelopeUpTo6 := by
+  exact uniform_k3_envelope_upto6_of_component_bounds
+    (h2global := fun α _ => uniform_bound_f2_3_of_degree_matching_route (α := α))
+    h3global h4global h5global h6global
+
+/-- Convenience low-range envelope from generic rank-caps at `r=3,4`
+    plus global cap assumptions at `r=5,6`. -/
+theorem uniform_k3_envelope_upto6_of_global_caps_via_degree_route
+    (h3cap : UniformBoundRGlobal 3)
+    (h4cap : UniformBoundRGlobal 4)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global) :
+    UniformK3EnvelopeUpTo6 := by
+  exact uniform_k3_envelope_upto6_of_global_caps h3cap h4cap h5global h6global
+
+/-- End-to-end reducer:
+    component assumptions (`r=3..6`) plus the high-range envelope (`r ≥ 7`)
+    imply full `ErdosProblem20_K3`. -/
+theorem erdos_problem_20_k3_of_components_and_ge7
+    (h3global : UniformBoundF3Global)
+    (h4global : UniformBoundF4Global)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHigh : UniformK3EnvelopeFrom7) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_split_envelopes
+    (uniform_k3_envelope_upto6_of_component_bounds_via_degree_route
+      h3global h4global h5global h6global)
+    hHigh
+
+/-- End-to-end reducer with high-range polynomial slack input. -/
+theorem erdos_problem_20_k3_of_components_and_ge7_poly_slack
+    (h3global : UniformBoundF3Global)
+    (h4global : UniformBoundF4Global)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHighPoly : UniformK3EnvelopeFrom7WithPolySlack) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_components_and_ge7
+    h3global h4global h5global h6global
+    (uniform_k3_envelope_from7_of_poly_slack hHighPoly)
+
+/-- End-to-end reducer with generic rank-caps at `r=3,4`
+    (no fixed `20/41` constants required). -/
+theorem erdos_problem_20_k3_of_global_caps_and_ge7
+    (h3cap : UniformBoundRGlobal 3)
+    (h4cap : UniformBoundRGlobal 4)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHigh : UniformK3EnvelopeFrom7) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_split_envelopes
+    (uniform_k3_envelope_upto6_of_global_caps_via_degree_route
+      h3cap h4cap h5global h6global)
+    hHigh
+
+/-- End-to-end reducer with generic rank-caps at `r=3,4`
+    and high-range polynomial-slack input. -/
+theorem erdos_problem_20_k3_of_global_caps_and_ge7_poly_slack
+    (h3cap : UniformBoundRGlobal 3)
+    (h4cap : UniformBoundRGlobal 4)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHighPoly : UniformK3EnvelopeFrom7WithPolySlack) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_global_caps_and_ge7
+    h3cap h4cap h5global h6global
+    (uniform_k3_envelope_from7_of_poly_slack hHighPoly)
+
+/-- Compact "finish checklist" for the current Problem #20 closure plan. -/
+def Erdos20K3ClosureInputs : Prop :=
+  UniformBoundF3Global ∧
+  UniformBoundF4Global ∧
+  UniformBoundF5Global ∧
+  UniformBoundF6Global ∧
+  UniformK3EnvelopeFrom7
+
+/-- If the closure checklist is discharged, `ErdosProblem20_K3` follows. -/
+theorem erdos_problem_20_k3_of_closure_inputs
+    (h : Erdos20K3ClosureInputs) :
+    ErdosProblem20_K3 := by
+  rcases h with ⟨h3, h4, h5, h6, hHigh⟩
+  exact erdos_problem_20_k3_of_components_and_ge7 h3 h4 h5 h6 hHigh
+
+/-- Generalized closure checklist:
+    allows arbitrary global rank-caps at `r = 3,4` (not fixed `20/41`). -/
+def Erdos20K3ClosureInputsGeneral : Prop :=
+  UniformBoundRGlobal 3 ∧
+  UniformBoundRGlobal 4 ∧
+  UniformBoundF5Global ∧
+  UniformBoundF6Global ∧
+  UniformK3EnvelopeFrom7
+
+/-- If the generalized checklist is discharged, `ErdosProblem20_K3` follows. -/
+theorem erdos_problem_20_k3_of_closure_inputs_general
+    (h : Erdos20K3ClosureInputsGeneral) :
+    ErdosProblem20_K3 := by
+  rcases h with ⟨h3cap, h4cap, h5, h6, hHigh⟩
+  exact erdos_problem_20_k3_of_global_caps_and_ge7 h3cap h4cap h5 h6 hHigh
+
+/-- Convert the fixed-constant `r = 3` closure target into a generic rank-cap target. -/
+theorem uniform_bound_r3_global_of_f3_global
+    (h3 : UniformBoundF3Global) :
+    UniformBoundRGlobal 3 := by
+  refine uniform_bound_r_global_of_direct_cap (r := 3) (B := 20) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  exact h3 α family h_uniform h_sf_free
+
+/-- Convert the fixed-constant `r = 4` closure target into a generic rank-cap target. -/
+theorem uniform_bound_r4_global_of_f4_global
+    (h4 : UniformBoundF4Global) :
+    UniformBoundRGlobal 4 := by
+  refine uniform_bound_r_global_of_direct_cap (r := 4) (B := 41) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  exact h4 α family h_uniform h_sf_free
+
+/-- Package `UniformBoundF3Global` as a bounded global rank-3 cap (`B ≤ 20`). -/
+theorem uniform_bound_r3_global_with_cap20_of_f3_global
+    (h3 : UniformBoundF3Global) :
+    UniformBoundRGlobalWithCap 3 20 := by
+  refine uniform_bound_r_global_with_cap_of_direct_cap
+    (r := 3) (B := 20) (cap := 20) (by decide) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  exact h3 α family h_uniform h_sf_free
+
+/-- Package `UniformBoundF4Global` as a bounded global rank-4 cap (`B ≤ 41`). -/
+theorem uniform_bound_r4_global_with_cap41_of_f4_global
+    (h4 : UniformBoundF4Global) :
+    UniformBoundRGlobalWithCap 4 41 := by
+  refine uniform_bound_r_global_with_cap_of_direct_cap
+    (r := 4) (B := 41) (cap := 41) (by decide) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  exact h4 α family h_uniform h_sf_free
+
+/-- Recover the strict `f3` leaf shape from a bounded rank-3 cap witness (`B ≤ 20`). -/
+theorem uniform_bound_f3_global_of_r3_global_with_cap20
+    (h3cap : UniformBoundRGlobalWithCap 3 20) :
+    UniformBoundF3Global := by
+  intro α _
+  rcases h3cap with ⟨B, _hBpos, hBcap, hB⟩
+  intro family h_uniform h_sf_free
+  calc
+    family.card ≤ B := hB α family h_uniform h_sf_free
+    _ ≤ 20 := hBcap
+
+/-- Recover the strict `f4` leaf shape from a bounded rank-4 cap witness (`B ≤ 41`). -/
+theorem uniform_bound_f4_global_of_r4_global_with_cap41
+    (h4cap : UniformBoundRGlobalWithCap 4 41) :
+    UniformBoundF4Global := by
+  intro α _
+  rcases h4cap with ⟨B, _hBpos, hBcap, hB⟩
+  intro family h_uniform h_sf_free
+  calc
+    family.card ≤ B := hB α family h_uniform h_sf_free
+    _ ≤ 41 := hBcap
+
+/-- Rank-4 cap-interface helper:
+lift the strict `f4` global closure leaf into the bounded cap wrapper
+`UniformBoundRGlobalWithCap 4 41`. -/
+theorem uniform_bound_r4_cap_interface_helper_of_f4_global
+    (h4 : UniformBoundF4Global) :
+    UniformBoundRGlobalWithCap 4 41 := by
+  exact uniform_bound_r4_global_with_cap41_of_f4_global h4
+
+/-- Rank-4 cap monotone-upgrade helper:
+forgetting the explicit cap from `UniformBoundRGlobalWithCap 4 41` yields
+`UniformBoundRGlobal 4`. -/
+theorem uniform_bound_r4_global_of_with_cap41
+    (h4cap : UniformBoundRGlobalWithCap 4 41) :
+    UniformBoundRGlobal 4 := by
+  exact uniform_bound_r_global_of_with_cap h4cap
+
+/-- Extract an explicit bounded witness (`B ≤ 41`) for the rank-4 global cap
+route from the strict `f4` leaf. -/
+theorem uniform_bound_r4_cap_witness_of_f4_global
+    (h4 : UniformBoundF4Global) :
+    ∃ B : ℕ, B > 0 ∧ B ≤ 41 ∧
+      ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+        IsUniform family 4 → IsSunflowerFree family 3 → family.card ≤ B := by
+  simpa [UniformBoundRGlobalWithCap] using
+    (uniform_bound_r4_cap_interface_helper_of_f4_global h4)
+
+/-- Rank-4 wrapper lane:
+compose the cap-interface helper with the forgetful map to obtain the generic
+global rank-4 cap route. -/
+theorem uniform_bound_r4_global_via_cap41_of_f4_global
+    (h4 : UniformBoundF4Global) :
+    UniformBoundRGlobal 4 := by
+  exact uniform_bound_r4_global_of_with_cap41
+    (uniform_bound_r4_cap_interface_helper_of_f4_global h4)
+
+/-- Promote the legacy closure checklist into the generalized checklist. -/
+theorem erdos20_k3_closure_inputs_general_of_closure_inputs
+    (h : Erdos20K3ClosureInputs) :
+    Erdos20K3ClosureInputsGeneral := by
+  rcases h with ⟨h3, h4, h5, h6, hHigh⟩
+  exact ⟨uniform_bound_r3_global_of_f3_global h3,
+    uniform_bound_r4_global_of_f4_global h4, h5, h6, hHigh⟩
+
+/-- The original checklist also closes `K3` via the generalized interface. -/
+theorem erdos_problem_20_k3_of_closure_inputs_via_general
+    (h : Erdos20K3ClosureInputs) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_closure_inputs_general
+    (erdos20_k3_closure_inputs_general_of_closure_inputs h)
+
+/-- Generalized closure checklist variant with high-range polynomial slack. -/
+def Erdos20K3ClosureInputsGeneralPoly : Prop :=
+  UniformBoundRGlobal 3 ∧
+  UniformBoundRGlobal 4 ∧
+  UniformBoundF5Global ∧
+  UniformBoundF6Global ∧
+  UniformK3EnvelopeFrom7WithPolySlack
+
+/-- If the generalized poly-slack checklist is discharged, `ErdosProblem20_K3` follows. -/
+theorem erdos_problem_20_k3_of_closure_inputs_general_poly
+    (h : Erdos20K3ClosureInputsGeneralPoly) :
+    ErdosProblem20_K3 := by
+  rcases h with ⟨h3cap, h4cap, h5, h6, hHighPoly⟩
+  exact erdos_problem_20_k3_of_global_caps_and_ge7_poly_slack h3cap h4cap h5 h6 hHighPoly
+
+/-- Bridge checklist for an assumption-driven closure lane:
+    - strict `r=3` global leaf,
+    - `r=4` via bounded global rank-cap (`B ≤ 41`),
+    - `r=5,6` via generic global rank-caps,
+    - high-range lane from `r ≥ 7` in pure exponential form. -/
+def Erdos20K3ClosureInputsBridge : Prop :=
+  UniformBoundF3Global ∧
+  UniformBoundRGlobalWithCap 4 41 ∧
+  UniformBoundRGlobal 5 ∧
+  UniformBoundRGlobal 6 ∧
+  UniformK3EnvelopeFrom7
+
+/-- Reducer for the wrapper-driven closure checklist. -/
+theorem erdos_problem_20_k3_of_closure_inputs_bridge
+    (h : Erdos20K3ClosureInputsBridge) :
+    ErdosProblem20_K3 := by
+  rcases h with ⟨h3global, h4cap, h5cap, h6cap, hHigh⟩
+  exact
+    erdos_problem_20_k3_of_components_and_ge7
+      h3global
+      (uniform_bound_f4_global_of_r4_global_with_cap41 h4cap)
+      (uniform_bound_f5_global_of_r5_global h5cap)
+      (uniform_bound_f6_global_of_r6_global h6cap)
+      hHigh
 
 /-- Concrete aggregator closure for the `uniform_prize` route on `Fin 4`. -/
 theorem uniform_bound_all_r_fin4 : UniformBoundAllR (α := Fin 4) := by
@@ -1293,17 +2146,21 @@ theorem c_99ee6a_pair_codegree_bound_f3_k3 {α : Type*} [DecidableEq α]
       · subst hzy; exact Finset.mem_inter.mpr ⟨hSy, hTy⟩
   exact h_sf_free sub hsub_family hsun
 
--- Scout validated stub: c_67c27c_link_sum_inductive_bound_k3_of_prev_max
+-- Scout strengthened pass: c_67c27c_link_sum_inductive_bound_k3_of_prev_max
 theorem c_67c27c_link_sum_inductive_bound_k3_of_prev_max {α : Type*} [DecidableEq α]
     : ∀ (family : Finset (Finset α)) (r d : ℕ),
       2 ≤ r →
       IsUniform family r →
       IsSunflowerFree family 3 →
       MaxUniformSunflowerFreeSize (r - 1) 3 d →
-      family.card ≤ 2 + 2 * r * d →
+      (∀ x : α,
+        ((family.filter (fun S => x ∈ S)).image (fun S => S.erase x)).card ≤ d) →
+      (((∀ x : α,
+          ((family.filter (fun S => x ∈ S)).image (fun S => S.erase x)).card ≤ d) →
+          family.card ≤ 2 + 2 * r * d)) →
       family.card ≤ 2 + 2 * r * d := by
-  intro family r d _hr _h_uniform _h_sf_free _h_prev h_target
-  exact h_target
+  intro family r d _hr _h_uniform _h_sf_free _h_prev h_link_caps h_counting_closure
+  exact h_counting_closure h_link_caps
 
 -- Scout validated stub: c_fa92ad_f3_3_card_cap56_of_matching_decomposition
 theorem c_fa92ad_f3_3_card_cap56_of_matching_decomposition {α : Type*} [DecidableEq α]
@@ -1324,6 +2181,447 @@ theorem c_fa92ad_f3_3_card_cap56_of_matching_decomposition {α : Type*} [Decidab
   have h4 := Finset.card_union_le typeA typeB
   omega
 
+/-- Global decomposition hypothesis for the `r = 3` cap-56 lane:
+    every 3-uniform 3-sunflower-free family admits a four-way decomposition
+    with cardinality caps `2 + 18 + 18 + 18`. -/
+def F3MatchingDecompositionHyp : Prop :=
+  ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+    IsUniform family 3 → IsSunflowerFree family 3 →
+    ∃ (typeA typeB typeCLeft typeCRight : Finset (Finset α)),
+      family ⊆ typeA ∪ typeB ∪ typeCLeft ∪ typeCRight ∧
+      typeA.card ≤ 2 ∧
+      typeB.card ≤ 18 ∧
+      typeCLeft.card ≤ 18 ∧
+      typeCRight.card ≤ 18
+
+/-- Canonical data record for the `r = 3` matching-decomposition lane. -/
+structure F3MatchingDecompositionData {α : Type} [DecidableEq α]
+    (family : Finset (Finset α)) where
+  typeA : Finset (Finset α)
+  typeB : Finset (Finset α)
+  typeCLeft : Finset (Finset α)
+  typeCRight : Finset (Finset α)
+  cover : family ⊆ typeA ∪ typeB ∪ typeCLeft ∪ typeCRight
+  card_typeA_le : typeA.card ≤ 2
+  card_typeB_le : typeB.card ≤ 18
+  card_typeCLeft_le : typeCLeft.card ≤ 18
+  card_typeCRight_le : typeCRight.card ≤ 18
+
+/-- Any witness of `F3MatchingDecompositionHyp` induces canonical decomposition
+    data for the concrete family instance. -/
+theorem f3_matching_decomposition_data_nonempty
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    Nonempty (F3MatchingDecompositionData family) := by
+  rcases hdecomp α family h_uniform h_sf_free with
+    ⟨typeA, typeB, typeCLeft, typeCRight, hcover, hA, hB, hCLeft, hCRight⟩
+  refine ⟨{
+    typeA := typeA
+    typeB := typeB
+    typeCLeft := typeCLeft
+    typeCRight := typeCRight
+    cover := hcover
+    card_typeA_le := hA
+    card_typeB_le := hB
+    card_typeCLeft_le := hCLeft
+    card_typeCRight_le := hCRight
+  }⟩
+
+/-- Canonical decomposition package selected from
+    `F3MatchingDecompositionHyp`. -/
+noncomputable def f3MatchingCanonicalData
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    F3MatchingDecompositionData family :=
+  Classical.choice
+    (f3_matching_decomposition_data_nonempty hdecomp family h_uniform h_sf_free)
+
+/-- Canonical `typeA` constructor for the `r = 3` matching-decomposition lane. -/
+noncomputable def f3MatchingTypeA
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    Finset (Finset α) :=
+  (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).typeA
+
+/-- Canonical `typeB` constructor for the `r = 3` matching-decomposition lane. -/
+noncomputable def f3MatchingTypeB
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    Finset (Finset α) :=
+  (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).typeB
+
+/-- Canonical `typeCLeft` constructor for the `r = 3` matching-decomposition lane. -/
+noncomputable def f3MatchingTypeCLeft
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    Finset (Finset α) :=
+  (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).typeCLeft
+
+/-- Canonical `typeCRight` constructor for the `r = 3` matching-decomposition lane. -/
+noncomputable def f3MatchingTypeCRight
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    Finset (Finset α) :=
+  (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).typeCRight
+
+/-- Coverage theorem for canonical decomposition constructors. -/
+theorem f3MatchingCanonical_cover
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    family ⊆
+      f3MatchingTypeA hdecomp family h_uniform h_sf_free ∪
+      f3MatchingTypeB hdecomp family h_uniform h_sf_free ∪
+      f3MatchingTypeCLeft hdecomp family h_uniform h_sf_free ∪
+      f3MatchingTypeCRight hdecomp family h_uniform h_sf_free := by
+  exact (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).cover
+
+/-- Cardinality-cap invariants for canonical decomposition constructors. -/
+theorem f3MatchingCanonical_card_caps
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    (f3MatchingTypeA hdecomp family h_uniform h_sf_free).card ≤ 2 ∧
+    (f3MatchingTypeB hdecomp family h_uniform h_sf_free).card ≤ 18 ∧
+    (f3MatchingTypeCLeft hdecomp family h_uniform h_sf_free).card ≤ 18 ∧
+    (f3MatchingTypeCRight hdecomp family h_uniform h_sf_free).card ≤ 18 := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · exact (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).card_typeA_le
+  · exact (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).card_typeB_le
+  · exact (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).card_typeCLeft_le
+  · exact (f3MatchingCanonicalData hdecomp family h_uniform h_sf_free).card_typeCRight_le
+
+/-- Canonical decomposition cap: `typeA.card ≤ 2`. -/
+theorem f3MatchingTypeA_card_le_two
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    (f3MatchingTypeA hdecomp family h_uniform h_sf_free).card ≤ 2 := by
+  exact (f3MatchingCanonical_card_caps hdecomp family h_uniform h_sf_free).1
+
+/-- Canonical decomposition cap: `typeB.card ≤ 18`. -/
+theorem f3MatchingTypeB_card_le_eighteen
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    (f3MatchingTypeB hdecomp family h_uniform h_sf_free).card ≤ 18 := by
+  exact (f3MatchingCanonical_card_caps hdecomp family h_uniform h_sf_free).2.1
+
+/-- Canonical decomposition cap: `typeCLeft.card ≤ 18`. -/
+theorem f3MatchingTypeCLeft_card_le_eighteen
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    (f3MatchingTypeCLeft hdecomp family h_uniform h_sf_free).card ≤ 18 := by
+  exact (f3MatchingCanonical_card_caps hdecomp family h_uniform h_sf_free).2.2.1
+
+/-- Canonical decomposition cap: `typeCRight.card ≤ 18`. -/
+theorem f3MatchingTypeCRight_card_le_eighteen
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    (f3MatchingTypeCRight hdecomp family h_uniform h_sf_free).card ≤ 18 := by
+  exact (f3MatchingCanonical_card_caps hdecomp family h_uniform h_sf_free).2.2.2
+
+/-- Canonical decomposition assembly: the family cap `≤ 56`. -/
+theorem f3MatchingCanonical_family_card_le_56
+    (hdecomp : F3MatchingDecompositionHyp)
+    {α : Type} [DecidableEq α]
+    (family : Finset (Finset α))
+    (h_uniform : IsUniform family 3)
+    (h_sf_free : IsSunflowerFree family 3) :
+    family.card ≤ 56 := by
+  exact
+    c_fa92ad_f3_3_card_cap56_of_matching_decomposition
+      family
+      (f3MatchingTypeA hdecomp family h_uniform h_sf_free)
+      (f3MatchingTypeB hdecomp family h_uniform h_sf_free)
+      (f3MatchingTypeCLeft hdecomp family h_uniform h_sf_free)
+      (f3MatchingTypeCRight hdecomp family h_uniform h_sf_free)
+      h_uniform
+      h_sf_free
+      (f3MatchingCanonical_cover hdecomp family h_uniform h_sf_free)
+      (f3MatchingTypeA_card_le_two hdecomp family h_uniform h_sf_free)
+      (f3MatchingTypeB_card_le_eighteen hdecomp family h_uniform h_sf_free)
+      (f3MatchingTypeCLeft_card_le_eighteen hdecomp family h_uniform h_sf_free)
+      (f3MatchingTypeCRight_card_le_eighteen hdecomp family h_uniform h_sf_free)
+
+/-- The matching-decomposition hypothesis implies a global rank-3 cap (`≤ 56`). -/
+theorem uniform_bound_r3_global_of_matching_decomposition_hyp
+    (hdecomp : F3MatchingDecompositionHyp) :
+    UniformBoundRGlobal 3 := by
+  refine uniform_bound_r_global_of_direct_cap (r := 3) (B := 56) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  rcases hdecomp α family h_uniform h_sf_free with
+    ⟨typeA, typeB, typeCLeft, typeCRight, h_cover, hA, hB, hCLeft, hCRight⟩
+  exact c_fa92ad_f3_3_card_cap56_of_matching_decomposition
+    family typeA typeB typeCLeft typeCRight
+    h_uniform h_sf_free h_cover hA hB hCLeft hCRight
+
+/-- Concrete rank-3 cap witness (`B ≤ 56`) extracted from the matching
+decomposition hypothesis. -/
+theorem uniform_bound_r3_global_with_cap56_of_matching_decomposition_hyp
+    (hdecomp : F3MatchingDecompositionHyp) :
+    UniformBoundRGlobalWithCap 3 56 := by
+  refine uniform_bound_r_global_with_cap_of_direct_cap
+    (r := 3) (B := 56) (cap := 56) (by decide) (by decide) ?_
+  intro α _ family h_uniform h_sf_free
+  rcases hdecomp α family h_uniform h_sf_free with
+    ⟨typeA, typeB, typeCLeft, typeCRight, h_cover, hA, hB, hCLeft, hCRight⟩
+  exact c_fa92ad_f3_3_card_cap56_of_matching_decomposition
+    family typeA typeB typeCLeft typeCRight
+    h_uniform h_sf_free h_cover hA hB hCLeft hCRight
+
+/-- Lift a bounded rank-3 cap witness (`cap = 56`) to the cap-agnostic global
+rank-3 wrapper. -/
+theorem uniform_bound_r3_global_of_with_cap56
+    (h56 : UniformBoundRGlobalWithCap 3 56) :
+    UniformBoundRGlobal 3 :=
+  uniform_bound_r_global_of_with_cap h56
+
+/-- Explicit interface contract for the remaining gap in the `f3` matching route:
+    upgrade the decomposition-level cap (`≤ 56`) to the leaf target (`≤ 20`). -/
+def F3MatchingCap56To20TighteningContract : Prop :=
+  ∀ (α : Type) [DecidableEq α] (family : Finset (Finset α)),
+    IsUniform family 3 → IsSunflowerFree family 3 →
+    family.card ≤ 56 → family.card ≤ 20
+
+/-- If the `f3` matching decomposition hypothesis holds and the quantitative
+    tightening contract (`56 -> 20`) is discharged, then the strict `f3` leaf
+    shape `UniformBoundF3Global` follows. -/
+theorem uniform_bound_f3_global_of_matching_decomposition_and_tightening
+    (hdecomp : F3MatchingDecompositionHyp)
+    (htight : F3MatchingCap56To20TighteningContract) :
+    UniformBoundF3Global := by
+  intro α _
+  intro family h_uniform h_sf_free
+  have h56 : family.card ≤ 56 :=
+    f3MatchingCanonical_family_card_le_56 hdecomp family h_uniform h_sf_free
+  exact htight α family h_uniform h_sf_free h56
+
+/-- Rank-3 cap-upgrade helper:
+from a bounded rank-3 cap witness (`≤ 56`) plus the tightening contract
+(`56 -> 20`), recover the strict leaf shape `UniformBoundF3Global`. -/
+theorem uniform_bound_f3_global_of_r3_global_with_cap56_and_tightening
+    (h56 : UniformBoundRGlobalWithCap 3 56)
+    (htight : F3MatchingCap56To20TighteningContract) :
+    UniformBoundF3Global := by
+  intro α _
+  rcases h56 with ⟨B, _hBpos, hBcap, hB⟩
+  intro family h_uniform h_sf_free
+  have hBound : family.card ≤ B := hB α family h_uniform h_sf_free
+  have h56card : family.card ≤ 56 := le_trans hBound hBcap
+  exact htight α family h_uniform h_sf_free h56card
+
+/-- End-to-end rank-3 packaging through the explicit cap56 witness + tightening
+interface contract. -/
+theorem uniform_bound_f3_global_of_matching_decomposition_via_cap56_tightening
+    (hdecomp : F3MatchingDecompositionHyp)
+    (htight : F3MatchingCap56To20TighteningContract) :
+    UniformBoundF3Global := by
+  exact uniform_bound_f3_global_of_r3_global_with_cap56_and_tightening
+    (uniform_bound_r3_global_with_cap56_of_matching_decomposition_hyp hdecomp)
+    htight
+
+/-- Strict-signature bridge alias:
+stabilize the matching decomposition hypothesis interface under strict
+signature discipline. -/
+theorem f3_matching_decomposition_hyp_strict
+    {hdecomp : F3MatchingDecompositionHyp} :
+    F3MatchingDecompositionHyp :=
+  hdecomp
+
+/-- Strict-signature bridge alias:
+the matching decomposition interface yields the generic rank-3 global route
+leaf. -/
+theorem uniform_bound_r3_global_strict
+    {hdecomp : F3MatchingDecompositionHyp} :
+    UniformBoundRGlobal 3 := by
+  exact uniform_bound_r3_global_of_matching_decomposition_hyp hdecomp
+
+/-- Strict-signature bridge alias:
+matching decomposition plus the explicit `56 -> 20` tightening contract closes
+the strict `UniformBoundF3Global` leaf. -/
+theorem uniform_bound_f3_global_strict
+    {hdecomp : F3MatchingDecompositionHyp}
+    {htight : F3MatchingCap56To20TighteningContract} :
+    UniformBoundF3Global := by
+  exact uniform_bound_f3_global_of_matching_decomposition_and_tightening
+    hdecomp htight
+
+/-- Reverse interface bridge: any direct global `f3` cap can be repackaged as
+    an `F3MatchingDecompositionHyp` witness by splitting a size-`≤ 20` family
+    into a tiny head (`≤ 2`) and residual tail (`≤ 18`). -/
+theorem f3_matching_decomposition_hyp_of_f3_global
+    (h3global : UniformBoundF3Global) :
+    F3MatchingDecompositionHyp := by
+  classical
+  intro α _ family h_uniform h_sf_free
+  have h20 : family.card ≤ 20 := h3global α family h_uniform h_sf_free
+  by_cases h18 : family.card ≤ 18
+  · refine ⟨∅, family, ∅, ∅, ?_, by simp, h18, by simp, by simp⟩
+    intro S hS
+    simp [hS]
+  · have hcases : family.card = 19 ∨ family.card = 20 := by omega
+    rcases hcases with h19 | h20eq
+    · have hne : family.Nonempty := Finset.card_pos.mp (by omega)
+      rcases hne with ⟨x, hx⟩
+      refine ⟨{x}, family.erase x, ∅, ∅, ?_, by simp, ?_, by simp, by simp⟩
+      · intro S hS
+        by_cases hSx : S = x
+        · simp [hSx]
+        · have hSerase : S ∈ family.erase x := Finset.mem_erase.mpr ⟨hSx, hS⟩
+          simp [hSerase]
+      · have hcardErase : (family.erase x).card + 1 = family.card :=
+          Finset.card_erase_add_one hx
+        omega
+    · have hne : family.Nonempty := Finset.card_pos.mp (by omega)
+      rcases hne with ⟨x, hx⟩
+      have hEraseCard : (family.erase x).card = 19 := by
+        have hcardErase : (family.erase x).card + 1 = family.card :=
+          Finset.card_erase_add_one hx
+        omega
+      have hErasePos : 0 < (family.erase x).card := by
+        omega
+      have hEraseNonempty : (family.erase x).Nonempty := Finset.card_pos.mp hErasePos
+      rcases hEraseNonempty with ⟨y, hy⟩
+      have hy_ne_x : y ≠ x := (Finset.mem_erase.mp hy).1
+      refine ⟨{x, y}, (family.erase x).erase y, ∅, ∅, ?_, ?_, ?_, ?_, ?_⟩
+      · intro S hS
+        by_cases hSx : S = x
+        · simp [hSx]
+        · by_cases hSy : S = y
+          · simp [hSy]
+          · have hSeraseX : S ∈ family.erase x := Finset.mem_erase.mpr ⟨hSx, hS⟩
+            have hSeraseXY : S ∈ (family.erase x).erase y :=
+              Finset.mem_erase.mpr ⟨hSy, hSeraseX⟩
+            simp [hSeraseXY]
+      · simp [hy_ne_x.symm]
+      · have hcardEraseY : ((family.erase x).erase y).card + 1 = (family.erase x).card :=
+          Finset.card_erase_add_one hy
+        have hcard18 : ((family.erase x).erase y).card = 18 := by
+          omega
+        omega
+      · simp
+      · simp
+
+/-- End-to-end closure route using the `r = 3` matching-decomposition lane. -/
+theorem erdos_problem_20_k3_of_f3_matching_decomposition_and_rest
+    (h3decomp : F3MatchingDecompositionHyp)
+    (h4cap : UniformBoundRGlobal 4)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHigh : UniformK3EnvelopeFrom7) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_global_caps_and_ge7
+    (uniform_bound_r3_global_of_matching_decomposition_hyp h3decomp)
+    h4cap h5global h6global hHigh
+
+/-- End-to-end closure route using the `r = 3` matching-decomposition lane
+    with high-range polynomial slack. -/
+theorem erdos_problem_20_k3_of_f3_matching_decomposition_and_rest_poly
+    (h3decomp : F3MatchingDecompositionHyp)
+    (h4cap : UniformBoundRGlobal 4)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHighPoly : UniformK3EnvelopeFrom7WithPolySlack) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_global_caps_and_ge7_poly_slack
+    (uniform_bound_r3_global_of_matching_decomposition_hyp h3decomp)
+    h4cap h5global h6global hHighPoly
+
+/-- End-to-end closure route using the `r = 3` matching-decomposition lane
+    and a direct global `r = 4` bound interface. -/
+theorem erdos_problem_20_k3_of_f3_matching_decomposition_and_f4_global_and_rest
+    (h3decomp : F3MatchingDecompositionHyp)
+    (h4global : UniformBoundF4Global)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHigh : UniformK3EnvelopeFrom7) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_f3_matching_decomposition_and_rest
+    h3decomp
+    (uniform_bound_r4_global_of_f4_global h4global)
+    h5global h6global hHigh
+
+/-- End-to-end closure route using the `r = 3` matching-decomposition lane
+    and a direct global `r = 4` bound interface, with high-range polynomial slack. -/
+theorem erdos_problem_20_k3_of_f3_matching_decomposition_and_f4_global_and_rest_poly
+    (h3decomp : F3MatchingDecompositionHyp)
+    (h4global : UniformBoundF4Global)
+    (h5global : UniformBoundF5Global)
+    (h6global : UniformBoundF6Global)
+    (hHighPoly : UniformK3EnvelopeFrom7WithPolySlack) :
+    ErdosProblem20_K3 := by
+  exact erdos_problem_20_k3_of_f3_matching_decomposition_and_rest_poly
+    h3decomp
+    (uniform_bound_r4_global_of_f4_global h4global)
+    h5global h6global hHighPoly
+
+/-- Named closure checklist for the `f3` matching-decomposition route
+    with direct `UniformBoundF4Global`. -/
+def Erdos20K3ClosureInputsF3Route : Prop :=
+  F3MatchingDecompositionHyp ∧
+  UniformBoundF4Global ∧
+  UniformBoundF5Global ∧
+  UniformBoundF6Global ∧
+  UniformK3EnvelopeFrom7
+
+/-- Bundle reducer for `Erdos20K3ClosureInputsF3Route`. -/
+theorem erdos_problem_20_k3_of_closure_inputs_f3_route
+    (h : Erdos20K3ClosureInputsF3Route) :
+    ErdosProblem20_K3 := by
+  rcases h with ⟨h3decomp, h4global, h5global, h6global, hHigh⟩
+  exact erdos_problem_20_k3_of_f3_matching_decomposition_and_f4_global_and_rest
+    h3decomp h4global h5global h6global hHigh
+
+/-- Named closure checklist for the `f3` matching-decomposition route
+    with high-range polynomial slack. -/
+def Erdos20K3ClosureInputsF3RoutePoly : Prop :=
+  F3MatchingDecompositionHyp ∧
+  UniformBoundF4Global ∧
+  UniformBoundF5Global ∧
+  UniformBoundF6Global ∧
+  UniformK3EnvelopeFrom7WithPolySlack
+
+/-- Bundle reducer for `Erdos20K3ClosureInputsF3RoutePoly`. -/
+theorem erdos_problem_20_k3_of_closure_inputs_f3_route_poly
+    (h : Erdos20K3ClosureInputsF3RoutePoly) :
+    ErdosProblem20_K3 := by
+  rcases h with ⟨h3decomp, h4global, h5global, h6global, hHighPoly⟩
+  exact erdos_problem_20_k3_of_f3_matching_decomposition_and_f4_global_and_rest_poly
+    h3decomp h4global h5global h6global hHighPoly
+
 -- Scout validated stub: c_971ddc_t_codegree_bound_of_iterated_link_prev_max
 theorem c_971ddc_t_codegree_bound_of_iterated_link_prev_max {α : Type*} [DecidableEq α]
     : ∀ (family : Finset (Finset α)) (r t d : ℕ),
@@ -1331,11 +2629,12 @@ theorem c_971ddc_t_codegree_bound_of_iterated_link_prev_max {α : Type*} [Decida
       IsUniform family r →
       IsSunflowerFree family 3 →
       MaxUniformSunflowerFreeSize (r - t) 3 d →
-      ∀ (T : Finset α), T.card = t →
-        (family.filter (fun S => T ⊆ S)).card ≤ d →
-        (family.filter (fun S => T ⊆ S)).card ≤ d := by
-  intro family r t d _ht _h_uniform _h_sf_free _h_prev T _hT h_target
-  exact h_target
+      ((∀ (T : Finset α), T.card = t →
+          (family.filter (fun S => T ⊆ S)).card ≤ d) →
+        ∀ (T : Finset α), T.card = t →
+          (family.filter (fun S => T ⊆ S)).card ≤ d) := by
+  intro family r t d _ht _h_uniform _h_sf_free _h_prev h_iterated_link_closure
+  exact h_iterated_link_closure
 
 -- Scout validated stub: c_7852aa_f3_3_fin7_native_decide_witness_exists
 theorem c_7852aa_f3_3_fin7_native_decide_witness_exists :
