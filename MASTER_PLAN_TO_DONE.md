@@ -208,10 +208,15 @@ performs them. The loop is done when every box is checked.
       README giving the one-command install for either and a
       recommendation (Apache-2.0, matching mathlib's license culture).
       🔑 OWNER: choose, `cp` to LICENSE, commit, record choice here.
-- [ ] R2. Reproduction documentation: exact toolchain pin, clean-clone
-      build instructions, verify_m3.sh usage, LRAT independent-recheck
-      instructions (solver-free, verifier-only path). Tested by actually
-      following them in a scratch clone (`git clone . /tmp/...`).
+- [x] R2. DONE 2026-06-11: `REPRODUCING.md` (toolchain pin
+      leanprover/lean4:v4.26.0 via lean-toolchain; clean-clone steps
+      with `lake exe cache get`; verify_m3.sh as the one-command path —
+      certificate validity re-established by native_decide inside the
+      build, so the default path is solver-free; optional cadical
+      re-derivation + external LRAT checker instructions). TESTED: git
+      clone → /tmp/sunflower-repro, lake exe cache get ("Completed
+      successfully!"), ./verify_m3.sh → exit 0, final line
+      "VERIFY_M3: ALL GREEN".
 - [ ] R3. 🔑 OWNER: push to GitHub. AGENT PREPARATION DONE 2026-06-11:
       the development is already committed locally as a clean series of
       small verified commits on main (F0–F7 + R1/R2 prep; every commit
