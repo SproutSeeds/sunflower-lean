@@ -368,6 +368,15 @@ performs them. The loop is done when every box is checked.
 - [ ] X1. Fresh-clone full verification: clone the public repo into a
       scratch directory, `lake build` everything, run verify_m3.sh, run
       every LRAT recheck — all green, output pasted here.
+      LOCAL HALF DONE 2026-06-11: fresh clone of the local repo at
+      HEAD e487de9+ into /tmp/sunflower-x1, `lake exe cache get`
+      ("Completed successfully!"), `./verify_m3.sh` → exit 0; full
+      lake build green, all 25 axiom audits present and profile-checked,
+      LRAT certificates present and natively re-verified inside the
+      build; final line "VERIFY_M3: ALL GREEN". DEPENDENCY BLOCKER for
+      the public half: requires R3 (🔑 push) — the identical command
+      sequence against github.com/SproutSeeds/sunflower-lean completes
+      this item once the push lands.
 - [ ] X2. Link integrity: paper PDF (arXiv version) links resolve to the
       repo/release/DOI; repo README links back to arXiv/Zenodo; forum
       comments' links resolve. Each checked mechanically (curl status).
