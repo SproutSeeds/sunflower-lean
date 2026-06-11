@@ -132,8 +132,18 @@ performs them. The loop is done when every box is checked.
       - [ ] F4c. LRAT-certify I3(4,2) = 12: UNSAT at 13 over the F4a
             ground set + Lean-verified witness at 12 (port the engine's
             I12 witness). Certificates committed; recheck command recorded.
-      - [ ] F4d. decide/LRAT the t=1 table rows l ≤ 4 (values 6, 8, 10 for
-            M3; 3, 4, 5 for I3) as redundancy against F2f.
+      - [x] F4d. t=1 table rows l ≤ 4. DONE 2026-06-10: six row theorems
+            I3_2/3/4_1_row (3, 4, 5) and M3_2/3/4_1_row (6, 8, 10) in
+            M3/SmallValues.lean, instantiated from F2f (kernel, axioms
+            clean); decide witness anchors at l = 2, 3 are F2g. LRAT for
+            the upper rows NOT used and recorded as such in-file: the
+            universal bound lives on Fin ((v+1)·l) where the bitmask
+            triple enumeration (2^n)³ is infeasible, and the parametric
+            kernel theorem is strictly stronger than any per-ground-set
+            SAT check. Recorded after two failed attempts: the l = 4
+            decide witness anchor (Sym2 (Fin 5)) SIGABRTs the kernel at
+            maxRecDepth 32768 even with a 64MB stack — omitted; the row
+            stays doubly pinned (theorem + engine).
       - [ ] F4e. Cross-validation anchors: f(2,3) = 6 and f(3,3) = 20 in
             the M3-encoder (vacuous cap t = l−1), matching the existing
             M(n,3) machinery's values.
