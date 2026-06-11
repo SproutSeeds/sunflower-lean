@@ -157,20 +157,25 @@ performs them. The loop is done when every box is checked.
             no exact-20 Fin-7 anchor pair exists. Axiom profile: SAT lane
             ([..., ofReduceBool, trustCompiler]), matching the existing
             M_n_3 bridge results.
-- [ ] F5. Conditional pencil lemma `SunflowerLean/M3/Pencil.lean`.
-      - [ ] F5a. `structure OrthogovalPair` (point/line types, two
-            incidences, two-points-one-line-per-plane, no shared lines,
-            cross-intersections ≤ 2, order q) + the pencil family
-            definition.
-      - [ ] F5b. Theorem: an OrthogovalPair of order q yields an
-            I3Admissible(2(q+1), 2) family of card q²+q+1 (sizes,
-            exact-2 pairwise, key uniqueness, no equal-core triple).
-      - [ ] F5c. Corollary via F1: M3Admissible family of card 2(q²+q+1)
-            — the paper's lower-bound mechanism, modulo the cited CIJSSS
-            Theorem 2.2 (existence), exactly as in the paper.
-      - [ ] F5d. Non-vacuity instance: an explicit OrthogovalPair at the
-            smallest feasible order (q = 2 or 3), decide/native_decide
-            certified.
+- [x] F5. Conditional pencil lemma `SunflowerLean/M3/Pencil.lean`.
+      DONE 2026-06-10, all sub-items, axioms [propext, Classical.choice,
+      Quot.sound] throughout (Fano instance by kernel decide, NOT
+      native_decide).
+      - [x] F5a. `structure OrthogovalPair` (lines as point-Finsets;
+            point_count q²+q+1, pencil degrees q+1, unique line per
+            plane through two points, no_shared, cross ≤ 2) +
+            `pencilAt`/`pencilFam`.
+      - [x] F5b. `pencilFam_I3Admissible` (uniform 2q+2 via disjoint
+            pencil union; cap from inter = {U₁,U₂}; SF-free by key
+            uniqueness U₁∩U₂ = {p,p′} + plane separation forcing b = c);
+            `pencilFam_card` = q²+q+1 for q ≥ 1 (`pencilAt_injective`).
+      - [x] F5c. `doubled_pencilFam`: M3Admissible card 2(q²+q+1) via
+            M3_ge_two_I3 — the paper's mechanism, modulo cited CIJSSS
+            Thm 2.2 exactly as in the paper.
+      - [x] F5d. `fanoOrthogovalPair`: explicit order-2 pair from
+            difference sets {0,1,3}/{0,2,3} mod 7, every field
+            kernel-decided (∃! unfolded for decidability);
+            `fano_pencilFam_card = 7`.
 - [ ] F6. Bertrand bound `SunflowerLean/M3/Bertrand.lean`:
       unconditional `(l-2)²/8`-type lower statement for all l ≥ 4 from
       F5b/F5c + mathlib's Bertrand postulate, stated conditionally on the
