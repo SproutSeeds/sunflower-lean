@@ -373,7 +373,16 @@ performs them. The loop is done when every box is checked.
       ("Completed successfully!"), `./verify_m3.sh` → exit 0; full
       lake build green, all 25 axiom audits present and profile-checked,
       LRAT certificates present and natively re-verified inside the
-      build; final line "VERIFY_M3: ALL GREEN". DEPENDENCY BLOCKER for
+      build; final line "VERIFY_M3: ALL GREEN". LRAT rechecks: the
+      fresh clone REBUILT the repo's own modules from source (cache get
+      fetches only mathlib oleans), so both certificate checks
+      (m3_7217_verified_eq_true, m3_73221_verified_eq_true) were
+      re-executed natively during the clone's build; additionally
+      2026-06-11 an INDEPENDENT solver-level recheck: CNFs re-exported
+      from the Lean generator (tools/export_m3_cnf.lean: 8356 vars /
+      32906 clauses and 8153 vars / 29973 clauses) and re-solved fresh
+      — cadical verdicts "s UNSATISFIABLE" for both, agreeing with the
+      committed certificates. DEPENDENCY BLOCKER for
       the public half: requires R3 (🔑 push) — the identical command
       sequence against github.com/SproutSeeds/sunflower-lean completes
       this item once the push lands.
