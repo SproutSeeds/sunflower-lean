@@ -18,4 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+      - name: Build and audit M3 with larger stack
+        run: |
+          ulimit -s unlimited
+          ./verify_m3.sh
       - uses: leanprover-community/docgen-action@v1
