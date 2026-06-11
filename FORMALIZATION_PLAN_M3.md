@@ -22,6 +22,15 @@ Reuses `IsSunflower` / `IsSunflowerFree` from `SunflowerLean.Basic`
 `IsUniform F l`, `PairwiseCapped F t`, `IsIntersectingFam F`,
 `M3Admissible F l t`, `I3Admissible F l t`.
 
+**STATUS 2026-06-11: ALL MILESTONES LANDED** (M4 witness half; its
+UNSAT half is blocked, see MASTER_PLAN_TO_DONE.md F4c). M2 =
+T1Exact.lean (DONE), M3 = LinkRecursion.lean (DONE), M4 =
+Relabel/SATEncoding/SmallValues.lean (witness + anchors DONE), M5 =
+Pencil.lean (DONE incl. q=2 instance), M6 = Bertrand.lean (DONE).
+Verification: FORMAL_RESULTS_M3.md + verify_m3.sh. This file is kept
+as the original milestone design; MASTER_PLAN_TO_DONE.md is the
+binding ledger.
+
 ## Targets, in milestone order
 
 - M1 — Doubling lemma (`M3/Doubling.lean`). DONE 2026-06-10: kernel-verified,
