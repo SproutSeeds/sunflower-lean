@@ -41,7 +41,8 @@ performs them. The loop is done when every box is checked.
 - [x] F1. Doubling lemma `SunflowerLean/M3/Doubling.lean`
       (`M3.doubling`, `M3.M3_ge_two_I3`). DONE 2026-06-10,
       kernel-verified, axiom audit clean, zero warnings.
-- [ ] F2. t=1 exact theorem `SunflowerLean/M3/T1Exact.lean` (paper Thm 1.1).
+- [x] F2. t=1 exact theorem `SunflowerLean/M3/T1Exact.lean` (paper Thm 1.1).
+      DONE 2026-06-10 — all sub-items kernel-verified, axiom audits clean.
       Sub-items, each kernel-gated:
       - [x] F2a. Degree lemma. DONE 2026-06-10: `inter_eq_singleton_of_capped`,
             `no_three_through_point`, `degree_le_two` in M3/T1Exact.lean;
@@ -80,8 +81,14 @@ performs them. The loop is done when every box is checked.
             universal-upper-bound idiom; M3 witness = doubled star family
             via M3_ge_two_I3. lake build green, zero warnings; axioms
             [propext, Classical.choice, Quot.sound] — no sorryAx.
-      - [ ] F2g. decide/native_decide cross-checks at l = 2, 3 mirroring
-            the M_n_3 style (consistency anchors).
+      - [x] F2g. decide cross-checks. DONE 2026-06-10: starFam_two/_three
+            card + admissibility anchors (I3(2,1)=3, I3(3,1)=4) via kernel
+            `decide` + SunflowerLean.isSFreeC_iff bridge — deliberately NO
+            native_decide, so axioms stay [propext, Classical.choice,
+            Quot.sound] (no ofReduceBool); maxRecDepth 8192 at l=3.
+            Doubled-family decide anchor dropped: kernel reduction sticks
+            on Sum/map/union instances; the doubled card is already the
+            kernel theorem M3_one_exact.
 - [ ] F3. Link recursion `SunflowerLean/M3/LinkRecursion.lean` (paper
       Lemma 2.1): `M3(l,0) ≤ 2`; `M3(l,t)`-admissible family cardinality
       ≤ 2 + 2l * (max over links); corollary `M3(l,2) ≤ 4l² + 2` using F2.

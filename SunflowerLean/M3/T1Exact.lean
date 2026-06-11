@@ -14,6 +14,7 @@
 
 import Mathlib.Data.Sym.Sym2
 import SunflowerLean.M3.Doubling
+import SunflowerLean.SmallCases
 
 namespace M3
 
@@ -457,5 +458,31 @@ theorem M3_one_exact (l : ℕ) (hl : 2 ≤ l) :
     ring
   · intro β _ G hG
     exact M3_card_le_t1 hG
+
+
+/-
+  F2g: decide cross-checks at l = 2, 3 — kernel-computed consistency
+  anchors for the parametric definitions, in the SmallCases style
+  (IsSFreeC bridges the sunflower-free check; the other admissibility
+  components decide after unfolding). Values match the engine table:
+  I3(2,1) = 3, I3(3,1) = 4. Kernel `decide` only — no native_decide, so
+  the axiom audit stays at the standard three.
+-/
+
+theorem starFam_two_card_check : (starFam 2).card = 3 := by decide
+
+theorem starFam_two_admissible_check : I3Admissible (starFam 2) 2 1 :=
+  ⟨⟨by unfold IsUniform; decide, by unfold PairwiseCapped; decide,
+    (SunflowerLean.isSFreeC_iff _ 3).mp (by decide)⟩,
+   by unfold IsIntersectingFam; decide⟩
+
+set_option maxRecDepth 8192 in
+theorem starFam_three_card_check : (starFam 3).card = 4 := by decide
+
+set_option maxRecDepth 8192 in
+theorem starFam_three_admissible_check : I3Admissible (starFam 3) 3 1 :=
+  ⟨⟨by unfold IsUniform; decide, by unfold PairwiseCapped; decide,
+    (SunflowerLean.isSFreeC_iff _ 3).mp (by decide)⟩,
+   by unfold IsIntersectingFam; decide⟩
 
 end M3
