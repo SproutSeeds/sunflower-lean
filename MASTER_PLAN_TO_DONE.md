@@ -233,24 +233,45 @@ performs them. The loop is done when every box is checked.
 
 ## Phase P — Paper integration (bld_note, in erdos-problems pack)
 
-- [ ] P1. Rewrite the paper's "Data and verification" section: Lean 4
-      formalization paragraph (what is formalized, the axiom audit
-      statement, the repo URL + release tag, LRAT methodology), keeping
-      the deterministic-checker description for the engine results that
-      remain checker-level. Add one sentence to the introduction noting
-      the formalization. Recompile clean.
-- [ ] P2. Insert the paper↔Lean mapping reference (cite
-      FORMAL_RESULTS_M3.md in the repo) and per-theorem formalization
-      footnotes for the formalized results only (no overclaiming for
-      M5's conditional form — state "formalized modulo the cited
-      existence theorem" verbatim).
-- [ ] P3. Bibliography: add the repository as a citable artifact entry
-      (and the Zenodo software DOI once R4 mints it). Mechanically verify
-      bibliography ordering after every insertion.
-- [ ] P4. Full reconciliation pass: every number in the paper's tables
-      against the Lean/LRAT values; every claim labeled with its
-      verification level (kernel / LRAT / checker / cited). Record the
-      reconciliation in this file when done.
+- [x] P1. DONE 2026-06-11: "Data and verification" gains a "Lean 4
+      formalization" subsection (what is formalized, three-axiom audit
+      statement, conditional results flagged verbatim, LRAT methodology,
+      FORMAL_RESULTS_M3.md + verify_m3.sh pointers, repo cite); the
+      checker description kept under "Checker artifacts". Intro sentence
+      added before Positioning. pdflatex 2-pass: 0 errors, 0 overfulls.
+- [x] P2. DONE 2026-06-11: footnotes on Thm 1.1 (I3_one_exact/
+      M3_one_exact), Thm 1.2 ("upper bound and, modulo the cited
+      existence theorem, the lower bound"), Lemma finite, Lemma
+      doubling, Lemma pencil ("formalized ... modulo the cited
+      existence theorem", non-vacuity instance named); mapping file
+      cited in the Data section.
+- [x] P3. DONE 2026-06-11 (agent half): \bibitem{SunflowerLeanRepo}
+      inserted between Kim95 and NaSa17; ordering mechanically verified
+      (17 entries, surname script, "ORDER: OK"). DOI sub-half waits on
+      R4/A1 (placeholder text in the entry).
+- [x] P4. DONE 2026-06-11. Reconciliation of the small-values table
+      and numeric claims (levels: kernel / LRAT / checker / cited):
+      l=2 row (3, 6, —, 6): kernel (I3_2_1_row, M3_2_1_row; M3(2,2)=6
+        via vacuous cap + kernel t=1; Fin-7 LRAT anchor agrees).
+      l=3 row (4, 8, —, 20): t=1 kernel; M3(3,2)=f(3,3)=20 literature
+        [AHS72,AE92] + engine exhaustion (checker); Fin-7 LRAT anchor
+        (UNSAT at 21) agrees.
+      l=4 row (5, 10, 12, [24,66]): t=1 kernel; I3(4,2): ≥12 kernel
+        (I3_4_2_lower), ≤12 checker (36,329,094-node exhaustion; SAT
+        certification attempt under F4c); bracket NOW BOTH KERNEL —
+        24 = M3_4_2_lower (added this pass, doubling I12), 66 =
+        M3_card_le_t2 at l=4.
+      l=5 row (6, 12, ≥16, ≥32): t=1 kernel (parametric M3_one_exact/
+        I3_one_exact at l=5); I3(5,2) ≥ 16 and M3(5,2) ≥ 32 checker
+        (capped runs, witnesses in pack JSON).
+      Pencil constructions: q=2 kernel (fanoOrthogovalPair); q=3,5,7
+        checker (projective_orthogoval_doubling_check.mjs); all prime
+        powers cited (CIJSSS Thm 2.2).
+      Quadratic bounds: 4l²+2 kernel; (l−2)²/8 kernel modulo cited.
+      Interval-arithmetic threshold numbers (N_PASS etc.): checker
+        (BigInt, slack_857_reserve_pinning.mjs).
+      Paper updated to claim M3(4,2) ≥ 24 as kernel-verified;
+      recompiled clean (0 errors / 0 overfulls).
 - [ ] P5. 🔑 OWNER: affiliation/contact + final AI-disclosure wording +
       complete read-through sign-off.
 
