@@ -89,12 +89,17 @@ performs them. The loop is done when every box is checked.
             Doubled-family decide anchor dropped: kernel reduction sticks
             on Sum/map/union instances; the doubled card is already the
             kernel theorem M3_one_exact.
-- [ ] F3. Link recursion `SunflowerLean/M3/LinkRecursion.lean` (paper
-      Lemma 2.1): `M3(l,0) ≤ 2`; `M3(l,t)`-admissible family cardinality
-      ≤ 2 + 2l * (max over links); corollary `M3(l,2) ≤ 4l² + 2` using F2.
-      Sub-items: maximal-disjoint-pair extraction; pigeonhole onto ≤ 2l
-      points; link admissibility (uniform l−1, capped t−1, SF-free via
-      re-adjoining lift); assembly + corollary.
+- [x] F3. Link recursion `SunflowerLean/M3/LinkRecursion.lean` (paper
+      Lemma 2.1). DONE 2026-06-10: `M3_card_le_t0` (≤ 2 at cap 0);
+      `link`/`erase_inter_erase`/`erase_injOn_through`/`link_admissible`
+      (uniform l−1, capped t−1, SF-free via insert-x lift);
+      `card_through_le`; `link_recursion` (F.card ≤ 2 + 2l·B given any
+      link bound B; disjoint-pair vs intersecting case split, biUnion
+      cover counting); corollary `M3_card_le_t2` (≤ 4l²+2 via F2's
+      M3_card_le_t1). lake build green (3 fix iterations: Set coercion
+      for standalone InjOn, beta-reduction bridge, push_neg Nonempty
+      form), zero warnings in-file; all five declarations audit to
+      [propext, Classical.choice, Quot.sound] — no sorryAx.
 - [ ] F4. SAT bridge retarget + small exact values
       `SunflowerLean/M3/SmallValues.lean` + encoder extension.
       - [ ] F4a. Support/relabel lemma: any family of m l-sets is
