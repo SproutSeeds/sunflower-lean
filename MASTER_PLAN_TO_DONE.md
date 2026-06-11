@@ -102,10 +102,16 @@ performs them. The loop is done when every box is checked.
       [propext, Classical.choice, Quot.sound] — no sorryAx.
 - [ ] F4. SAT bridge retarget + small exact values
       `SunflowerLean/M3/SmallValues.lean` + encoder extension.
-      - [ ] F4a. Support/relabel lemma: any family of m l-sets is
-            isomorphic (intersection-pattern-preserving) to one on
-            `Fin (m*l)`; upper bounds over `Fin ((v+1)*l)` therefore
-            certify M3/I3 upper bounds. Kernel-gated.
+      - [x] F4a. Support/relabel lemma. DONE 2026-06-10:
+            `SunflowerLean/M3/Relabel.lean` — image_inter_of_injOn_support,
+            image_cancel_of_injOn, M3Admissible_image / I3Admissible_image
+            (admissibility + card transport along any map injective on the
+            support), support_card_le (≤ m·l), exists_injOn_fin (via
+            Finset.equivFin + Fin.castLE), and the certifiers
+            `M3_upper_of_fin` / `I3_upper_of_fin` (Fin ((v+1)·l) bound ⇒
+            universal bound, l > 0; l = 0 is M3_card_le_t0 territory).
+            lake build green, zero warnings; all eight declarations audit
+            to [propext, Classical.choice, Quot.sound] — no sorryAx.
       - [ ] F4b. Extend the existing Lean→CNF generator with uniformity
             (exactly-l per set) and pairwise-cap (≤ t common) clauses;
             document the encoding in the file header.
