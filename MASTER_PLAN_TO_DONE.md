@@ -112,9 +112,23 @@ performs them. The loop is done when every box is checked.
             universal bound, l > 0; l = 0 is M3_card_le_t0 territory).
             lake build green, zero warnings; all eight declarations audit
             to [propext, Classical.choice, Quot.sound] — no sorryAx.
-      - [ ] F4b. Extend the existing Lean→CNF generator with uniformity
-            (exactly-l per set) and pairwise-cap (≤ t common) clauses;
-            document the encoding in the file header.
+      - [x] F4b. Encoder extension. DONE 2026-06-10:
+            `SunflowerLean/M3/SATEncoding.lean` — nonUniformClauses (unit
+            ¬x_m for non-l masks), capViolationClauses (¬x_a ∨ ¬x_b for
+            distinct pairs meeting in > t), disjointPairClauses (I3),
+            m3CNF/i3CNF assembling them with the reused sunflowerClauses +
+            seqCounterClauses; encoding documented in the header. Bonus:
+            full soundness bridges `m3_bridge`/`i3_bridge` (UNSAT ⇒ < B on
+            Fin n) proved now rather than at F4c — spec lemmas carry
+            subset-distinctness inside the generation condition so no
+            bitmask-injectivity (no private SATBridge lemma) is needed.
+            lake build green, zero warnings in-file. Axiom note: the spec
+            lemmas audit to the standard three; the bridge theorems audit
+            to [propext, Classical.choice, Lean.ofReduceBool,
+            Lean.trustCompiler, Quot.sound] — inherited from SATBridge's
+            internals, the SAME profile as the repo's existing
+            M_n_3_upper_bridge results; the SAT lane is LRAT/native-trust
+            by standing methodology, the F1–F3 kernel spine is unaffected.
       - [ ] F4c. LRAT-certify I3(4,2) = 12: UNSAT at 13 over the F4a
             ground set + Lean-verified witness at 12 (port the engine's
             I12 witness). Certificates committed; recheck command recorded.
