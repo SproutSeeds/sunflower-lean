@@ -43,9 +43,10 @@ performs them. The loop is done when every box is checked.
       kernel-verified, axiom audit clean, zero warnings.
 - [ ] F2. t=1 exact theorem `SunflowerLean/M3/T1Exact.lean` (paper Thm 1.1).
       Sub-items, each kernel-gated:
-      - [ ] F2a. Degree lemma: in a (cap 1, SF-free) family, no point lies
-            in 3 members (three sets through a point with pairwise
-            intersections ≤ 1 share core exactly that singleton).
+      - [x] F2a. Degree lemma. DONE 2026-06-10: `inter_eq_singleton_of_capped`,
+            `no_three_through_point`, `degree_le_two` in M3/T1Exact.lean;
+            lake build green first attempt; axioms: [propext, Quot.sound] /
+            [propext, Classical.choice, Quot.sound] — no sorryAx.
       - [ ] F2b. Counting upper bound `I3 ≤ l+1` for intersecting families
             (pair-count vs degree-2 points; Finset.sum double count).
       - [ ] F2c. Mantel input: disjointness-graph triangle-free bound
