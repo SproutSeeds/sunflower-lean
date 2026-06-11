@@ -75,9 +75,11 @@ performs them. The loop is done when every box is checked.
             starAt_inter (= {s(u,v)}), starAt_injective. lake build green
             (one omega fix-up for l+1-1), zero warnings; axioms [propext,
             Classical.choice, Quot.sound] — no sorryAx.
-      - [ ] F2f. Exact statements: `I3_one_exact` (= l+1) and
-            `M3_one_exact` (= 2l+2 via F2e + F1 doubling + F2d), stated in
-            the existence-plus-upper-bound idiom of SmallCases.lean.
+      - [x] F2f. Exact statements. DONE 2026-06-10: `I3_one_exact` and
+            `M3_one_exact` (l ≥ 2) in the SmallCases existence-plus-
+            universal-upper-bound idiom; M3 witness = doubled star family
+            via M3_ge_two_I3. lake build green, zero warnings; axioms
+            [propext, Classical.choice, Quot.sound] — no sorryAx.
       - [ ] F2g. decide/native_decide cross-checks at l = 2, 3 mirroring
             the M_n_3 style (consistency anchors).
 - [ ] F3. Link recursion `SunflowerLean/M3/LinkRecursion.lean` (paper

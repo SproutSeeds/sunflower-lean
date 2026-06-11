@@ -425,4 +425,37 @@ theorem starFam_I3Admissible (l : ℕ) : I3Admissible (starFam l) l 1 := by
     rw [starAt_inter huv]
     exact ⟨s(u, v), Finset.mem_singleton_self _⟩
 
+
+/-
+  F2f: the exact statements at t = 1 (l >= 2), in the SmallCases idiom:
+  witness existence + universal upper bound. I3(l,1) = l+1 and
+  M3(l,1) = 2l+2 (paper Theorem 1.1).
+-/
+
+/-- F2f: `I3(l,1) = l+1` for `l ≥ 2` — star-family witness over the
+    `K_{l+1}` edge type, upper bound over every ground type. -/
+theorem I3_one_exact (l : ℕ) (hl : 2 ≤ l) :
+    (∃ F : Finset (Finset (Sym2 (Fin (l + 1)))),
+      I3Admissible F l 1 ∧ F.card = l + 1) ∧
+    (∀ {β : Type*} [DecidableEq β] (G : Finset (Finset β)),
+      I3Admissible G l 1 → G.card ≤ l + 1) :=
+  ⟨⟨starFam l, starFam_I3Admissible l, starFam_card hl⟩,
+   fun _ hG => I3_card_le_t1 hG⟩
+
+/-- F2f: `M3(l,1) = 2l+2` for `l ≥ 2` — witness by doubling the star
+    family (F1 + F2e), upper bound over every ground type (F2d). -/
+theorem M3_one_exact (l : ℕ) (hl : 2 ≤ l) :
+    (∃ F : Finset (Finset (Sym2 (Fin (l + 1)) ⊕ Sym2 (Fin (l + 1)))),
+      M3Admissible F l 1 ∧ F.card = 2 * l + 2) ∧
+    (∀ {β : Type*} [DecidableEq β] (G : Finset (Finset β)),
+      M3Admissible G l 1 → G.card ≤ 2 * l + 2) := by
+  constructor
+  · obtain ⟨H, hadm, hcard⟩ :=
+      M3_ge_two_I3 (starFam l) l 1 (by omega) (starFam_I3Admissible l)
+    refine ⟨H, hadm, ?_⟩
+    rw [hcard, starFam_card hl]
+    ring
+  · intro β _ G hG
+    exact M3_card_le_t1 hG
+
 end M3
