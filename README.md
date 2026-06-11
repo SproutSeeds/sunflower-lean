@@ -58,8 +58,8 @@ paper ↔ Lean mapping with verbatim axiom audits):
 - SAT encoder + soundness bridges for M3/I3 on the bitmask variable
   space, with LRAT-certified encoder anchors at n = 7
   (`M3/SATEncoding.lean`, `M3/SmallValues.lean`)
-- the engine's I3(4,2) optimum I12 re-certified by kernel decide:
-  I3(4,2) ≥ 12 (`M3/SmallValues.lean`)
+- the engine's I3(4,2) optimum I12 re-certified by native finite
+  reduction: I3(4,2) ≥ 12 (`M3/SmallValues.lean`)
 - the conditional pencil lemma: orthogoval plane pairs give
   I3-admissible(2q+2, 2) families of q²+q+1 pencils, doubled to the
   paper's M3 lower bound; explicit kernel-decided Fano pair at q = 2

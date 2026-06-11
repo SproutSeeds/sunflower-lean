@@ -66,8 +66,9 @@ FOREIGN=$(printf '%s\n' "$NORM" | tr -d '[],' | tr ' ' '\n' \
 if [ -n "$FOREIGN" ]; then
   echo "FAIL: unexpected axiom tokens:"; echo "$FOREIGN"; exit 1
 fi
-# the kernel-only spine must not mention the compiler axioms
-SPINE=$(printf '%s\n' "$NORM" | grep -v -E "m3_bridge|i3_bridge|fin7_anchor")
+# the kernel-only spine must not mention the compiler axioms; native finite
+# reductions are confined to the bridge/LRAT and explicit I12 witness lanes.
+SPINE=$(printf '%s\n' "$NORM" | grep -v -E "m3_bridge|i3_bridge|fin7_anchor|I3_4_2_lower|M3_4_2_lower")
 if printf '%s\n' "$SPINE" | grep -q "ofReduceBool"; then
   echo "FAIL: compiler axiom leaked into the kernel spine"; exit 1
 fi

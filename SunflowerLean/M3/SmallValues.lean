@@ -28,24 +28,25 @@ def i12Witness : Finset (Finset (Fin 10)) :=
 
 theorem i12Witness_card : i12Witness.card = 12 := by decide
 
-set_option maxRecDepth 65536 in
--- The kernel `decide` walks C(12,3) = 220 subfamilies of explicit Fin 10
--- set literals; the default heartbeat budget is far too small for it.
-set_option maxHeartbeats 4000000 in
--- See the comment above: 220-subfamily kernel decide.
+set_option linter.style.nativeDecide false in
+-- The explicit I12 witness is a finite check over 220 triples of concrete
+-- Fin 10 sets.  Kernel `decide` verifies it on Cody's local machine but
+-- exhausts the GitHub runner stack, so the witness lane follows the existing
+-- LRAT-certificate lane and uses native reduction; the main theorem spine
+-- remains kernel-only.
 theorem i12Witness_admissible : I3Admissible i12Witness 4 2 :=
-  ⟨⟨by unfold IsUniform; decide, by unfold PairwiseCapped; decide,
-    (SunflowerLean.isSFreeC_iff _ 3).mp (by decide)⟩,
-   by unfold IsIntersectingFam; decide⟩
+  ⟨⟨by unfold IsUniform; native_decide,
+    by unfold PairwiseCapped; native_decide,
+    (SunflowerLean.isSFreeC_iff _ 3).mp (by native_decide)⟩,
+   by unfold IsIntersectingFam; native_decide⟩
 
-/-- F4c, lower bound: `I3(4,2) ≥ 12`, kernel-verified witness. -/
+/-- F4c, lower bound: `I3(4,2) ≥ 12`, native-checked explicit witness. -/
 theorem I3_4_2_lower :
     ∃ F : Finset (Finset (Fin 10)), I3Admissible F 4 2 ∧ F.card = 12 :=
   ⟨i12Witness, i12Witness_admissible, i12Witness_card⟩
 
-/-- Doubling the I12 witness: `M3(4,2) ≥ 24`, kernel-verified (the
-    paper's bracket [24, 66] at (4,2) — lower half now kernel, upper
-    half is `M3_card_le_t2` at l = 4). -/
+/-- Doubling the I12 witness: `M3(4,2) ≥ 24`, with the I12 witness
+    checked by native finite reduction (paper's bracket lower half). -/
 theorem M3_4_2_lower :
     ∃ H : Finset (Finset (Fin 10 ⊕ Fin 10)),
       M3Admissible H 4 2 ∧ H.card = 24 := by
