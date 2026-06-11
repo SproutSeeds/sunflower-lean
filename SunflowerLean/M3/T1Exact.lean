@@ -166,4 +166,140 @@ theorem I3_card_le_t1 {F : Finset (Finset α)} {l : ℕ}
       _ = F.card * (l + 1) := by ring
   exact Nat.le_of_mul_le_mul_left this hpos
 
+
+/-
+  F2c/F2d: the full t=1 upper bound M3 <= 2l+2, by partition at a fixed
+  member A rather than Mantel: members disjoint from A pairwise intersect
+  (a third mutual disjointness would be an empty-core 3-sunflower), so
+  there are at most l+1 of them by F2b; members meeting A inject into A's
+  points by key uniqueness + the degree lemma, so at most l of them; with
+  A itself, m <= 1 + (l+1) + l = 2l+2. (The plan's F2c "Mantel input" is
+  realized by `disjoint_part_intersecting` + `meets_part_card_le`; the
+  Mantel bound is not needed on this route.)
+-/
+
+/-- Admissibility restricts to subfamilies. -/
+lemma M3Admissible.subset {F G : Finset (Finset α)} {l t : ℕ}
+    (hF : M3Admissible F l t) (hGF : G ⊆ F) : M3Admissible G l t :=
+  ⟨fun S hS => hF.1 S (hGF hS),
+   fun S hS T hT hST => hF.2.1 S (hGF hS) T (hGF hT) hST,
+   fun H hH => hF.2.2 H (Finset.Subset.trans hH hGF)⟩
+
+/-- F2c (disjoint part): in a 3-sunflower-free family of nonempty sets,
+    the members disjoint from a fixed member `A` pairwise intersect — a
+    disjoint pair among them would complete an empty-core 3-sunflower
+    with `A`. -/
+lemma disjoint_part_intersecting {F : Finset (Finset α)} {l : ℕ}
+    (hl : 0 < l) (hu : IsUniform F l) (hsf : IsSunflowerFree F 3)
+    {A : Finset α} (hA : A ∈ F) :
+    IsIntersectingFam (F.filter (fun B => A ∩ B = ∅)) := by
+  intro B hB C hC hBC
+  obtain ⟨hBF, hAB⟩ := Finset.mem_filter.mp hB
+  obtain ⟨hCF, hAC⟩ := Finset.mem_filter.mp hC
+  by_contra hcon
+  rw [Finset.not_nonempty_iff_eq_empty] at hcon
+  have hAne : A.Nonempty := Finset.card_pos.mp (by rw [hu A hA]; exact hl)
+  have hABne : A ≠ B := by
+    rintro rfl
+    rw [Finset.inter_self] at hAB
+    exact hAne.ne_empty hAB
+  have hACne : A ≠ C := by
+    rintro rfl
+    rw [Finset.inter_self] at hAC
+    exact hAne.ne_empty hAC
+  refine hsf {A, B, C} ?_ ⟨?_, ∅, ?_⟩
+  · intro W hW
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hW
+    rcases hW with rfl | rfl | rfl <;> assumption
+  · exact Finset.card_eq_three.mpr ⟨A, B, C, hABne, hACne, hBC, rfl⟩
+  · intro S T hS hT hST
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hS hT
+    rcases hS with rfl | rfl | rfl <;> rcases hT with rfl | rfl | rfl
+    · exact absurd rfl hST
+    · exact hAB
+    · exact hAC
+    · rw [Finset.inter_comm]; exact hAB
+    · exact absurd rfl hST
+    · exact hcon
+    · rw [Finset.inter_comm]; exact hAC
+    · rw [Finset.inter_comm]; exact hcon
+    · exact absurd rfl hST
+
+/-- F2c (meeting part): the members other than `A` that meet `A` inject
+    into `A`'s points — each meets `A` in a unique point (cap 1), and two
+    of them through the same point would put three members through it. -/
+lemma meets_part_card_le {F : Finset (Finset α)}
+    (hc : PairwiseCapped F 1) (hsf : IsSunflowerFree F 3)
+    {A : Finset α} (hA : A ∈ F) :
+    (F.filter (fun B => B ≠ A ∧ (A ∩ B).Nonempty)).card ≤ A.card := by
+  rcases (F.filter (fun B => B ≠ A ∧ (A ∩ B).Nonempty)).eq_empty_or_nonempty
+    with he | ⟨B0, hB0⟩
+  · rw [he]; simp
+  obtain ⟨x0, _⟩ := (Finset.mem_filter.mp hB0).2.2
+  set f : Finset α → α :=
+    fun B => if h : (A ∩ B).Nonempty then h.choose else x0 with hf
+  have hfmem : ∀ B ∈ F.filter (fun B => B ≠ A ∧ (A ∩ B).Nonempty),
+      f B ∈ A ∩ B := by
+    intro B hB
+    have hne := (Finset.mem_filter.mp hB).2.2
+    simp only [hf, dif_pos hne]
+    exact hne.choose_spec
+  refine Finset.card_le_card_of_injOn f
+    (fun B hB => (Finset.mem_inter.mp (hfmem B hB)).1) ?_
+  intro B hB C hC hfeq
+  rw [Finset.mem_coe] at hB hC
+  by_contra hBC
+  obtain ⟨hBF, hBA, _⟩ := Finset.mem_filter.mp hB
+  obtain ⟨hCF, hCA, _⟩ := Finset.mem_filter.mp hC
+  have hxB := hfmem B hB
+  have hxC := hfmem C hC
+  rw [hfeq] at hxB
+  exact no_three_through_point hc hsf hA hBF hCF (Ne.symm hBA) (Ne.symm hCA)
+    hBC (Finset.mem_inter.mp hxC).1 (Finset.mem_inter.mp hxB).2
+    (Finset.mem_inter.mp hxC).2
+
+/-- F2d: the t=1 upper bound `M3 ≤ 2l+2`. Paper Theorem 1.1, upper bound. -/
+theorem M3_card_le_t1 {F : Finset (Finset α)} {l : ℕ}
+    (hF : M3Admissible F l 1) : F.card ≤ 2 * l + 2 := by
+  obtain ⟨hu, hc, hsf⟩ := hF
+  rcases F.eq_empty_or_nonempty with rfl | ⟨A, hA⟩
+  · simp
+  rcases Nat.eq_zero_or_pos l with rfl | hl
+  · have hsub : F ⊆ {∅} := by
+      intro S hS
+      rw [Finset.mem_singleton]
+      exact Finset.card_eq_zero.mp (hu S hS)
+    have := Finset.card_le_card hsub
+    simp only [Finset.card_singleton] at this
+    omega
+  set Dis := F.filter (fun B => A ∩ B = ∅) with hDis
+  set Mee := F.filter (fun B => B ≠ A ∧ (A ∩ B).Nonempty) with hMee
+  have hcover : F ⊆ Dis ∪ Mee ∪ {A} := by
+    intro B hB
+    simp only [Finset.mem_union, Finset.mem_singleton, hDis, hMee,
+      Finset.mem_filter]
+    rcases eq_or_ne B A with rfl | hBA
+    · tauto
+    rcases Finset.eq_empty_or_nonempty (A ∩ B) with he | hne
+    · tauto
+    · tauto
+  have hDadm : I3Admissible Dis l 1 :=
+    ⟨M3Admissible.subset ⟨hu, hc, hsf⟩ (Finset.filter_subset _ _),
+     disjoint_part_intersecting hl hu hsf hA⟩
+  have hDcard : Dis.card ≤ l + 1 := I3_card_le_t1 hDadm
+  have hMcard : Mee.card ≤ l := by
+    have h := meets_part_card_le hc hsf hA
+    rw [hu A hA] at h
+    exact h
+  have h1 : F.card ≤ (Dis ∪ Mee ∪ {A}).card := Finset.card_le_card hcover
+  have h2 : (Dis ∪ Mee ∪ {A}).card ≤ Dis.card + Mee.card + 1 := by
+    calc (Dis ∪ Mee ∪ {A}).card
+        ≤ (Dis ∪ Mee).card + ({A} : Finset (Finset α)).card :=
+          Finset.card_union_le _ _
+      _ ≤ Dis.card + Mee.card + 1 := by
+          have := Finset.card_union_le Dis Mee
+          simp only [Finset.card_singleton]
+          omega
+  omega
+
 end M3

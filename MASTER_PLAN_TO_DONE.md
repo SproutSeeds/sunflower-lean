@@ -54,12 +54,20 @@ performs them. The loop is done when every box is checked.
             Σ deg = m·l by sum swap; m(m−1) ≤ m·l → m ≤ l+1. lake build
             green, zero warnings; axioms [propext, Classical.choice,
             Quot.sound] — no sorryAx.
-      - [ ] F2c. Mantel input: disjointness-graph triangle-free bound
-            (≤ m²/4 disjoint pairs). Use mathlib Turán API if available on
-            this toolchain; otherwise prove the cherry double-count
-            directly. Acceptance: lemma named, audited.
-      - [ ] F2d. Counting upper bound `M3 ≤ 2l+2` assembling F2a–F2c
-            (final arithmetic by omega/nlinarith).
+      - [x] F2c. DONE 2026-06-10 (route revised, Mantel not needed): the
+            partition at a fixed member A replaces the disjointness-graph
+            bound — `disjoint_part_intersecting` (members disjoint from A
+            pairwise intersect, else empty-core 3-sunflower with A) +
+            `meets_part_card_le` (members meeting A inject into A's points
+            by key uniqueness + degree lemma) + `M3Admissible.subset`.
+            Same parent acceptance (F2d below) reached with a simpler
+            kernel object. lake build green first attempt, zero warnings;
+            axioms clean, no sorryAx.
+      - [x] F2d. Counting upper bound `M3 ≤ 2l+2`. DONE 2026-06-10:
+            `M3.M3_card_le_t1` in M3/T1Exact.lean — F ⊆ Dis ∪ Mee ∪ {A},
+            |Dis| ≤ l+1 by F2b (intersecting subfamily), |Mee| ≤ l by
+            injection into A; l = 0 and F = ∅ edge cases handled. axioms
+            [propext, Classical.choice, Quot.sound] — no sorryAx.
       - [ ] F2e. Star witness: parametric K_{l+1} star family over
             `Sym2 (Fin (l+1))` is I3Admissible(l,1) with card l+1
             (pairwise cores are distinct singleton edges).
