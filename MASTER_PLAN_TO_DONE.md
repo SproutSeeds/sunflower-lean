@@ -297,20 +297,30 @@ performs them. The loop is done when every box is checked.
 
 ## Phase A — Archival and announcement (owner-gated, agent-prepared)
 
-- [ ] A1. Zenodo deposit bundle prepared by agent: paper PDF, the
-      erdos-problems checker artifacts (.mjs + JSON certificates), pointer
-      to the GitHub release; metadata text (title, authors, description,
-      keywords, license) ready to paste. 🔑 OWNER publishes; DOI recorded
-      HERE and pasted into the paper (P-section placeholder), recompile.
-- [ ] A2. arXiv package prepared by agent: self-contained .tex verified to
-      compile on a clean TeX tree, abstract text, category math.CO,
-      license selection notes. 🔑 OWNER submits (endorsement flow if
-      needed); arXiv ID recorded HERE; Zenodo and GitHub cross-linked to
-      it.
-- [ ] A3. Forum comments finalized by agent with live links (drafts exist
-      in the session record: one for problem 20 — primary, the strong
-      sunflower problem; one companion for problem 857 noting the
-      formalization in this repo). 🔑 OWNER posts both.
+- [ ] A1. Zenodo deposit bundle. AGENT PREPARATION DONE 2026-06-11:
+      `bld_note/zenodo_bundle/` (in the 857 pack) — `assemble.sh`
+      builds zenodo_deposit.zip (paper PDF+TeX, the five paper-cited
+      checker .mjs files, their JSON certificates, metadata); test
+      assembly ran green (15 files, ~444 KB). `metadata.md` carries
+      paste-ready title/authors/description/keywords/license (CC BY
+      4.0) and related-identifier entries. 🔑 OWNER: after P5, re-run
+      assemble.sh, upload at zenodo.org, Publish; record DOI HERE;
+      replace the paper's two DOI placeholders; recompile.
+- [ ] A2. arXiv package. AGENT PREPARATION DONE 2026-06-11:
+      `bld_note/arxiv_package/` — bld_note.tex verified SELF-CONTAINED
+      on a clean TeX tree (/tmp/arxiv_test, 2-pass pdflatex, 0 errors /
+      0 overfulls; only amsmath/amssymb/amsthm/geometry/booktabs/
+      hyperref); SUBMISSION_NOTES.md has the paste-ready plain-text
+      abstract, category math.CO, license notes, and the
+      refresh-after-DOI checklist. 🔑 OWNER: resolve P5 markers,
+      refresh the copy, submit; record arXiv ID HERE; cross-link.
+- [ ] A3. Forum comments. AGENT PREPARATION DONE 2026-06-11:
+      `bld_note/FORUM_COMMENTS_DRAFT.md` — comment 1 for problem 20
+      (primary; results summary + formalization pointer), comment 2 for
+      problem 857 (companion under the existing M(n,3) thread). Two
+      explicit link slots ([ARXIV], [REPO]) to fill after R3/R4/A2;
+      [REPO] is https://github.com/SproutSeeds/sunflower-lean. 🔑 OWNER
+      fills links and posts both; never posted by the agent.
 - [ ] A4. The erdos-problems pack updated (agent): bld_note README marked
       published, links recorded; memory updated.
 
