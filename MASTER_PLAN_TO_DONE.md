@@ -129,9 +129,38 @@ performs them. The loop is done when every box is checked.
             internals, the SAME profile as the repo's existing
             M_n_3_upper_bridge results; the SAT lane is LRAT/native-trust
             by standing methodology, the F1–F3 kernel spine is unaffected.
-      - [ ] F4c. LRAT-certify I3(4,2) = 12: UNSAT at 13 over the F4a
-            ground set + Lean-verified witness at 12 (port the engine's
-            I12 witness). Certificates committed; recheck command recorded.
+      - [~] F4c. PARTIAL 2026-06-11 — witness half DONE, UNSAT half
+            BLOCKED (recorded after two failed attempts per protocol).
+            DONE: I12 ported and kernel-verified (`i12Witness`,
+            `I3_4_2_lower`: I3(4,2) ≥ 12; plus `M3_4_2_lower`:
+            M3(4,2) ≥ 24 by doubling), axioms clean, no native_decide.
+            BLOCKER (UNSAT-at-13 half):
+            (1) The plan's "over the F4a ground set" is structurally
+                impossible in the existing bitmask encoding — Fin 52
+                means 2^52 primary variables and (2^52)³ triple
+                enumeration; dead at generation, not at solving.
+            (2) Attempt 1: incidence-matrix encoding (13 rows × 52
+                points, exactly-4 counters, common-point aux + cap
+                counters, XOR difference witnesses for SF-freeness;
+                row0 fixed + row-lex symmetry breaking;
+                tools/probe_i3_4_2_incidence.py). B=12 SAT in seconds
+                (encoding validated against the witness); B=13: cadical
+                600 s timeout.
+            (3) Attempt 2: + first-use point-precedence breaking
+                (kills the S₄₈ point symmetry). B=12 still SAT; B=13:
+                33M+ conflicts at 44 CPU-min with no convergence signal
+                (7200 s budget; final outcome to be recorded here).
+            (4) Even given UNSAT: an LRAT certificate at this conflict
+                scale is multi-GB (the trivial n=6 M(n,3) proof was
+                already 26 MB), impractical to commit/re-check, and the
+                incidence encoding has no Lean soundness layer (per-row
+                counters, aux-var semantics — a multi-day build).
+            STANDING EVIDENCE for I3(4,2) ≤ 12: the deterministic
+            orderly exhaustion (36,329,094 nodes, certified checker,
+            857 pack), exactly as the paper states it; the paper makes
+            no LRAT claim for this value (verified in P4). Next hook if
+            ever resumed: special-case support analysis to shrink the
+            ground set below 52 before re-encoding.
       - [x] F4d. t=1 table rows l ≤ 4. DONE 2026-06-10: six row theorems
             I3_2/3/4_1_row (3, 4, 5) and M3_2/3/4_1_row (6, 8, 10) in
             M3/SmallValues.lean, instantiated from F2f (kernel, axioms
