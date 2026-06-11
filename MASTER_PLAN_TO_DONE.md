@@ -212,11 +212,21 @@ performs them. The loop is done when every box is checked.
       build instructions, verify_m3.sh usage, LRAT independent-recheck
       instructions (solver-free, verifier-only path). Tested by actually
       following them in a scratch clone (`git clone . /tmp/...`).
-- [ ] R3. 🔑 OWNER: commit the M3 development (suggested message prepared
-      by agent), push to GitHub.
-- [ ] R4. 🔑 OWNER: tag a citable release (suggested: `paper-v1`);
-      optionally enable the Zenodo–GitHub integration so the release
-      mints a software DOI automatically.
+- [ ] R3. 🔑 OWNER: push to GitHub. AGENT PREPARATION DONE 2026-06-11:
+      the development is already committed locally as a clean series of
+      small verified commits on main (F0–F7 + R1/R2 prep; every commit
+      message records what was kernel-gated). Owner action is exactly:
+      `git push origin main`. Nothing else to prepare — no force, no
+      rebase, no new branch needed.
+- [ ] R4. 🔑 OWNER: tag a citable release. AGENT PREPARATION DONE
+      2026-06-11 — suggested commands, after R3:
+      `git tag -a paper-v1 -m "M3 development as referenced by the paper
+      (kernel-verified spine + LRAT-certified SAT lane)"` then
+      `git push origin paper-v1`, then on GitHub: Releases → Draft from
+      tag paper-v1 (title "paper-v1: M3 development"). Optional DOI:
+      zenodo.org → GitHub integration → flip the repo on BEFORE
+      publishing the GitHub release, so the release mints the software
+      DOI automatically; the DOI then goes into the paper (P3/A1).
 - [ ] R5. Post-push verification (agent): clean clone FROM GITHUB builds
       green and verify_m3.sh passes (this also validates R2 for the
       public).
