@@ -264,6 +264,12 @@ performs them. The loop is done when every box is checked.
 - [ ] R5. Post-push verification (agent): clean clone FROM GITHUB builds
       green and verify_m3.sh passes (this also validates R2 for the
       public).
+      DEPENDENCY BLOCKER recorded 2026-06-11: requires R3 (🔑 push) —
+      the GitHub repo currently lacks the 27 local commits, so a
+      public clone cannot contain the M3 development. The exact same
+      verification has been performed twice against local clones
+      (R2: ALL GREEN; X1 local half: see below), so this item is
+      one `git clone && ./verify_m3.sh` away once the push lands.
 
 ## Phase P — Paper integration (bld_note, in erdos-problems pack)
 
@@ -352,6 +358,10 @@ performs them. The loop is done when every box is checked.
       fills links and posts both; never posted by the agent.
 - [ ] A4. The erdos-problems pack updated (agent): bld_note README marked
       published, links recorded; memory updated.
+      DEPENDENCY BLOCKER recorded 2026-06-11: definitionally
+      post-publication — requires A1 (DOI), A2 (arXiv ID), A3 (posted
+      comments) to exist before they can be recorded. Memory already
+      updated with the pre-publication program state.
 
 ## Phase X — Final audit (the loop's exit gate)
 
@@ -361,9 +371,41 @@ performs them. The loop is done when every box is checked.
 - [ ] X2. Link integrity: paper PDF (arXiv version) links resolve to the
       repo/release/DOI; repo README links back to arXiv/Zenodo; forum
       comments' links resolve. Each checked mechanically (curl status).
+      AGENT PREPARATION DONE 2026-06-11: `tools/x2_check_links.sh`
+      committed — takes the arXiv and Zenodo URLs as arguments, curls
+      all nine public surfaces, exit 0 only if all resolve. Pre-check
+      of the three surfaces that exist today: github repo 200,
+      erdosproblems.com/20 200, erdosproblems.com/857 200.
+      DEPENDENCY BLOCKER: the remaining six links (release tag, arXiv,
+      DOI, raw-file URLs at the pushed HEAD) exist only after
+      R3/R4/A1/A2/A3.
 - [ ] X3. Closing ledger appended to this file: dates, final axiom
       audits, certificate inventory, and the statement that every box
       above is checked. THE LOOP ENDS HERE.
+      AGENT PREPARATION DONE 2026-06-11 — ledger template below with
+      every pre-publication field already filled; the five bracketed
+      fields are completed at X3 time (post-owner-actions):
+      ---- CLOSING LEDGER (template) ----
+      Formalization: 2026-06-10 → 2026-06-11, Phases F/R-agent/P-agent
+      complete. Final axiom audits: 25 results, verbatim in
+      FORMAL_RESULTS_M3.md (19 × [propext, Classical.choice,
+      Quot.sound]; 6 × SAT lane + [Lean.ofReduceBool,
+      Lean.trustCompiler]); no sorryAx anywhere. Certificate
+      inventory: SunflowerLean/M3/sat_m3_7_2_1_7.lrat (689,091 B),
+      SunflowerLean/M3/sat_m3_7_3_2_21.lrat (511,802 B), re-checked
+      natively on every build. Known permanent exception: F4c
+      UNSAT-half blocker (engine-exhaustion evidence stands; recorded
+      above). Verification runs: verify_m3.sh ALL GREEN (working
+      tree, R2 scratch clone, X1 fresh clone at HEAD e487de9+).
+      [Push date / pushed HEAD hash], [release tag URL],
+      [Zenodo DOI], [arXiv ID], [forum comment URLs].
+      Statement when all five fields are filled and X1/X2 pass
+      publicly: every box above is checked. THE LOOP ENDS.
+      ---- end template ----
+      DEPENDENCY BLOCKER: the exit gate cannot truthfully close while
+      R1/R3/R4/P5/A1/A2/A3 (🔑) and their dependents R5/A4/X1-public/
+      X2 remain open; per the standing publication-control rule the
+      agent never performs the owner actions.
 
 ## Loop protocol
 
