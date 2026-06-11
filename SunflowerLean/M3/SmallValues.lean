@@ -43,6 +43,16 @@ theorem I3_4_2_lower :
     ∃ F : Finset (Finset (Fin 10)), I3Admissible F 4 2 ∧ F.card = 12 :=
   ⟨i12Witness, i12Witness_admissible, i12Witness_card⟩
 
+/-- Doubling the I12 witness: `M3(4,2) ≥ 24`, kernel-verified (the
+    paper's bracket [24, 66] at (4,2) — lower half now kernel, upper
+    half is `M3_card_le_t2` at l = 4). -/
+theorem M3_4_2_lower :
+    ∃ H : Finset (Finset (Fin 10 ⊕ Fin 10)),
+      M3Admissible H 4 2 ∧ H.card = 24 := by
+  obtain ⟨H, hadm, hcard⟩ :=
+    M3_ge_two_I3 i12Witness 4 2 (by norm_num) i12Witness_admissible
+  exact ⟨H, hadm, by rw [hcard, i12Witness_card]⟩
+
 
 /-
   F4d: the t=1 table rows l = 2, 3, 4 (M3 = 6, 8, 10; I3 = 3, 4, 5) as

@@ -3,8 +3,8 @@
 Companion to the paper *"Three-sunflower-free set systems with bounded
 pairwise intersections"* (draft in
 `erdos-problems/packs/sunflower/problems/857/bld_note/`). Every row's
-axiom audit below is the verbatim `#print axioms` output, re-derived
-2026-06-11 against the full green `lake build` (toolchain
+axiom audit below is the verbatim `#print axioms` output (25 results),
+re-derived 2026-06-11 against the full green `lake build` (toolchain
 `leanprover/lean4:v4.26.0`, mathlib `v4.26.0`).
 
 Axiom profiles:
@@ -42,6 +42,7 @@ Axiom profiles:
 | Support/relabel soundness: Fin ((v+1)·l) bounds are universal | `M3.M3_upper_of_fin`, `M3.I3_upper_of_fin` | `M3/Relabel.lean` | kernel |
 | SAT bridge soundness: UNSAT ⇒ cardinality bound on Fin n | `M3.m3_bridge`, `M3.i3_bridge` | `M3/SATEncoding.lean` | kernel+LRAT* |
 | Engine value, witness side: I3(4,2) ≥ 12 (I12 on 10 points) | `M3.I3_4_2_lower` | `M3/SmallValues.lean` | kernel |
+| Doubled I12: M3(4,2) ≥ 24 (paper's bracket, lower half) | `M3.M3_4_2_lower` | `M3/SmallValues.lean` | kernel |
 | Encoder anchors: no 7-member M3(2,1)- / 21-member M3(3,2)-family on Fin 7 | `M3.M3_2_1_fin7_anchor`, `M3.M3_3_2_fin7_anchor` | `M3/SmallValues.lean` | kernel+LRAT |
 | Lemma 4.1 (pencil): an orthogoval pair of order q yields an I3-admissible(2q+2, 2) family of card q²+q+1 | `M3.pencilFam_I3Admissible`, `M3.pencilFam_card` | `M3/Pencil.lean` | kernel |
 | Lemma 4.1 + 2.4: doubled pencil family, M3-admissible, card 2(q²+q+1) | `M3.doubled_pencilFam` | `M3/Pencil.lean` | kernel |
@@ -79,6 +80,7 @@ the class non-vacuous at q = 2 by kernel `decide`.
 'M3.m3_bridge' depends on axioms: [propext, Classical.choice, Lean.ofReduceBool, Lean.trustCompiler, Quot.sound]
 'M3.i3_bridge' depends on axioms: [propext, Classical.choice, Lean.ofReduceBool, Lean.trustCompiler, Quot.sound]
 'M3.I3_4_2_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.M3_4_2_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_2_1_fin7_anchor' depends on axioms: [propext, Classical.choice, Lean.ofReduceBool, Lean.trustCompiler, Quot.sound]
 'M3.M3_3_2_fin7_anchor' depends on axioms: [propext, Classical.choice, Lean.ofReduceBool, Lean.trustCompiler, Quot.sound]
 'M3.pencilFam_I3Admissible' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -103,8 +105,8 @@ build (no external tool needed for verification).
 
 ## Engine results that remain checker-level (not Lean)
 
-I3(4,2) ≤ 12 (orderly exhaustion, 36,329,094 nodes) — the ≥ 12 half is
-kernel-verified above; the ≤ 12 half is engine + deterministic checker
-in the erdos-problems pack (SAT certification attempt recorded in
-MASTER_PLAN_TO_DONE.md under F4c). Everything t = 2 exact beyond that
-(e.g. M3(4,2) ≥ 24) likewise lives at checker level.
+I3(4,2) ≤ 12 (orderly exhaustion, 36,329,094 nodes) — the ≥ 12 half
+and the doubled M3(4,2) ≥ 24 are kernel-verified above; the ≤ 12 half
+is engine + deterministic checker in the erdos-problems pack (SAT
+certification attempt recorded in MASTER_PLAN_TO_DONE.md under F4c).
+Other t = 2 engine bounds (e.g. I3(5,2) ≥ 16) remain checker-level.
