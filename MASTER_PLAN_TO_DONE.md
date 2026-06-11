@@ -148,8 +148,8 @@ performs them. The loop is done when every box is checked.
                 600 s timeout.
             (3) Attempt 2: + first-use point-precedence breaking
                 (kills the S₄₈ point symmetry). B=12 still SAT; B=13:
-                33M+ conflicts at 44 CPU-min with no convergence signal
-                (7200 s budget; final outcome to be recorded here).
+                FINAL — full 7200 s budget expired, cadical UNKNOWN
+                (timeout), ~40M+ conflicts, neither SAT nor UNSAT.
             (4) Even given UNSAT: an LRAT certificate at this conflict
                 scale is multi-GB (the trivial n=6 M(n,3) proof was
                 already 26 MB), impractical to commit/re-check, and the
