@@ -278,7 +278,22 @@ performs them. The loop is done when every box is checked.
       Paper updated to claim M3(4,2) ≥ 24 as kernel-verified;
       recompiled clean (0 errors / 0 overfulls).
 - [ ] P5. 🔑 OWNER: affiliation/contact + final AI-disclosure wording +
-      complete read-through sign-off.
+      complete read-through sign-off. AGENT PREPARATION DONE 2026-06-11
+      — the exact markers to resolve in bld_note.tex:
+      (1) line ~26 \author thanks: "[Affiliation/contact to be filled
+          by the author.]" — replace with affiliation or "Independent
+          researcher" + email;
+      (2) line ~30 title-page disclosure footnote: "[Author to finalize
+          disclosure wording.]" — suggested wording: "Drafting,
+          computation, and Lean formalization were carried out with
+          substantial assistance from Claude (Anthropic); all results
+          were verified by deterministic checkers or the Lean kernel as
+          described in Section 7, and responsibility rests with the
+          author.";
+      (3) line ~559 Acknowledgments "[Author to finalize.]" — keep or
+          trim the CIJSSS thanks sentence;
+      (4) line ~556 "[Zenodo DOI placeholder.]" — filled at A1, not by
+          hand. Then: full read-through sign-off.
 
 ## Phase A — Archival and announcement (owner-gated, agent-prepared)
 
