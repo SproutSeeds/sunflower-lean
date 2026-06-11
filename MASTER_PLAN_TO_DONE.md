@@ -202,9 +202,12 @@ performs them. The loop is done when every box is checked.
 
 ## Phase R — Repository publication readiness
 
-- [ ] R1. LICENSE file: agent prepares Apache-2.0 (code) text and notes
-      the option (MIT alternative); 🔑 OWNER chooses and the file is
-      committed with that choice recorded here.
+- [ ] R1. LICENSE file. AGENT PREPARATION DONE 2026-06-11: canonical
+      texts staged in `license-options/` (LICENSE.apache-2.0.txt from
+      apache.org; LICENSE.mit.txt from SPDX, year/name filled), with
+      README giving the one-command install for either and a
+      recommendation (Apache-2.0, matching mathlib's license culture).
+      🔑 OWNER: choose, `cp` to LICENSE, commit, record choice here.
 - [ ] R2. Reproduction documentation: exact toolchain pin, clean-clone
       build instructions, verify_m3.sh usage, LRAT independent-recheck
       instructions (solver-free, verifier-only path). Tested by actually
