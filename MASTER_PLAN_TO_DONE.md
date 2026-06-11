@@ -68,9 +68,13 @@ performs them. The loop is done when every box is checked.
             |Dis| ≤ l+1 by F2b (intersecting subfamily), |Mee| ≤ l by
             injection into A; l = 0 and F = ∅ edge cases handled. axioms
             [propext, Classical.choice, Quot.sound] — no sorryAx.
-      - [ ] F2e. Star witness: parametric K_{l+1} star family over
-            `Sym2 (Fin (l+1))` is I3Admissible(l,1) with card l+1
-            (pairwise cores are distinct singleton edges).
+      - [x] F2e. Star witness. DONE 2026-06-10: `starAt`/`starFam` over
+            `Sym2 (Fin (l+1))`; `starFam_I3Admissible` (all l) and
+            `starFam_card = l+1` (for 2 ≤ l — at l=1 the two stars of K₂
+            coincide, matching the paper's l ≥ 2). starAt_card,
+            starAt_inter (= {s(u,v)}), starAt_injective. lake build green
+            (one omega fix-up for l+1-1), zero warnings; axioms [propext,
+            Classical.choice, Quot.sound] — no sorryAx.
       - [ ] F2f. Exact statements: `I3_one_exact` (= l+1) and
             `M3_one_exact` (= 2l+2 via F2e + F1 doubling + F2d), stated in
             the existence-plus-upper-bound idiom of SmallCases.lean.

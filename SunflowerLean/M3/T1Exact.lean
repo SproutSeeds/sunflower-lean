@@ -12,6 +12,7 @@
   `lake build` (kernel) + axiom audit; committed only if sorry-free.
 -/
 
+import Mathlib.Data.Sym.Sym2
 import SunflowerLean.M3.Doubling
 
 namespace M3
@@ -301,5 +302,127 @@ theorem M3_card_le_t1 {F : Finset (Finset α)} {l : ℕ}
           simp only [Finset.card_singleton]
           omega
   omega
+
+
+/-
+  F2e: the star witness. Over the edge set of K_{l+1} (type
+  `Sym2 (Fin (l+1))`), the family of vertex stars is I3-admissible(l,1)
+  with exactly l+1 members for l >= 2: each star has l edges, two stars
+  meet in exactly the connecting edge, and three stars have pairwise
+  distinct connecting edges (no common core). At l = 1 the two stars of
+  K_2 coincide, so l >= 2 is required — matching the paper's l >= 2.
+-/
+
+/-- The star of a vertex: the `l` edges of `K_{l+1}` incident to it. -/
+def starAt (l : ℕ) (v : Fin (l + 1)) : Finset (Sym2 (Fin (l + 1))) :=
+  (Finset.univ.erase v).image (fun w => s(v, w))
+
+/-- The star family: all `l+1` vertex stars. -/
+def starFam (l : ℕ) : Finset (Finset (Sym2 (Fin (l + 1)))) :=
+  Finset.univ.image (starAt l)
+
+lemma mem_starAt {l : ℕ} {v : Fin (l + 1)} {e : Sym2 (Fin (l + 1))} :
+    e ∈ starAt l v ↔ ∃ w, w ≠ v ∧ e = s(v, w) := by
+  simp only [starAt, Finset.mem_image, Finset.mem_erase, Finset.mem_univ,
+    and_true]
+  constructor
+  · rintro ⟨w, hw, rfl⟩
+    exact ⟨w, hw, rfl⟩
+  · rintro ⟨w, hw, rfl⟩
+    exact ⟨w, hw, rfl⟩
+
+lemma starAt_card {l : ℕ} (v : Fin (l + 1)) : (starAt l v).card = l := by
+  have hinj : Set.InjOn (fun w => s(v, w)) (Finset.univ.erase v) :=
+    fun a _ b _ hab => Sym2.congr_right.mp hab
+  rw [starAt, Finset.card_image_of_injOn hinj,
+    Finset.card_erase_of_mem (Finset.mem_univ v), Finset.card_univ,
+    Fintype.card_fin]
+  omega
+
+lemma starAt_inter {l : ℕ} {u v : Fin (l + 1)} (huv : u ≠ v) :
+    starAt l u ∩ starAt l v = {s(u, v)} := by
+  ext e
+  simp only [Finset.mem_inter, mem_starAt, Finset.mem_singleton]
+  constructor
+  · rintro ⟨⟨a, ha, rfl⟩, ⟨b, hb, heq⟩⟩
+    rw [Sym2.eq_iff] at heq
+    rcases heq with ⟨h1, _⟩ | ⟨_, h2⟩
+    · exact absurd h1 huv
+    · rw [h2]
+  · rintro rfl
+    exact ⟨⟨v, Ne.symm huv, rfl⟩, ⟨u, huv, Sym2.eq_swap⟩⟩
+
+lemma starAt_injective {l : ℕ} (hl : 2 ≤ l) :
+    Function.Injective (starAt l) := by
+  intro u v hueq
+  by_contra huv
+  obtain ⟨w, hwu, hwv⟩ : ∃ w : Fin (l + 1), w ≠ u ∧ w ≠ v := by
+    by_contra hcon
+    push_neg at hcon
+    have hsub : (Finset.univ : Finset (Fin (l + 1))) ⊆ {u, v} := by
+      intro w _
+      simp only [Finset.mem_insert, Finset.mem_singleton]
+      rcases eq_or_ne w u with h | h
+      · exact Or.inl h
+      · exact Or.inr (hcon w h)
+    have h1 := Finset.card_le_card hsub
+    have h2 : ({u, v} : Finset (Fin (l + 1))).card ≤ 2 :=
+      le_trans (Finset.card_insert_le _ _) (by simp)
+    rw [Finset.card_univ, Fintype.card_fin] at h1
+    omega
+  have hmem : s(u, w) ∈ starAt l u := mem_starAt.mpr ⟨w, hwu, rfl⟩
+  rw [hueq] at hmem
+  obtain ⟨b, _, heq⟩ := mem_starAt.mp hmem
+  rw [Sym2.eq_iff] at heq
+  rcases heq with ⟨h1, _⟩ | ⟨_, h2⟩
+  · exact huv h1
+  · exact hwv h2
+
+lemma starFam_card {l : ℕ} (hl : 2 ≤ l) : (starFam l).card = l + 1 := by
+  rw [starFam, Finset.card_image_of_injective _ (starAt_injective hl),
+    Finset.card_univ, Fintype.card_fin]
+
+/-- F2e: the star family is an intersecting witness of size `l+1` at
+    cap 1 (for `l ≥ 2`). Paper Theorem 1.1, lower-bound witness. -/
+theorem starFam_I3Admissible (l : ℕ) : I3Admissible (starFam l) l 1 := by
+  have hmem : ∀ S ∈ starFam l, ∃ v, starAt l v = S := by
+    intro S hS
+    obtain ⟨v, _, hv⟩ := Finset.mem_image.mp hS
+    exact ⟨v, hv⟩
+  refine ⟨⟨?_, ?_, ?_⟩, ?_⟩
+  · intro S hS
+    obtain ⟨v, rfl⟩ := hmem S hS
+    exact starAt_card v
+  · intro S hS T hT hST
+    obtain ⟨u, rfl⟩ := hmem S hS
+    obtain ⟨v, rfl⟩ := hmem T hT
+    have huv : u ≠ v := fun h => hST (by rw [h])
+    rw [starAt_inter huv, Finset.card_singleton]
+  · rintro H hH ⟨hcard, core, hcore⟩
+    obtain ⟨X, Y, Z, hXY, hXZ, hYZ, rfl⟩ := Finset.card_eq_three.mp hcard
+    have hXm : X ∈ starFam l := hH (by simp)
+    have hYm : Y ∈ starFam l := hH (by simp)
+    have hZm : Z ∈ starFam l := hH (by simp)
+    obtain ⟨u, rfl⟩ := hmem X hXm
+    obtain ⟨v, rfl⟩ := hmem Y hYm
+    obtain ⟨w, rfl⟩ := hmem Z hZm
+    have huv : u ≠ v := fun h => hXY (by rw [h])
+    have huw : u ≠ w := fun h => hXZ (by rw [h])
+    have hvw : v ≠ w := fun h => hYZ (by rw [h])
+    have e1 : ({s(u, v)} : Finset (Sym2 (Fin (l + 1)))) = core := by
+      rw [← starAt_inter huv]
+      exact hcore _ _ (by simp) (by simp) hXY
+    have e2 : ({s(u, w)} : Finset (Sym2 (Fin (l + 1)))) = core := by
+      rw [← starAt_inter huw]
+      exact hcore _ _ (by simp) (by simp) hXZ
+    have heq : s(u, v) = s(u, w) :=
+      Finset.singleton_inj.mp (e1.trans e2.symm)
+    exact hvw (Sym2.congr_right.mp heq)
+  · intro S hS T hT hST
+    obtain ⟨u, rfl⟩ := hmem S hS
+    obtain ⟨v, rfl⟩ := hmem T hT
+    have huv : u ≠ v := fun h => hST (by rw [h])
+    rw [starAt_inter huv]
+    exact ⟨s(u, v), Finset.mem_singleton_self _⟩
 
 end M3
