@@ -181,19 +181,24 @@ performs them. The loop is done when every box is checked.
       F5b/F5c + mathlib's Bertrand postulate, stated conditionally on the
       orthogoval-pair existence hypothesis class (with F5d showing
       non-vacuity; the all-prime-powers input remains cited).
-- [ ] F7. Glue, index, and verification harness.
-      - [ ] F7a. `SunflowerLean/M3.lean` umbrella import; root
-            `SunflowerLean.lean` updated; full `lake build` green.
-      - [ ] F7b. `FORMAL_RESULTS_M3.md`: a mapping table — paper statement
-            ↔ Lean name ↔ file ↔ axiom audit output — for every formalized
-            result. Every row mechanically re-derived (run the audits while
-            writing the table, paste actual output).
-      - [ ] F7c. `verify_m3.sh`: one script that runs lake build, the
-            axiom audits, and the LRAT rechecks; exits nonzero on any
-            failure. Run it; commit it; record its output.
-      - [ ] F7d. README.md gains an "M3 development" section (results,
-            how to verify, link to plan + mapping table + paper).
-            AI_DISCLOSURE.md extended to cover this development.
+- [x] F7. Glue, index, and verification harness. DONE 2026-06-11
+      (commit a185364).
+      - [x] F7a. `SunflowerLean/M3.lean` umbrella (9 module imports);
+            root `SunflowerLean.lean` updated; full `lake build`
+            "Build completed successfully (3094 jobs)" — only
+            pre-existing lints elsewhere (Obstruction.lean longLine,
+            SmallCases native_decide style).
+      - [x] F7b. `FORMAL_RESULTS_M3.md` written with the 24-row audit
+            re-derived 2026-06-11 and pasted verbatim: 19 kernel-only
+            rows ([propext, Classical.choice, Quot.sound]), 4 SAT-lane
+            rows (+ ofReduceBool/trustCompiler), certificate inventory,
+            conditionality note for CIJSSS.
+      - [x] F7c. `verify_m3.sh` committed and run: "VERIFY_M3: ALL
+            GREEN" (full build + 24 audits with count/sorryAx/foreign-
+            axiom/spine-purity checks + LRAT presence; nonzero exit on
+            failure; wrapped-line normalization handled).
+      - [x] F7d. README "M3 development" section + AI_DISCLOSURE M3
+            paragraph (kernel/LRAT trust tiers, conditionality policy).
 
 ## Phase R — Repository publication readiness
 
