@@ -144,9 +144,19 @@ performs them. The loop is done when every box is checked.
             decide witness anchor (Sym2 (Fin 5)) SIGABRTs the kernel at
             maxRecDepth 32768 even with a 64MB stack — omitted; the row
             stays doubly pinned (theorem + engine).
-      - [ ] F4e. Cross-validation anchors: f(2,3) = 6 and f(3,3) = 20 in
-            the M3-encoder (vacuous cap t = l−1), matching the existing
-            M(n,3) machinery's values.
+      - [x] F4e. Cross-validation anchors. DONE 2026-06-10: LRAT-certified
+            UNSAT at the repo's M(n,3) scale (n = 7) — `M3_2_1_fin7_anchor`
+            (m3CNF 7 2 1 7, agrees with kernel M3(2,1) = 6) and
+            `M3_3_2_fin7_anchor` (m3CNF 7 3 2 21, agrees with literature
+            f(3,3) = 20; cap vacuous for 3-sets). Certificates committed
+            (SunflowerLean/M3/sat_m3_7_*.lrat, CaDiCaL --plain --lrat
+            --no-binary), re-verified natively on every build via the
+            committed exporter tools/export_m3_cnf.lean; recheck commands
+            recorded in-file. Solver fact noted: m3CNF 7 3 2 20 is also
+            UNSAT — the f(3,3) = 20 extremal family needs > 7 points, so
+            no exact-20 Fin-7 anchor pair exists. Axiom profile: SAT lane
+            ([..., ofReduceBool, trustCompiler]), matching the existing
+            M_n_3 bridge results.
 - [ ] F5. Conditional pencil lemma `SunflowerLean/M3/Pencil.lean`.
       - [ ] F5a. `structure OrthogovalPair` (point/line types, two
             incidences, two-points-one-line-per-plane, no shared lines,

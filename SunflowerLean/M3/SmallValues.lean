@@ -109,4 +109,79 @@ theorem M3_4_1_row :
   is deliberately not used on the anchor lane.
 -/
 
+
+/-
+  F4e: cross-validation anchors for the M3 encoder, at the same n = 7
+  scale as the repo's largest M(n,3) bridge. Both UNSAT results are
+  LRAT-certified (CaDiCaL --plain --lrat --no-binary; certificates
+  committed next to this file) and cross-checked against independent
+  knowledge: m3CNF 7 2 1 7 against the kernel theorem M3(2,1) = 6
+  (M3_one_exact — the cap is genuine there), and m3CNF 7 3 2 21 against
+  the literature value f(3,3) = 20 (cap t = 2 is vacuous for 3-sets, so
+  M3(3,2) = f(3,3)). Solver note: m3CNF 7 3 2 20 is ALSO unsat on
+  Fin 7 — the f(3,3) = 20 extremal family needs more than 7 points, so
+  no Fin 7 witness pair is possible at 20.
+
+  Recheck commands (deterministic):
+    lake env lean --run tools/export_m3_cnf.lean   # writes /tmp/m3_*.cnf
+    cadical --plain --lrat --no-binary m3_7_2_1_7.cnf   sat_m3_7_2_1_7.lrat
+    cadical --plain --lrat --no-binary m3_7_3_2_21.cnf  sat_m3_7_3_2_21.lrat
+  and the native LRAT checks below re-verify the committed certificates
+  against the Lean-generated CNFs on every build.
+-/
+
+open Std.Tactic.BVDecide.LRAT in
+/-- LRAT certificate for `(m3CNF 7 2 1 7).Unsat`. -/
+def m3_7217_lrat : Array IntAction :=
+  match parseLRATProof (include_str "sat_m3_7_2_1_7.lrat").toUTF8 with
+  | .ok proof => proof
+  | .error _ => #[]
+
+open Std.Tactic.BVDecide.LRAT in
+def m3_7217_verified : Bool :=
+  check m3_7217_lrat (m3CNF 7 2 1 7)
+
+set_option linter.style.nativeDecide false in
+-- SAT lane: LRAT certificates are checked natively by standing repo
+-- methodology (kernel decide cannot walk certificates of this size).
+theorem m3_7217_verified_eq_true : m3_7217_verified = true := by
+  native_decide
+
+theorem m3CNF_7_2_1_7_unsat : (m3CNF 7 2 1 7).Unsat :=
+  Std.Tactic.BVDecide.LRAT.check_sound m3_7217_lrat (m3CNF 7 2 1 7)
+    m3_7217_verified_eq_true
+
+/-- F4e anchor 1: no 7-member M3(2,1)-family on `Fin 7` — encoder
+    result agreeing with the kernel theorem `M3_one_exact` (= 6). -/
+theorem M3_2_1_fin7_anchor :
+    ∀ F : Finset (Finset (Fin 7)), M3Admissible F 2 1 → F.card < 7 :=
+  m3_bridge 7 2 1 7 m3CNF_7_2_1_7_unsat
+
+open Std.Tactic.BVDecide.LRAT in
+/-- LRAT certificate for `(m3CNF 7 3 2 21).Unsat`. -/
+def m3_73221_lrat : Array IntAction :=
+  match parseLRATProof (include_str "sat_m3_7_3_2_21.lrat").toUTF8 with
+  | .ok proof => proof
+  | .error _ => #[]
+
+open Std.Tactic.BVDecide.LRAT in
+def m3_73221_verified : Bool :=
+  check m3_73221_lrat (m3CNF 7 3 2 21)
+
+set_option linter.style.nativeDecide false in
+-- SAT lane: see the note on `m3_7217_verified_eq_true`.
+theorem m3_73221_verified_eq_true : m3_73221_verified = true := by
+  native_decide
+
+theorem m3CNF_7_3_2_21_unsat : (m3CNF 7 3 2 21).Unsat :=
+  Std.Tactic.BVDecide.LRAT.check_sound m3_73221_lrat (m3CNF 7 3 2 21)
+    m3_73221_verified_eq_true
+
+/-- F4e anchor 2: no 21-member M3(3,2)-family on `Fin 7` — encoder
+    result agreeing with the literature value f(3,3) = 20 (the cap is
+    vacuous for 3-sets, so M3(3,2) = f(3,3)). -/
+theorem M3_3_2_fin7_anchor :
+    ∀ F : Finset (Finset (Fin 7)), M3Admissible F 3 2 → F.card < 21 :=
+  m3_bridge 7 3 2 21 m3CNF_7_3_2_21_unsat
+
 end M3
