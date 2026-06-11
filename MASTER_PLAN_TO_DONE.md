@@ -47,8 +47,13 @@ performs them. The loop is done when every box is checked.
             `no_three_through_point`, `degree_le_two` in M3/T1Exact.lean;
             lake build green first attempt; axioms: [propext, Quot.sound] /
             [propext, Classical.choice, Quot.sound] — no sorryAx.
-      - [ ] F2b. Counting upper bound `I3 ≤ l+1` for intersecting families
-            (pair-count vs degree-2 points; Finset.sum double count).
+      - [x] F2b. Counting upper bound `I3 ≤ l+1`. DONE 2026-06-10:
+            `M3.I3_card_le_t1` in M3/T1Exact.lean — each ordered distinct
+            pair maps to its unique common point (card_eq_sum_card_fiberwise);
+            fibers ⊆ (filter x).offDiag so ≤ deg²−deg ≤ deg (degree_le_two);
+            Σ deg = m·l by sum swap; m(m−1) ≤ m·l → m ≤ l+1. lake build
+            green, zero warnings; axioms [propext, Classical.choice,
+            Quot.sound] — no sorryAx.
       - [ ] F2c. Mantel input: disjointness-graph triangle-free bound
             (≤ m²/4 disjoint pairs). Use mathlib Turán API if available on
             this toolchain; otherwise prove the cherry double-count

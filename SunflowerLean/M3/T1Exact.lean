@@ -83,4 +83,87 @@ lemma degree_le_two {F : Finset (Finset α)}
   obtain ⟨hC, hxC⟩ := Finset.mem_filter.mp hCm
   exact no_three_through_point hc hsf hA hB hC hAB hAC hBC hxA hxB hxC
 
+
+/-
+  F2b: the intersecting cap. An intersecting, 1-capped, 3-sunflower-free
+  family of l-sets has at most l+1 members. Proof: map each ordered distinct
+  pair to its unique common point; fibers inject into ordered pairs through
+  that point, of which there are deg*(deg-1) <= deg by the degree lemma; so
+  m(m-1) <= sum of degrees = m*l.
+-/
+
+/-- F2b: an intersecting `I3`-admissible family at cap 1 has at most `l+1`
+    members. Paper Theorem 1.1, intersecting case. -/
+theorem I3_card_le_t1 {F : Finset (Finset α)} {l : ℕ}
+    (hF : I3Admissible F l 1) : F.card ≤ l + 1 := by
+  obtain ⟨⟨hu, hc, hsf⟩, hint⟩ := hF
+  rcases le_or_gt F.card 1 with hm | hm
+  · omega
+  obtain ⟨A0, hA0, B0, hB0, hAB0⟩ := Finset.one_lt_card.mp hm
+  obtain ⟨x0, _⟩ := hint A0 hA0 B0 hB0 hAB0
+  set U := F.sup id with hU
+  have hsubU : ∀ S ∈ F, S ⊆ U := fun S hS => Finset.le_sup (f := id) hS
+  set deg : α → ℕ := fun x => (F.filter (fun S => x ∈ S)).card with hdeg
+  set f : Finset α × Finset α → α :=
+    fun p => if h : (p.1 ∩ p.2).Nonempty then h.choose else x0 with hf
+  have hfmem : ∀ p ∈ F.offDiag, p.1 ∩ p.2 = {f p} := by
+    intro p hp
+    obtain ⟨h1, h2, hne⟩ := Finset.mem_offDiag.mp hp
+    have hnonempty : (p.1 ∩ p.2).Nonempty := hint _ h1 _ h2 hne
+    have hch : f p ∈ p.1 ∩ p.2 := by
+      simp only [hf, dif_pos hnonempty]
+      exact hnonempty.choose_spec
+    obtain ⟨hx1, hx2⟩ := Finset.mem_inter.mp hch
+    exact inter_eq_singleton_of_capped hc h1 h2 hne hx1 hx2
+  have hfU : ∀ p ∈ F.offDiag, f p ∈ U := by
+    intro p hp
+    obtain ⟨h1, _, _⟩ := Finset.mem_offDiag.mp hp
+    have hpin : f p ∈ p.1 ∩ p.2 := by
+      rw [hfmem p hp]; exact Finset.mem_singleton_self _
+    exact hsubU _ h1 (Finset.mem_inter.mp hpin).1
+  have hfiber := Finset.card_eq_sum_card_fiberwise hfU
+  have hfibsub : ∀ x ∈ U,
+      (F.offDiag.filter (fun p => f p = x)) ⊆
+        (F.filter (fun S => x ∈ S)).offDiag := by
+    intro x _ p hp
+    obtain ⟨hpd, hfp⟩ := Finset.mem_filter.mp hp
+    obtain ⟨h1, h2, hne⟩ := Finset.mem_offDiag.mp hpd
+    have hin := hfmem p hpd
+    rw [hfp] at hin
+    have hxin : x ∈ p.1 ∩ p.2 := by
+      rw [hin]; exact Finset.mem_singleton_self x
+    obtain ⟨hx1, hx2⟩ := Finset.mem_inter.mp hxin
+    exact Finset.mem_offDiag.mpr ⟨Finset.mem_filter.mpr ⟨h1, hx1⟩,
+      Finset.mem_filter.mpr ⟨h2, hx2⟩, hne⟩
+  have hfibcard : ∀ x ∈ U,
+      (F.offDiag.filter (fun p => f p = x)).card ≤ deg x * deg x - deg x := by
+    intro x hx
+    calc (F.offDiag.filter (fun p => f p = x)).card
+        ≤ (F.filter (fun S => x ∈ S)).offDiag.card :=
+          Finset.card_le_card (hfibsub x hx)
+      _ = deg x * deg x - deg x := by rw [Finset.offDiag_card]
+  have hkey : F.card * F.card - F.card ≤ ∑ x ∈ U, deg x := by
+    rw [← Finset.offDiag_card, hfiber]
+    refine le_trans (Finset.sum_le_sum hfibcard) (Finset.sum_le_sum ?_)
+    intro x hx
+    have hd2 : deg x ≤ 2 := degree_le_two hc hsf x
+    set d := deg x with hd
+    interval_cases d <;> omega
+  have hsum : ∑ x ∈ U, deg x = F.card * l := by
+    have h1 : ∑ x ∈ U, deg x = ∑ S ∈ F, S.card := by
+      simp only [hdeg, Finset.card_filter]
+      rw [Finset.sum_comm]
+      refine Finset.sum_congr rfl fun S hS => ?_
+      rw [← Finset.card_filter, Finset.filter_mem_eq_inter,
+        Finset.inter_eq_right.mpr (hsubU S hS)]
+    rw [h1, Finset.sum_congr rfl (fun S hS => hu S hS), Finset.sum_const,
+      smul_eq_mul]
+  have hfinal : F.card * F.card - F.card ≤ F.card * l := hsum ▸ hkey
+  have hpos : 0 < F.card := by omega
+  have : F.card * F.card ≤ F.card * (l + 1) := by
+    have := Nat.sub_le_iff_le_add.mp hfinal
+    calc F.card * F.card ≤ F.card * l + F.card := this
+      _ = F.card * (l + 1) := by ring
+  exact Nat.le_of_mul_le_mul_left this hpos
+
 end M3
