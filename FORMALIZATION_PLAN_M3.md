@@ -24,7 +24,8 @@ Reuses `IsSunflower` / `IsSunflowerFree` from `SunflowerLean.Basic`
 
 **STATUS 2026-06-11: ALL MILESTONES LANDED** (M4 witness half; its
 UNSAT half is blocked, see MASTER_PLAN_TO_DONE.md F4c). M2 =
-T1Exact.lean (DONE), M3 = LinkRecursion.lean (DONE), M4 =
+T1Exact.lean (DONE) plus T1Rigidity.lean (DONE), M3 =
+LinkRecursion.lean (DONE) plus T2Counting.lean (DONE), M4 =
 Relabel/SATEncoding/SmallValues.lean (witness + anchors DONE), M5 =
 Pencil.lean (DONE incl. q=2 instance), M6 = Bertrand.lean (DONE).
 Verification: FORMAL_RESULTS_M3.md + verify_m3.sh. This file is kept
@@ -58,13 +59,14 @@ binding ledger.
   edges incident to `v`; pairwise intersection = the single edge
   `s(v,w)`; cores pairwise distinct. (d) `M3(l,1) = 2l+2` by M1 + (a).
   For small `l`, `decide`/`native_decide` cross-checks of (a) mirror the
-  existing `M_n_3` idiom.
+  existing `M_n_3` idiom. Equality-case rigidity for the intersecting
+  extremals is formalized separately in `M3/T1Rigidity.lean`.
 
 - M3 — Link recursion (`M3/LinkRecursion.lean`). Paper Lemma 2.1:
   `M3(l,t) ≤ 2 + 2l * M3(l-1, t-1)` and `M3(l,0) ≤ 2`. Maximal disjoint
   pair + pigeonhole on the ≤ 2l covered points + link inherits
   (uniform l-1, capped t-1, SF-free; lifting lemma re-adjoining x).
-  Corollary: `M3(l,2) ≤ 4l² + 2` from M2.
+  Corollary: `M3(l,2) ≤ 4l² + 2` from M2; superseded for the paper headline by the sharp counting file `M3/T2Counting.lean`, proving `M3(l,2) ≤ 3l²-l+2` for `l ≥ 3`.
 
 - M4 — Small exact values via the SAT bridge (`M3/SmallValues.lean` +
   encoder extension). Re-target the existing Lean-to-SAT pipeline:

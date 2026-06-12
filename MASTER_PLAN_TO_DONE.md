@@ -89,6 +89,13 @@ performs them. The loop is done when every box is checked.
             Doubled-family decide anchor dropped: kernel reduction sticks
             on Sum/map/union instances; the doubled card is already the
             kernel theorem M3_one_exact.
+      - [x] F2h. t=1 equality rigidity. DONE 2026-06-11:
+            `SunflowerLean/M3/T1Rigidity.lean` formalizes the extremal
+            intersecting incidence structure: no private points, support
+            degree exactly two, unique common point for each pair, and
+            `I3_extremal_star_incidence`. Axiom audit is kernel-only
+            [propext, Classical.choice, Quot.sound] (unique-common-point
+            row needs only propext + Quot.sound); no sorryAx.
 - [x] F3. Link recursion `SunflowerLean/M3/LinkRecursion.lean` (paper
       Lemma 2.1). DONE 2026-06-10: `M3_card_le_t0` (≤ 2 at cap 0);
       `link`/`erase_inter_erase`/`erase_injOn_through`/`link_admissible`
@@ -100,6 +107,14 @@ performs them. The loop is done when every box is checked.
       for standalone InjOn, beta-reduction bridge, push_neg Nonempty
       form), zero warnings in-file; all five declarations audit to
       [propext, Classical.choice, Quot.sound] — no sorryAx.
+      - [x] F3b. Sharp t=2 counting upper bound. DONE 2026-06-11:
+            `SunflowerLean/M3/T2Counting.lean` formalizes the pair-counting
+            improvement `M3_card_le_t2_sharp`: for `l ≥ 3`, every
+            M3-admissible(l,2) family has cardinality at most `3*l^2-l+2`.
+            The proof uses Mantel/Turan for ordered disjoint pairs, the
+            t=1 link bound for one-point intersections, and codegree ≤2
+            for two-point intersections. `verify_m3.sh` green; axiom audit
+            [propext, Classical.choice, Quot.sound], no sorryAx.
 - [ ] F4. SAT bridge retarget + small exact values
       `SunflowerLean/M3/SmallValues.lean` + encoder extension.
       - [x] F4a. Support/relabel lemma. DONE 2026-06-10:
@@ -307,7 +322,7 @@ performs them. The loop is done when every box is checked.
       Pencil constructions: q=2 kernel (fanoOrthogovalPair); q=3,5,7
         checker (projective_orthogoval_doubling_check.mjs); all prime
         powers cited (CIJSSS Thm 2.2).
-      Quadratic bounds: 4l²+2 kernel; (l−2)²/8 kernel modulo cited.
+      Quadratic bounds: 3l²-l+2 kernel for l ≥ 3 (sharp counting upper); 4l²+2 remains as the link-recursion corollary; (l−2)²/8 kernel modulo cited.
       Interval-arithmetic threshold numbers (N_PASS etc.): checker
         (BigInt, slack_857_reserve_pinning.mjs).
       Paper updated to claim M3(4,2) ≥ 24 as kernel-verified;

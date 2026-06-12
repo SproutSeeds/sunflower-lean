@@ -1,5 +1,7 @@
 # Sunflower Lean - Formal Verification Project
 
+Maintained by SproutSeeds. Research stewardship: Fractal Research Group ([frg.earth](https://frg.earth)).
+
 Lean 4 formalization of sunflower combinatorics, using Mathlib and Aristotle verification.
 
 ## Purpose
@@ -32,6 +34,7 @@ After a failed proof attempt (see [/CORRECTION_NOTICE.md](../CORRECTION_NOTICE.m
 | `SunflowerLean/Spread.lean` | Spread family definitions | Draft (not verified) |
 
 
+
 ## M3 development (uniform, intersection-capped, 2026-06)
 
 Kernel-verified companion to the paper *"Three-sunflower-free set
@@ -45,15 +48,18 @@ paper ↔ Lean mapping with verbatim axiom audits):
 
 - doubling lemma M3 ≥ 2·I3 (`M3/Doubling.lean`)
 - the exact t = 1 theorem I3(l,1) = l+1, M3(l,1) = 2l+2 for l ≥ 2,
-  with the K_{l+1} star-family witness (`M3/T1Exact.lean`)
+  with the K_{l+1} star-family witness (`M3/T1Exact.lean`) and
+  intersecting equality-case rigidity (`M3/T1Rigidity.lean`)
 - link recursion and M3(l,2) ≤ 4l²+2 (`M3/LinkRecursion.lean`)
+- the sharp counting upper bound M3(l,2) ≤ 3l²-l+2 for l ≥ 3
+  (`M3/T2Counting.lean`)
 - support-relabel soundness: Fin-type upper bounds are universal
   (`M3/Relabel.lean`)
 - SAT encoder + soundness bridges for M3/I3 on the bitmask variable
   space, with LRAT-certified encoder anchors at n = 7
   (`M3/SATEncoding.lean`, `M3/SmallValues.lean`)
-- the engine's I3(4,2) optimum I12 re-certified by kernel decide:
-  I3(4,2) ≥ 12 (`M3/SmallValues.lean`)
+- the engine's I3(4,2) optimum I12 re-certified by native finite
+  reduction: I3(4,2) ≥ 12 (`M3/SmallValues.lean`)
 - the conditional pencil lemma: orthogoval plane pairs give
   I3-admissible(2q+2, 2) families of q²+q+1 pencils, doubled to the
   paper's M3 lower bound; explicit kernel-decided Fano pair at q = 2
@@ -71,6 +77,7 @@ Verify everything with one command:
 
 (full `lake build`, axiom audits with profile checks, LRAT certificate
 rechecks; exits nonzero on any failure).
+
 
 ## Key Definitions
 

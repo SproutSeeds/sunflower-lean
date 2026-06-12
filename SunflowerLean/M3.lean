@@ -9,7 +9,9 @@
 import SunflowerLean.M3.Defs
 import SunflowerLean.M3.Doubling
 import SunflowerLean.M3.T1Exact
+import SunflowerLean.M3.T1Rigidity
 import SunflowerLean.M3.LinkRecursion
+import SunflowerLean.M3.T2Counting
 import SunflowerLean.M3.Relabel
 import SunflowerLean.M3.SATEncoding
 import SunflowerLean.M3.SmallValues

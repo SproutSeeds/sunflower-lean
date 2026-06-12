@@ -109,7 +109,7 @@ for i in range(B-1):
             # eq so far -> a_p >= b_p
             add(-eq, a[p], -b[p])
             e = newvar()
-            add(-e, eq); 
+            add(-e, eq);
             add(-e, a[p], -b[p]); add(-e, -a[p], b[p])
             eq = e
 

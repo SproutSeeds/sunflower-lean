@@ -23,9 +23,14 @@ import SunflowerLean.M3
 #print axioms M3.starFam_card
 #print axioms M3.I3_one_exact
 #print axioms M3.M3_one_exact
+#print axioms M3.I3_extremal_no_private_points
+#print axioms M3.I3_extremal_degree_eq_two
+#print axioms M3.I3_unique_common_point_t1
+#print axioms M3.I3_extremal_star_incidence
 #print axioms M3.M3_card_le_t0
 #print axioms M3.link_recursion
 #print axioms M3.M3_card_le_t2
+#print axioms M3.M3_card_le_t2_sharp
 #print axioms M3.M3_upper_of_fin
 #print axioms M3.I3_upper_of_fin
 #print axioms M3.m3_bridge
@@ -48,8 +53,8 @@ NORM=$(printf '%s\n' "$AUDIT" | awk "/^'/{if(buf)print buf; buf=\$0; next}{buf=b
 
 echo "== audit checks =="
 COUNT=$(printf '%s\n' "$NORM" | grep -c "depends on axioms") || true
-if [ "$COUNT" -ne 25 ]; then
-  echo "FAIL: expected 25 audited results, saw $COUNT"; exit 1
+if [ "$COUNT" -ne 30 ]; then
+  echo "FAIL: expected 30 audited results, saw $COUNT"; exit 1
 fi
 if printf '%s\n' "$NORM" | grep -q "sorryAx"; then
   echo "FAIL: sorryAx found"; exit 1
@@ -61,8 +66,9 @@ FOREIGN=$(printf '%s\n' "$NORM" | tr -d '[],' | tr ' ' '\n' \
 if [ -n "$FOREIGN" ]; then
   echo "FAIL: unexpected axiom tokens:"; echo "$FOREIGN"; exit 1
 fi
-# the kernel-only spine must not mention the compiler axioms
-SPINE=$(printf '%s\n' "$NORM" | grep -v -E "m3_bridge|i3_bridge|fin7_anchor")
+# the kernel-only spine must not mention the compiler axioms; native finite
+# reductions are confined to the bridge/LRAT and explicit I12 witness lanes.
+SPINE=$(printf '%s\n' "$NORM" | grep -v -E "m3_bridge|i3_bridge|fin7_anchor|I3_4_2_lower|M3_4_2_lower")
 if printf '%s\n' "$SPINE" | grep -q "ofReduceBool"; then
   echo "FAIL: compiler axiom leaked into the kernel spine"; exit 1
 fi
