@@ -1,6 +1,7 @@
 # Sunflower Lean - Formal Verification Project
 
 Maintained by SproutSeeds. Research stewardship: Fractal Research Group ([frg.earth](https://frg.earth)).
+License: [Apache-2.0](LICENSE) (matching Lean 4 and mathlib).
 
 Lean 4 formalization of sunflower combinatorics, using Mathlib and Aristotle verification.
 

@@ -246,12 +246,13 @@ performs them. The loop is done when every box is checked.
 
 ## Phase R — Repository publication readiness
 
-- [ ] R1. LICENSE file. AGENT PREPARATION DONE 2026-06-11: canonical
-      texts staged in `license-options/` (LICENSE.apache-2.0.txt from
-      apache.org; LICENSE.mit.txt from SPDX, year/name filled), with
-      README giving the one-command install for either and a
-      recommendation (Apache-2.0, matching mathlib's license culture).
-      🔑 OWNER: choose, `cp` to LICENSE, commit, record choice here.
+- [x] R1. LICENSE file. DONE 2026-06-12: owner chose **Apache-2.0**
+      (delegated to the staged recommendation: matches the Lean/mathlib
+      ecosystem license and carries the explicit patent grant).
+      `LICENSE` installed from `license-options/LICENSE.apache-2.0.txt`
+      verbatim; `NOTICE` added ("Copyright 2026 Cody Mitchell (Fractal
+      Research Group)"); README license line added. Prep record:
+      canonical texts staged 2026-06-11 in `license-options/`.
 - [x] R2. DONE 2026-06-11: `REPRODUCING.md` (toolchain pin
       leanprover/lean4:v4.26.0 via lean-toolchain; clean-clone steps
       with `lake exe cache get`; verify_m3.sh as the one-command path —
