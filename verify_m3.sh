@@ -31,6 +31,9 @@ import SunflowerLean.M3
 #print axioms M3.link_recursion
 #print axioms M3.M3_card_le_t2
 #print axioms M3.M3_card_le_t2_sharp
+#print axioms M3.M3_card_le_t2_no_singletons
+#print axioms M3.inter_card_sum_eq_deg_offDiag
+#print axioms M3.M3_t3_no_exact3_card_le_t2_sharp
 #print axioms M3.M3_upper_of_fin
 #print axioms M3.I3_upper_of_fin
 #print axioms M3.m3_bridge
@@ -53,8 +56,8 @@ NORM=$(printf '%s\n' "$AUDIT" | awk "/^'/{if(buf)print buf; buf=\$0; next}{buf=b
 
 echo "== audit checks =="
 COUNT=$(printf '%s\n' "$NORM" | grep -c "depends on axioms") || true
-if [ "$COUNT" -ne 30 ]; then
-  echo "FAIL: expected 30 audited results, saw $COUNT"; exit 1
+if [ "$COUNT" -ne 33 ]; then
+  echo "FAIL: expected 33 audited results, saw $COUNT"; exit 1
 fi
 if printf '%s\n' "$NORM" | grep -q "sorryAx"; then
   echo "FAIL: sorryAx found"; exit 1

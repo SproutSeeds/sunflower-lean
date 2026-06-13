@@ -4,7 +4,8 @@ Companion to the paper *"Three-sunflower-free set systems with bounded
 pairwise intersections"* (draft in
 `erdos-problems/packs/sunflower/problems/857/bld_note/`). Every row's
 normalized axiom audit below is re-derived from `#print axioms` output
-(30 results), checked 2026-06-11 against the full green `lake build`
+(33 results; 30 from the published-paper spine + 3 goal-push additions
+2026-06-13), checked against the full green `lake build`
 (toolchain `leanprover/lean4:v4.26.0`, mathlib `v4.26.0`).
 
 Axiom profiles:
@@ -41,6 +42,9 @@ Axiom profiles:
 | Lemma 2.1 (link recursion): M3(l,t) ≤ 2 + 2l·B given link bound B | `M3.link_recursion` | `M3/LinkRecursion.lean` | kernel |
 | Link-recursion corollary: M3(l,2) ≤ 4l² + 2 | `M3.M3_card_le_t2` | `M3/LinkRecursion.lean` | kernel |
 | Thm 1.2 sharp counting upper bound: M3(l,2) ≤ 3l²-l+2 for l ≥ 3 | `M3.M3_card_le_t2_sharp` | `M3/T2Counting.lean` | kernel |
+| **[goal-push 2026-06-13, beyond published v1]** incidence identity Σ_{(A,B)∈offDiag}\|A∩B\| = Σ_x deg(x)(deg(x)−1) | `M3.inter_card_sum_eq_deg_offDiag` | `M3/T2Counting.lean` | kernel |
+| **[goal-push 2026-06-13]** conditional: no exact-1 pair ⇒ M3(l,2) ≤ l²−l+2 | `M3.M3_card_le_t2_no_singletons` | `M3/T2Counting.lean` | kernel |
+| **[goal-push 2026-06-13]** t=3 localization: no exact-3 pair ⇒ M3(l,3) ≤ 3l²−l+2 (θ(3)>2 needs exact-3) | `M3.M3_t3_no_exact3_card_le_t2_sharp` | `M3/T2Counting.lean` | kernel |
 | Support/relabel soundness: Fin ((v+1)·l) bounds are universal | `M3.M3_upper_of_fin`, `M3.I3_upper_of_fin` | `M3/Relabel.lean` | kernel |
 | SAT bridge soundness: UNSAT ⇒ cardinality bound on Fin n | `M3.m3_bridge`, `M3.i3_bridge` | `M3/SATEncoding.lean` | kernel+native* |
 | Engine value, witness side: I3(4,2) ≥ 12 (I12 on 10 points) | `M3.I3_4_2_lower` | `M3/SmallValues.lean` | kernel+native |
@@ -62,7 +66,7 @@ power) is cited, not formalized; the hypothesis class `OrthogovalPair`
 packages exactly what it provides, and `fanoOrthogovalPair` certifies
 the class non-vacuous at q = 2 by kernel `decide`.
 
-## Normalized audit output (2026-06-11)
+## Normalized audit output (33 results; refreshed 2026-06-13)
 
 ```
 'M3.doubling' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -82,6 +86,9 @@ the class non-vacuous at q = 2 by kernel `decide`.
 'M3.link_recursion' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_card_le_t2' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_card_le_t2_sharp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.M3_card_le_t2_no_singletons' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.inter_card_sum_eq_deg_offDiag' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.M3_t3_no_exact3_card_le_t2_sharp' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_upper_of_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.I3_upper_of_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.m3_bridge' depends on axioms: [propext, Classical.choice, Lean.ofReduceBool, Lean.trustCompiler, Quot.sound]

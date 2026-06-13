@@ -377,4 +377,117 @@ theorem M3_card_le_t2_sharp {F : Finset (Finset α)} {l : ℕ}
   have hfinal : m ≤ 3 * l ^ 2 - l + 2 := by omega
   simpa [hmdef] using hfinal
 
+/-- B3.1 incidence identity (goal-stack, ordered form): the double-count
+    `∑_{(A,B)∈offDiag} |A∩B| = ∑_x deg(x)·(deg(x)−1)`. Equivalent to the
+    unordered `P₁ + 2P₂ = Σ_x C(d_x,2)` — the algebraic handle behind the t=2
+    constant analysis. (`(F.filter (x∈·)).offDiag.card = deg(x)·(deg(x)−1)`.) -/
+theorem inter_card_sum_eq_deg_offDiag {F : Finset (Finset α)} :
+    ∑ p ∈ F.offDiag, (p.1 ∩ p.2).card
+      = ∑ x ∈ F.biUnion id, (F.filter (fun S => x ∈ S)).offDiag.card := by
+  classical
+  have hstep : ∀ p ∈ F.offDiag,
+      (p.1 ∩ p.2).card
+        = ∑ x ∈ F.biUnion id, (if x ∈ p.1 ∧ x ∈ p.2 then 1 else 0) := by
+    intro p hp
+    have hp1 : p.1 ∈ F := (Finset.mem_offDiag.mp hp).1
+    have hsub : p.1 ∩ p.2 ⊆ F.biUnion id := fun y hy =>
+      Finset.mem_biUnion.mpr ⟨p.1, hp1, (Finset.mem_inter.mp hy).1⟩
+    calc (p.1 ∩ p.2).card
+        = ((F.biUnion id).filter (fun x => x ∈ p.1 ∩ p.2)).card := by
+          rw [Finset.filter_mem_eq_inter, Finset.inter_eq_right.mpr hsub]
+      _ = ∑ x ∈ F.biUnion id, (if x ∈ p.1 ∩ p.2 then 1 else 0) := by
+          rw [Finset.card_filter]
+      _ = ∑ x ∈ F.biUnion id, (if x ∈ p.1 ∧ x ∈ p.2 then 1 else 0) := by
+          refine Finset.sum_congr rfl (fun x _ => ?_)
+          simp [Finset.mem_inter]
+  rw [Finset.sum_congr rfl hstep, Finset.sum_comm]
+  refine Finset.sum_congr rfl (fun x _ => ?_)
+  rw [← Finset.card_filter]
+  congr 1
+  ext p
+  simp only [Finset.mem_offDiag, Finset.mem_filter]
+  constructor
+  · rintro ⟨⟨h1, h2, hne⟩, hx1, hx2⟩; exact ⟨⟨h1, hx1⟩, ⟨h2, hx2⟩, hne⟩
+  · rintro ⟨⟨h1, hx1⟩, ⟨h2, hx2⟩, hne⟩; exact ⟨⟨h1, h2, hne⟩, hx1, hx2⟩
+
+/-- Prop 5 (goal-stack B3, conditional constant-1 bound): a t=2-admissible
+    family with **no** pair meeting in exactly one point (every pair disjoint or
+    meeting in exactly 2 — the doubled-pencil construction's own profile) obeys
+    the far tighter `l²−l+2`. So the whole gap between the general `3l²−l+2` and
+    this is exactly the *permission for singleton intersections*. -/
+theorem M3_card_le_t2_no_singletons {F : Finset (Finset α)} {l : ℕ}
+    (hl : 1 ≤ l) (hF : M3Admissible F l 2)
+    (hno1 : ∀ S ∈ F, ∀ T ∈ F, S ≠ T → (S ∩ T).card ≠ 1) :
+    F.card ≤ l ^ 2 - l + 2 := by
+  classical
+  have hF0 := hF
+  obtain ⟨hu, hc, hsf⟩ := hF
+  let D := F.offDiag.filter (fun p : Finset α × Finset α => p.1 ∩ p.2 = ∅)
+  let P2 := F.offDiag.filter (fun p : Finset α × Finset α => (p.1 ∩ p.2).card = 2)
+  have hcover : F.offDiag ⊆ D ∪ P2 := by
+    intro p hp
+    have hpinfo := Finset.mem_offDiag.mp hp
+    have hcap := hc p.1 hpinfo.1 p.2 hpinfo.2.1 hpinfo.2.2
+    have hne1 := hno1 p.1 hpinfo.1 p.2 hpinfo.2.1 hpinfo.2.2
+    have hk : (p.1 ∩ p.2).card = 0 ∨ (p.1 ∩ p.2).card = 2 := by omega
+    simp only [D, P2, Finset.mem_union, Finset.mem_filter]
+    rcases hk with h0 | h2
+    · exact Or.inl ⟨hp, Finset.card_eq_zero.mp h0⟩
+    · exact Or.inr ⟨hp, h2⟩
+  have hpairCover : F.offDiag.card ≤ D.card + P2.card :=
+    (Finset.card_le_card hcover).trans (Finset.card_union_le _ _)
+  have hD : 2 * D.card ≤ F.card ^ 2 := by
+    simpa [D] using ordered_disjoint_pairs_le_sq (show 0 < l by omega) hu hsf
+  have hP2 : 2 * P2.card ≤ F.card * (l * (l - 1)) := by
+    have hmul := Nat.mul_le_mul_left 2 (ordered_two_point_pairs_le hF0)
+    have hchoose' : 2 * l.choose 2 = l * (l - 1) := by
+      rw [Nat.choose_two_right]
+      exact Nat.mul_div_cancel' (even_iff_two_dvd.mp (Nat.even_mul_pred_self l))
+    calc 2 * P2.card ≤ 2 * (F.card * l.choose 2) := by simpa [P2] using hmul
+      _ = F.card * (2 * l.choose 2) := by ring
+      _ = F.card * (l * (l - 1)) := by rw [hchoose']
+  rcases F.eq_empty_or_nonempty with hEmpty | hNonempty
+  · rw [hEmpty]; simp
+  set m := F.card with hmdef
+  have hmpos : 0 < m := Finset.card_pos.mpr hNonempty
+  have hoff : F.offDiag.card = m * (m - 1) := by
+    rw [Finset.offDiag_card, hmdef, Nat.mul_sub_left_distrib]; simp
+  have htotal2 : 2 * F.offDiag.card ≤ F.card ^ 2 + F.card * (l * (l - 1)) := by
+    calc 2 * F.offDiag.card
+        ≤ 2 * (D.card + P2.card) := Nat.mul_le_mul_left 2 hpairCover
+      _ = 2 * D.card + 2 * P2.card := by ring
+      _ ≤ F.card ^ 2 + F.card * (l * (l - 1)) := Nat.add_le_add hD hP2
+  have hcancelShape : m * (m - 2) ≤ m * (l * (l - 1)) := by
+    rw [hoff, ← hmdef] at htotal2
+    by_cases hm2 : m ≤ 2
+    · rw [Nat.sub_eq_zero_of_le hm2]; exact Nat.zero_le _
+    · have h2m : 2 ≤ m := by omega
+      have h1m : 1 ≤ m := by omega
+      zify [h1m, h2m, hl] at htotal2 ⊢
+      nlinarith
+  have hcancel : m - 2 ≤ l * (l - 1) := Nat.le_of_mul_le_mul_left hcancelShape hmpos
+  have hll : l * (l - 1) = l ^ 2 - l := by
+    cases l with
+    | zero => simp
+    | succ k => simp only [pow_two, Nat.succ_sub_one, Nat.mul_succ]; omega
+  have hfinal : m ≤ l ^ 2 - l + 2 := by rw [← hll]; omega
+  simpa [hmdef] using hfinal
+
+/-- A4.1 localization (goal-stack Lane A): a `t=3`-admissible family with **no**
+    pair meeting in exactly 3 points is `t=2`-admissible, hence obeys the sharp
+    t=2 bound `3l²−l+2 = O(l²)`. Consequently `θ(3) > 2` can only arise via
+    exact-3 intersections — and the best known `t=3` construction (the doubled
+    pencil) has none. -/
+theorem M3_t3_no_exact3_card_le_t2_sharp {F : Finset (Finset α)} {l : ℕ}
+    (hl : 3 ≤ l) (hF : M3Admissible F l 3)
+    (hno3 : ∀ S ∈ F, ∀ T ∈ F, S ≠ T → (S ∩ T).card ≠ 3) :
+    F.card ≤ 3 * l ^ 2 - l + 2 := by
+  obtain ⟨hu, hc, hsf⟩ := hF
+  have hc2 : PairwiseCapped F 2 := by
+    intro S hS T hT hST
+    have h3 := hc S hS T hT hST
+    have hne := hno3 S hS T hT hST
+    omega
+  exact M3_card_le_t2_sharp hl ⟨hu, hc2, hsf⟩
+
 end M3
