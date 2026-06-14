@@ -18,3 +18,4 @@ import SunflowerLean.M3.SmallValues
 import SunflowerLean.M3.Pencil
 import SunflowerLean.M3.Bertrand
 import SunflowerLean.M3.T1MSide
+import SunflowerLean.M3.T2MantelReduction

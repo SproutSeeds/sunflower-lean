@@ -2,10 +2,10 @@
 
 Companion to the paper *"Three-sunflower-free set systems with bounded
 pairwise intersections"* (draft in
-`erdos-problems/packs/sunflower/problems/857/bld_note/`). Every row's
+`erdos-problems/packs/sunflower/problems/857/three_sunflower_paper/`). Every row's
 normalized axiom audit below is re-derived from `#print axioms` output
-(46 results; 30 from the published-paper spine + 16 goal-push additions
-2026-06-13), checked against the full green `lake build`
+(48 results; 30 from the published-paper spine + 18 goal-push additions
+2026-06-14), checked against the full green `lake build`
 (toolchain `leanprover/lean4:v4.26.0`, mathlib `v4.26.0`).
 
 Axiom profiles:
@@ -57,6 +57,8 @@ Axiom profiles:
 | **[goal-push 2026-06-13]** counting helpers: exactly l+1 of the 2l+2 residues are even / odd (k↦2k, k↦2k+1) | `M3.fin_residue0_card`, `M3.fin_residue1_card` | `M3/T1MSide.lean` | kernel |
 | **[goal-push 2026-06-13]** B4 bipartition (M-side): extremal M3(l,1) family splits into two disjoint size-(l+1) intersecting parts with all cross-pairs disjoint (colour classes of the Turán iso) | `M3.disjGraph_extremal_bipartition` | `M3/T1MSide.lean` | kernel |
 | **[goal-push 2026-06-13]** **B4 CLOSED**: full M-side extremal classification — extremal M3(l,1) family = two disjoint complete-graph star copies on disjoint supports | `M3.M3_extremal_classification` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-14]** B3.2a: Turán-maximal disjointness graph ⇒ bipartition into two intersecting parts with disjoint cross-pairs | `M3.disjGraph_turanMaximal_bipartition` | `M3/T2MantelReduction.lean` | kernel |
+| **[goal-push 2026-06-14]** B3.2a (conditional Mantel-tight reduction): cap-2 SF-free F with Turán-maximal disjointness graph ⇒ two I3(l,2)-admissible parts on disjoint supports (reduces M3(l,2) to I3(l,2) within the Mantel-tight subclass; NOT global) | `M3.M3_mantel_tight_reduction` | `M3/T2MantelReduction.lean` | kernel |
 | Support/relabel soundness: Fin ((v+1)·l) bounds are universal | `M3.M3_upper_of_fin`, `M3.I3_upper_of_fin` | `M3/Relabel.lean` | kernel |
 | SAT bridge soundness: UNSAT ⇒ cardinality bound on Fin n | `M3.m3_bridge`, `M3.i3_bridge` | `M3/SATEncoding.lean` | kernel+native* |
 | Engine value, witness side: I3(4,2) ≥ 12 (I12 on 10 points) | `M3.I3_4_2_lower` | `M3/SmallValues.lean` | kernel+native |
@@ -78,7 +80,7 @@ power) is cited, not formalized; the hypothesis class `OrthogovalPair`
 packages exactly what it provides, and `fanoOrthogovalPair` certifies
 the class non-vacuous at q = 2 by kernel `decide`.
 
-## Normalized audit output (46 results; refreshed 2026-06-13)
+## Normalized audit output (48 results; refreshed 2026-06-14)
 
 ```
 'M3.doubling' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -114,6 +116,8 @@ the class non-vacuous at q = 2 by kernel `decide`.
 'M3.fin_residue1_card' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.disjGraph_extremal_bipartition' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_extremal_classification' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjGraph_turanMaximal_bipartition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.M3_mantel_tight_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_upper_of_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.I3_upper_of_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.m3_bridge' depends on axioms: [propext, Classical.choice, Lean.ofReduceBool, Lean.trustCompiler, Quot.sound]

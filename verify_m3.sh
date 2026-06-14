@@ -47,6 +47,8 @@ import SunflowerLean.M3
 #print axioms M3.fin_residue1_card
 #print axioms M3.disjGraph_extremal_bipartition
 #print axioms M3.M3_extremal_classification
+#print axioms M3.disjGraph_turanMaximal_bipartition
+#print axioms M3.M3_mantel_tight_reduction
 #print axioms M3.M3_upper_of_fin
 #print axioms M3.I3_upper_of_fin
 #print axioms M3.m3_bridge
@@ -69,8 +71,8 @@ NORM=$(printf '%s\n' "$AUDIT" | awk "/^'/{if(buf)print buf; buf=\$0; next}{buf=b
 
 echo "== audit checks =="
 COUNT=$(printf '%s\n' "$NORM" | grep -c "depends on axioms") || true
-if [ "$COUNT" -ne 46 ]; then
-  echo "FAIL: expected 46 audited results, saw $COUNT"; exit 1
+if [ "$COUNT" -ne 48 ]; then
+  echo "FAIL: expected 48 audited results, saw $COUNT"; exit 1
 fi
 if printf '%s\n' "$NORM" | grep -q "sorryAx"; then
   echo "FAIL: sorryAx found"; exit 1
