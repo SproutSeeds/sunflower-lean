@@ -4,7 +4,7 @@ Companion to the paper *"Three-sunflower-free set systems with bounded
 pairwise intersections"* (draft in
 `erdos-problems/packs/sunflower/problems/857/bld_note/`). Every row's
 normalized axiom audit below is re-derived from `#print axioms` output
-(33 results; 30 from the published-paper spine + 3 goal-push additions
+(46 results; 30 from the published-paper spine + 16 goal-push additions
 2026-06-13), checked against the full green `lake build`
 (toolchain `leanprover/lean4:v4.26.0`, mathlib `v4.26.0`).
 
@@ -45,6 +45,18 @@ Axiom profiles:
 | **[goal-push 2026-06-13, beyond published v1]** incidence identity Σ_{(A,B)∈offDiag}\|A∩B\| = Σ_x deg(x)(deg(x)−1) | `M3.inter_card_sum_eq_deg_offDiag` | `M3/T2Counting.lean` | kernel |
 | **[goal-push 2026-06-13]** conditional: no exact-1 pair ⇒ M3(l,2) ≤ l²−l+2 | `M3.M3_card_le_t2_no_singletons` | `M3/T2Counting.lean` | kernel |
 | **[goal-push 2026-06-13]** t=3 localization: no exact-3 pair ⇒ M3(l,3) ≤ 3l²−l+2 (θ(3)>2 needs exact-3) | `M3.M3_t3_no_exact3_card_le_t2_sharp` | `M3/T2Counting.lean` | kernel |
+| **[goal-push 2026-06-13]** B4 assembly (M-side): given a balanced bipartition into two intersecting size-(l+1) parts with disjoint cross-pairs, each part is the star family + supports disjoint (reduces full B4 to the Turán bipartition) | `M3.M3_extremal_two_disjoint_stars_of_split` | `M3/T1Rigidity.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.2 step 1: the disjointness graph of a 3-sunflower-free family is triangle-free (`CliqueFree 3`) | `M3.disjGraph_cliqueFree` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.1 (upper half): disjointness graph of an SF-free family of size 2l+2 has ≤ (l+1)² edges (Turán bound) | `M3.disjGraph_edge_le` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.1 intersecting-pair bound: cap-1 family has Σ_offDiag\|A∩B\| ≤ \|F\|·l (2I ≤ ml) | `M3.inter_pairs_le` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.1 (lower half): at \|F\|=2l+2 the ordered disjoint pairs are ≥ 2(l+1)² (D ≥ (l+1)²), matching the Turán upper bound | `M3.disjoint_pairs_ge` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.2 bridge: 2·#disjGraph-edges = #ordered disjoint pairs of F (subtype-edge↔offDiag bijection) | `M3.two_mul_edge_eq_disjoint_pairs` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.1 complete: extremal M3(l,1) disjointness graph has **exactly (l+1)² edges** (Turán-maximal value; the IsTuranMaximal edge hypothesis) | `M3.disjGraph_edge_eq` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.2 Turán maximality: extremal M3(l,1) disjointness graph is `IsTuranMaximal 2` (CliqueFree 3 + max edge count); hypothesis of mathlib's iso-to-turanGraph theorem | `M3.disjGraph_isTuranMaximal` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4.2 iso: extremal M3(l,1) disjointness graph ≃g `turanGraph (2l+2) 2` (balanced complete bipartite); first half of the bipartition extraction | `M3.disjGraph_nonempty_iso_turanGraph` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** counting helpers: exactly l+1 of the 2l+2 residues are even / odd (k↦2k, k↦2k+1) | `M3.fin_residue0_card`, `M3.fin_residue1_card` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** B4 bipartition (M-side): extremal M3(l,1) family splits into two disjoint size-(l+1) intersecting parts with all cross-pairs disjoint (colour classes of the Turán iso) | `M3.disjGraph_extremal_bipartition` | `M3/T1MSide.lean` | kernel |
+| **[goal-push 2026-06-13]** **B4 CLOSED**: full M-side extremal classification — extremal M3(l,1) family = two disjoint complete-graph star copies on disjoint supports | `M3.M3_extremal_classification` | `M3/T1MSide.lean` | kernel |
 | Support/relabel soundness: Fin ((v+1)·l) bounds are universal | `M3.M3_upper_of_fin`, `M3.I3_upper_of_fin` | `M3/Relabel.lean` | kernel |
 | SAT bridge soundness: UNSAT ⇒ cardinality bound on Fin n | `M3.m3_bridge`, `M3.i3_bridge` | `M3/SATEncoding.lean` | kernel+native* |
 | Engine value, witness side: I3(4,2) ≥ 12 (I12 on 10 points) | `M3.I3_4_2_lower` | `M3/SmallValues.lean` | kernel+native |
@@ -66,7 +78,7 @@ power) is cited, not formalized; the hypothesis class `OrthogovalPair`
 packages exactly what it provides, and `fanoOrthogovalPair` certifies
 the class non-vacuous at q = 2 by kernel `decide`.
 
-## Normalized audit output (33 results; refreshed 2026-06-13)
+## Normalized audit output (46 results; refreshed 2026-06-13)
 
 ```
 'M3.doubling' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -89,6 +101,19 @@ the class non-vacuous at q = 2 by kernel `decide`.
 'M3.M3_card_le_t2_no_singletons' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.inter_card_sum_eq_deg_offDiag' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_t3_no_exact3_card_le_t2_sharp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.M3_extremal_two_disjoint_stars_of_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjGraph_cliqueFree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjGraph_edge_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.inter_pairs_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjoint_pairs_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.two_mul_edge_eq_disjoint_pairs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjGraph_edge_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjGraph_isTuranMaximal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjGraph_nonempty_iso_turanGraph' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.fin_residue0_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.fin_residue1_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.disjGraph_extremal_bipartition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'M3.M3_extremal_classification' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.M3_upper_of_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.I3_upper_of_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
 'M3.m3_bridge' depends on axioms: [propext, Classical.choice, Lean.ofReduceBool, Lean.trustCompiler, Quot.sound]

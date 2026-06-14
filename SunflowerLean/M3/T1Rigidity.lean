@@ -158,4 +158,30 @@ theorem I3_extremal_star_incidence {F : Finset (Finset α)} {l : ℕ}
   · intro A hA B hB hAB
     exact I3_unique_common_point_t1 hF hA hB hAB
 
+/-- B4 assembly (goal-stack Lane B, M-side classification, steps B4.3+B4.4):
+    GIVEN a balanced bipartition of an `M3(l,1)` family into two *intersecting*
+    parts of size `l+1` with all cross-pairs disjoint, each part is the
+    `K_{l+1}` star-incidence family (via `I3_extremal_star_incidence`) and the
+    two parts live on disjoint supports. This reduces the full M-side
+    classification to producing the bipartition (B4.2, the Turán/Mantel step).
+    See `B4_MSIDE_CLASSIFICATION_BLUEPRINT.md`. -/
+theorem M3_extremal_two_disjoint_stars_of_split
+    {F A B : Finset (Finset α)} {l : ℕ}
+    (hF : M3Admissible F l 1) (hAsub : A ⊆ F) (hBsub : B ⊆ F)
+    (hAcard : A.card = l + 1) (hBcard : B.card = l + 1)
+    (hAint : IsIntersectingFam A) (hBint : IsIntersectingFam B)
+    (hcross : ∀ a ∈ A, ∀ b ∈ B, a ∩ b = ∅) :
+    IsCompleteGraphStarIncidence A ∧ IsCompleteGraphStarIncidence B ∧
+      Disjoint (A.biUnion id) (B.biUnion id) := by
+  refine ⟨I3_extremal_star_incidence ⟨M3Admissible.subset hF hAsub, hAint⟩ hAcard,
+          I3_extremal_star_incidence ⟨M3Admissible.subset hF hBsub, hBint⟩ hBcard, ?_⟩
+  rw [Finset.disjoint_left]
+  intro x hxA hxB
+  obtain ⟨a, haA, hxa⟩ := Finset.mem_biUnion.mp hxA
+  obtain ⟨b, hbB, hxb⟩ := Finset.mem_biUnion.mp hxB
+  simp only [id_eq] at hxa hxb
+  have hxab : x ∈ a ∩ b := Finset.mem_inter.mpr ⟨hxa, hxb⟩
+  rw [hcross a haA b hbB] at hxab
+  exact Finset.notMem_empty x hxab
+
 end M3
