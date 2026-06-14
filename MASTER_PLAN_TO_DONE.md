@@ -287,7 +287,7 @@ performs them. The loop is done when every box is checked.
       (R2: ALL GREEN; X1 local half: see below), so this item is
       one `git clone && ./verify_m3.sh` away once the push lands.
 
-## Phase P — Paper integration (bld_note, in erdos-problems pack)
+## Phase P — Paper integration (three_sunflower_paper, in erdos-problems pack)
 
 - [x] P1. DONE 2026-06-11: "Data and verification" gains a "Lean 4
       formalization" subsection (what is formalized, three-axiom audit
@@ -330,7 +330,7 @@ performs them. The loop is done when every box is checked.
       recompiled clean (0 errors / 0 overfulls).
 - [ ] P5. 🔑 OWNER: affiliation/contact + final AI-disclosure wording +
       complete read-through sign-off. AGENT PREPARATION DONE 2026-06-11
-      — the exact markers to resolve in bld_note.tex:
+      — the exact markers to resolve in three_sunflower_free_set_systems.tex:
       (1) line ~26 \author thanks: "[Affiliation/contact to be filled
           by the author.]" — replace with affiliation or "Independent
           researcher" + email;
@@ -349,7 +349,7 @@ performs them. The loop is done when every box is checked.
 ## Phase A — Archival and announcement (owner-gated, agent-prepared)
 
 - [ ] A1. Zenodo deposit bundle. AGENT PREPARATION DONE 2026-06-11:
-      `bld_note/zenodo_bundle/` (in the 857 pack) — `assemble.sh`
+      `three_sunflower_paper/zenodo_bundle/` (in the 857 pack) — `assemble.sh`
       builds zenodo_deposit.zip (paper PDF+TeX, the five paper-cited
       checker .mjs files, their JSON certificates, metadata); test
       assembly ran green (15 files, ~444 KB). `metadata.md` carries
@@ -358,7 +358,7 @@ performs them. The loop is done when every box is checked.
       assemble.sh, upload at zenodo.org, Publish; record DOI HERE;
       replace the paper's two DOI placeholders; recompile.
 - [ ] A2. arXiv package. AGENT PREPARATION DONE 2026-06-11:
-      `bld_note/arxiv_package/` — bld_note.tex verified SELF-CONTAINED
+      `three_sunflower_paper/arxiv_package/` — three_sunflower_free_set_systems.tex verified SELF-CONTAINED
       on a clean TeX tree (/tmp/arxiv_test, 2-pass pdflatex, 0 errors /
       0 overfulls; only amsmath/amssymb/amsthm/geometry/booktabs/
       hyperref); SUBMISSION_NOTES.md has the paste-ready plain-text
@@ -366,13 +366,13 @@ performs them. The loop is done when every box is checked.
       refresh-after-DOI checklist. 🔑 OWNER: resolve P5 markers,
       refresh the copy, submit; record arXiv ID HERE; cross-link.
 - [ ] A3. Forum comments. AGENT PREPARATION DONE 2026-06-11:
-      `bld_note/FORUM_COMMENTS_DRAFT.md` — comment 1 for problem 20
+      `three_sunflower_paper/FORUM_COMMENTS_DRAFT.md` — comment 1 for problem 20
       (primary; results summary + formalization pointer), comment 2 for
       problem 857 (companion under the existing M(n,3) thread). Two
       explicit link slots ([ARXIV], [REPO]) to fill after R3/R4/A2;
       [REPO] is https://github.com/SproutSeeds/sunflower-lean. 🔑 OWNER
       fills links and posts both; never posted by the agent.
-- [ ] A4. The erdos-problems pack updated (agent): bld_note README marked
+- [ ] A4. The erdos-problems pack updated (agent): three_sunflower_paper README marked
       published, links recorded; memory updated.
       DEPENDENCY BLOCKER recorded 2026-06-11: definitionally
       post-publication — requires A1 (DOI), A2 (arXiv ID), A3 (posted

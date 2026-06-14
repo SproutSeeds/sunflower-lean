@@ -2,7 +2,7 @@
 
 Companion to the paper *"Three-sunflower-free set systems with bounded
 pairwise intersections"* (draft in
-`erdos-problems/packs/sunflower/problems/857/bld_note/`). Goal: formalize
+`erdos-problems/packs/sunflower/problems/857/three_sunflower_paper/`). Goal: formalize
 the paper's spine in this repo before arXiv submission, unifying the
 M(n,3) weak-value certifications (already here) and the uniform capped
 results (the paper) under one kernel-verified methodology.
